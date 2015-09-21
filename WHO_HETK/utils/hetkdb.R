@@ -6,7 +6,7 @@
 getHETKdata <- function(indicator, stratifier, countries, years, mostrecent=F, datasource='All'){
   require('RSQLite')
   drv <- dbDriver("SQLite")
-  con <- dbConnect(drv, "../resources/data/HEMTK.db")
+  con <- dbConnect(drv, "data/HEMTK.db")
   
   
   #   ## First make sure that the years are correct

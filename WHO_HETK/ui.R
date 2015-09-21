@@ -3,7 +3,7 @@ library(shinythemes)
 library(shinyBS)  # devtools::install_github("ebailey78/shinyBS")
 library(ggplot2)
 library(digest)
-source('../resources/includes/useful.R')
+source('utils/useful.R')
 
 shinyUI(
   fluidPage(  theme = shinytheme("readable"), 
@@ -19,7 +19,7 @@ shinyUI(
                 ###### SIDEBAR PANEL BEGINS HERE  #####
                 #######################################
                 sidebarPanel(
-                  source('./ext/tagshead-css.R')$value,  # provide additional CSS styling
+                  source('ui/tagshead-css.R')$value,  # provide additional CSS styling
                   
                   # This is a hidden variable to manage communication within the javascript interface
                   myHiddenText(inputId='countryVar', label='Cry the lost country', value='Afghanistan'),
@@ -28,22 +28,22 @@ shinyUI(
                   ###############################
                   
                   #######  Select data Side Panel 1 #######
-                  source('./ext/select-upload-sidepanel.R')$value,
+                  source('ui/select-upload-sidepanel.R')$value,
                   
                   #######  Upload your own data ######
-                  source('./ext/select-database-sidepanel.R')$value,                                    
+                  source('ui/select-database-sidepanel.R')$value,                                    
                                     
                   ##    Assess Inequalities    ##                        
                   ###############################
                   
                   #######  Disaggregated Table Here #######
-                  source('./ext/disaggregated-table-sidepanel.R')$value,
+                  source('ui/disaggregated-table-sidepanel.R')$value,
                   
                   #######  Disaggregated Plot Here #######                         
-                  source('./ext/disaggregated-plot-sidepanel.R')$value,
+                  source('ui/disaggregated-plot-sidepanel.R')$value,
                   
                   #######  Summary Table Here #######                         
-                  source('./ext/summary-table-sidepanel.R')$value,
+                  source('ui/summary-table-sidepanel.R')$value,
                   
                   #######  Summary Plot Here #######                         
                   conditionalPanel(condition = "input.mainPanel == 'assess_inequality' && input.assessment_panel == 'sumplot'",
@@ -88,11 +88,11 @@ shinyUI(
                   conditionalPanel(condition = "input.mainPanel == 'compare_inequality'",
                                    h4(textOutput('focusCountry4')),
                                    hr(),
-                                   source('./ext/comparison-benchmark-sidepanel.R')$value,  # Side panel for comparison benchmark                            
-                                   source('./ext/comparison-plot1-sidepanel.R')$value  # Side panel for comparison of inequality                                                              
+                                   source('ui/comparison-benchmark-sidepanel.R')$value,  # Side panel for comparison benchmark                            
+                                   source('ui/comparison-plot1-sidepanel.R')$value  # Side panel for comparison of inequality                                                              
                   ),  # End conditionalPanel "Disaggregated Plot"
-                  source('./ext/comparison-plot2-sidepanel.R')$value,  # Side panel for comparison of national average x inequality                            
-                  source('./ext/administration-sidepanel.R')$value  # Side panel displayed in the administration subpanel 
+                  source('ui/comparison-plot2-sidepanel.R')$value,  # Side panel for comparison of national average x inequality                            
+                  source('ui/administration-sidepanel.R')$value  # Side panel displayed in the administration subpanel 
                   
                 ), # End ALL Sidepanels here
                                 
@@ -101,19 +101,19 @@ shinyUI(
                 ######   MAIN PANEL BEGINS HERE   #####
                 #######################################
                 mainPanel(
-                  source('./ext/disaggregated-table-modal.R')$value,  # Modal for dowloading the disaggregated indicators CSV file
-                  source('./ext/disaggregated-plot-modal.R')$value,  # Modal for dowloading the disaggregated indicators plot
-                  source('./ext/summary-table-modal.R')$value,  # Modal for downloading the summary inequalities CSV file,
-                  source('./ext/summary-plot-modal.R')$value,  # Modal for dowloading the summary inequalities plot
-                  source('./ext/comparison-plot1-modal.R')$value,  # Modal for downloading comparison plot 1
-                  source('./ext/comparison-plot2-modal.R')$value,  # Modal for downloading comparison plot 2
+                  source('ui/disaggregated-table-modal.R')$value,  # Modal for dowloading the disaggregated indicators CSV file
+                  source('ui/disaggregated-plot-modal.R')$value,  # Modal for dowloading the disaggregated indicators plot
+                  source('ui/summary-table-modal.R')$value,  # Modal for downloading the summary inequalities CSV file,
+                  source('ui/summary-plot-modal.R')$value,  # Modal for dowloading the summary inequalities plot
+                  source('ui/comparison-plot1-modal.R')$value,  # Modal for downloading comparison plot 1
+                  source('ui/comparison-plot2-modal.R')$value,  # Modal for downloading comparison plot 2
                   
                   
                   tabsetPanel(id = "mainPanel",
-                              source('./ext/select-database-panel.R')$value,  # Select the database
-                              source('./ext/explore-inequality-panel.R')$value,  # Explore inequalities (and subtabs)
-                              source('./ext/compare-inequality-panel.R')$value,  # Compare with benchmark countries (and subtabs)
-                              source('./ext/information-panel.R')$value  # Information panel, with About, Glossary, Administration subtabs                
+                              source('ui/select-database-panel.R')$value,  # Select the database
+                              source('ui/explore-inequality-panel.R')$value,  # Explore inequalities (and subtabs)
+                              source('ui/compare-inequality-panel.R')$value,  # Compare with benchmark countries (and subtabs)
+                              source('ui/information-panel.R')$value  # Information panel, with About, Glossary, Administration subtabs                
                   )  # End tabPanel in mainPanel
                 , width=8)  # End mainPanel    
               )  # End sidebarLayout 

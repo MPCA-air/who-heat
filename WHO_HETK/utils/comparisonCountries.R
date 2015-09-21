@@ -13,7 +13,7 @@ getComparisonCountries <- function(indicator, stratifier, countries, years, elas
   
   for(i in countries){
     drv <- dbDriver("SQLite")
-    con <- dbConnect(drv, '../resources/data/HEMTK.db')
+    con <- dbConnect(drv, 'data/HEMTK.db')
     yearsStr <- paste('SELECT DISTINCT year FROM maindata WHERE country="', i, '";', sep="")
     available_years <- dbGetQuery(con, yearsStr)$year
     for(j in as.integer(years)){
@@ -55,7 +55,7 @@ getComparisonSummaries <- function(summeasure, indicator, stratifier, countries,
   require('RSQLite')
   
   drv <- dbDriver("SQLite")
-  con <- dbConnect(drv, "../resources/data/HEMTK.db")
+  con <- dbConnect(drv, "data/HEMTK.db")
   
   
   

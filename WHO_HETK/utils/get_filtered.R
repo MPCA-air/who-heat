@@ -9,7 +9,7 @@ getFilteredCountries <- function(WBgroup, WHOregion, database)
     # Connect to the local GHO (HEMTK) SQLite database
     require("RSQLite")
     drv <- dbDriver("SQLite")
-    con <- dbConnect(drv, "../resources/data/HEMTK.db")
+    con <- dbConnect(drv, "data/HEMTK.db")
     
     strWHOregion <- ""
     if (!is.null(WHOregion))
@@ -58,7 +58,7 @@ getFilteredIndim <- function(country, years=NULL, mostrecent=F, datasource='All'
   
   require('RSQLite')
   drv <- dbDriver('SQLite')
-  con <- dbConnect(drv, '../resources/data/HEMTK.db')
+  con <- dbConnect(drv, 'data/HEMTK.db')
   
   
   # if(length(years)==2){
@@ -147,7 +147,7 @@ getFilteredYear <-  function(country, datasource='All', database){
   
   require('RSQLite')
   drv <- dbDriver('SQLite')
-  con <- dbConnect(drv, '../resources/data/HEMTK.db')
+  con <- dbConnect(drv, 'data/HEMTK.db')
   
   
   if(database=='HETK'){    

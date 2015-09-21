@@ -1,35 +1,35 @@
-source('../resources/includes/GHO.R')
-source('../resources/includes/hetkdb.R')
-source('../resources/includes/get_filtered.R')  # Retrieve lists filtered by Year, Equity Dimension, or Health Indicator
-source('../resources/includes/list_append.R')  # Append an item to a list
-source('../resources/includes/sql_in.R')  # Take a character or numeric vector and return it in a form suitable for
+source('utils/GHO.R')
+source('utils/hetkdb.R')
+source('utils/get_filtered.R')  # Retrieve lists filtered by Year, Equity Dimension, or Health Indicator
+source('utils/list_append.R')  # Append an item to a list
+source('utils/sql_in.R')  # Take a character or numeric vector and return it in a form suitable for
                                           # using after the 'IN' subcommand in a SQLite SELECT statement.
-source('../resources/includes/is_rank.R')  # A function to test rank order
-source('../resources/includes/not_in.R')  # A function that returns elements in vector1 that are not in vector2
-source('../resources/includes/health_indicator_list.R')  # Returns a list ov available health indicators
-source('../resources/includes/useful.R')
-source('../resources/includes/findfixed.R')  # findFixedFactors function
-source('../resources/includes/plotter.R')  # The ggplot functions for rendering the graphs
-source('../resources/includes/comparisonCountries.R')  # The function to fecth benchmark country data
+source('utils/is_rank.R')  # A function to test rank order
+source('utils/not_in.R')  # A function that returns elements in vector1 that are not in vector2
+source('utils/health_indicator_list.R')  # Returns a list ov available health indicators
+source('utils/useful.R')
+source('utils/findfixed.R')  # findFixedFactors function
+source('utils/plotter.R')  # The ggplot functions for rendering the graphs
+source('utils/comparisonCountries.R')  # The function to fecth benchmark country data
 
 #----------Source files for the calculation of the inequality measures-------------#
-source('../resources/includes/inequal.R')
-source('../resources/includes/midpointprop.R')
-source('../resources/includes/aci.R')  # Absolute concentration index
-source('../resources/includes/bgv.R')  # Between groups variance
-source('../resources/includes/idis.R')  # Index of disparity
-source('../resources/includes/riikm.R')  # Kunst Mackenbach Index
-source('../resources/includes/mdb.R')  # Mean difference between best subgroup
-source('../resources/includes/mdm.R')  # Meand difference between mean
-source('../resources/includes/mld.R')  # Mean log deviation
-source('../resources/includes/paf.R')  # Population attributable fraction
-source('../resources/includes/par.R')  # population attributable risk (capitalised so as not to confuse par())
-source('../resources/includes/rci.R')  # Relative concentration index
-source('../resources/includes/rd.R')  # Rate (or Range) Difference
-source('../resources/includes/rii.R')  # Relative Index of Inequality
-source('../resources/includes/rr.R')  # Rate (or Range) Ratio
-source('../resources/includes/sii.R')  # Slope index of inequality
-source('../resources/includes/ti.R')  # Theil index
+source('utils/inequal.R')
+source('utils/midpointprop.R')
+source('utils/inequal_functions/aci.R')  # Absolute concentration index
+source('utils/inequal_functions/bgv.R')  # Between groups variance
+source('utils/inequal_functions/idis.R')  # Index of disparity
+source('utils/inequal_functions/riikm.R')  # Kunst Mackenbach Index
+source('utils/inequal_functions/mdb.R')  # Mean difference between best subgroup
+source('utils/inequal_functions/mdm.R')  # Meand difference between mean
+source('utils/inequal_functions/mld.R')  # Mean log deviation
+source('utils/inequal_functions/paf.R')  # Population attributable fraction
+source('utils/inequal_functions/par.R')  # population attributable risk (capitalised so as not to confuse par())
+source('utils/inequal_functions/rci.R')  # Relative concentration index
+source('utils/inequal_functions/rd.R')  # Rate (or Range) Difference
+source('utils/inequal_functions/rii.R')  # Relative Index of Inequality
+source('utils/inequal_functions/rr.R')  # Rate (or Range) Ratio
+source('utils/inequal_functions/sii.R')  # Slope index of inequality
+source('utils/inequal_functions/ti.R')  # Theil index
 
 
 unrankable <- c("Sex", "Geographical region")

@@ -298,7 +298,7 @@ getInequal <- function(indicator, stratifier, countries, years,  inequal_types='
   
   require('RSQLite')
   drv <- dbDriver("SQLite")
-  con <- dbConnect(drv, "../resources/data/HEMTK.db")
+  con <- dbConnect(drv, "data/HEMTK.db")
   
   if(is.null(inequal_types)){
     return(NULL)
