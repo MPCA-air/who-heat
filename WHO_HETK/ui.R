@@ -19,7 +19,7 @@ shinyUI(
                 ###### SIDEBAR PANEL BEGINS HERE  #####
                 #######################################
                 sidebarPanel(
-                  source('ui/tagshead-css.R')$value,  # provide additional CSS styling
+                  #source('ui/tagshead-css.R')$value,  # provide additional CSS styling
                   
                   # This is a hidden variable to manage communication within the javascript interface
                   myHiddenText(inputId='countryVar', label='Cry the lost country', value='Afghanistan'),

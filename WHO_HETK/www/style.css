@@ -1,0 +1,37 @@
+ label.radio {
+     display: inline-block;
+ }
+ 
+ .radio input[type="radio"] {
+     float: none;
+ }
+ 
+ select {
+     max-width: 200px;
+     font-size: 50%;
+ }
+ 
+ textarea {
+     max-width: 185px;
+ }
+ 
+ .jslider {
+     max-width: 200px;
+ }
+ 
+ .well {
+     padding: 12px;
+     margin-bottom: 5px;
+     max-width: 280px;
+ }
+ 
+ .span4 {
+     max-width: 280px;
+ }
+
+ 
+ /*This styles the axis min-max input*/
+ 
+ .input-custom {
+     max-width: 50px;
+ }
