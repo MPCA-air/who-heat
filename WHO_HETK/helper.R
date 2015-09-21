@@ -14,7 +14,7 @@ source('utils/comparisonCountries.R')  # The function to fecth benchmark country
 
 #----------Source files for the calculation of the inequality measures-------------#
 source('utils/inequal.R')
-source('utils/midpointprop.R')
+source('utils/inequal_functions/midpointprop.R')
 source('utils/inequal_functions/aci.R')  # Absolute concentration index
 source('utils/inequal_functions/bgv.R')  # Between groups variance
 source('utils/inequal_functions/idis.R')  # Index of disparity
