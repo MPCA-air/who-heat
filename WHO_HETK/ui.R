@@ -29,6 +29,7 @@ shinyUI(
                   
                   #######  Select data Side Panel 1 #######
                   source('ui/select-upload-sidepanel.R')$value,
+
                   
                   #######  Upload your own data ######
                   source('ui/select-database-sidepanel.R')$value,                                    
