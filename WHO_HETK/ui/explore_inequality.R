@@ -130,9 +130,9 @@ output$explore_inequality_ui <- renderUI({
     
     mainPanel(
       tabsetPanel(id="assessment_panel",
-                  tabPanel(h6("Disaggregated data - tables"), value='datatable' #, 
-                           #uiOutput('downloadDatatable'),
-                           #dataTableOutput(outputId="dataTable")
+                  tabPanel(h6("Disaggregated data - tables"), value='datatable' , 
+                           uiOutput('downloadDatatable'),
+                           dataTableOutput(outputId="dataTable")
                   ), 
                   tabPanel(h6("Disaggregated data - graphs"), value='dataplot' #,
                            #uiOutput('downloadDataplot'),

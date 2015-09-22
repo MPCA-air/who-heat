@@ -21,6 +21,7 @@ shinyServer(function(input, output, session){
   source("ui/explore_inequality.R", local=TRUE)
   source("utils/get_filtered.R", local=TRUE)
   source("utils/health_indicator_list.R", local=TRUE)
+  source("utils/hetkdb.R", local=TRUE)
   source("server/tmp_all_server.R", local=TRUE)
   #source("server/tmp_all_server.R", local = TRUE)
   serverfiles <- list.files("server/", pattern="\\.(r|R)$", full.names = TRUE)

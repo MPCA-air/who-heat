@@ -1,3 +1,8 @@
+##############################################################
+# required in explore inequality: table
+#############################################################
+
+
 
 ### Creating reactive input for the Data Table and Data Plot tabs
 ###
@@ -78,7 +83,94 @@ output$dataTableItems <- renderUI({
 
 
 
+# Create a download button contingent on data in the table
+output$downloadDatatable <- renderUI({
+  theData <- datasetInput()
+  if(nrow(theData)==0){
+    return(NULL)
+  } else {
+    list(br(),
+         actionButton("downloadDatatable", "Download", class = "btn-primary"))
+  }  
+})
 
+##############################################################
+# required in explore inequality: table
+#############################################################
+
+
+
+# Return the requested dataset based on the UI selection (dataSource)
+datasetInput <- reactive({
+  dat<-switch(input$dataSource,
+         #"GHO" = getData1a(),
+         "HETK" = getData2()
+         #"OWN" = getData3()
+  )
+  
+  return(dat)
+})
+
+
+# A *Reactive* to read data in from the Health Equity Toolkit DB
+getData2 <- reactive({
+  # This *reactive* gets the data from HETKdb
+ 
+  input$getdata
+  isolate({  # Isolate holds of the getting of the data until the Process button in the ui.R is pressed
+    
+    if(input$dataSource == 'HETK'){  # Get the data from the HETKdb
+      hetk.data <- getHETKdata(indicator=input$healthIndicator, stratifier=input$equityDimension,  # in hetkdb.R
+                               countries=input$equityCountry, years=input$years, mostrecent=input$mostrecent,
+                               datasource=input$data_source)
+      
+      updateTextInput(session, inputId='countryVar', label='Cry the lost country', value=unique(hetk.data$country))
+      return (hetk.data)
+    }
+  })
+})
+
+# Generate a view of the Managed Data
+output$dataTable <- renderDataTable({
+  print('Enter the disaggregated data table')
+  theData <- datasetInput()
+  if(is.null(theData)){
+    return(NULL)
+  }
+  if(nrow(theData)==0){
+    return(NULL)
+  }
+  if(theData$source[1] %in% c('DHS', 'MICS')){
+    theData <- theData[, input$dataTableItems]
+    #      theData <- theData[, c('country', 'year', 'source', 'indic', 'dimension', 'subgroup', 'estimate', 'lower_95ci', 'upper_95ci', 'popshare', 'flag')]
+  }
+  else{
+    theData <- theData[, c('country', 'year', 'source', 'indic', 'dimension', 'subgroup', 'estimate', 'se')]
+  }
+  names(theData)[names(theData)=="country" ] <- "Country" 
+  names(theData)[names(theData)=="year" ] <- "Year"
+  names(theData)[names(theData)=="source" ] <- "Data source"    
+  names(theData)[names(theData)=="indic" ] <- "Health indicator" 
+  names(theData)[names(theData)=="dimension" ] <- "Inequality dimension" 
+  names(theData)[names(theData)=="subgroup" ] <- "Subgroup"
+  names(theData)[names(theData)=="estimate" ] <- "Estimate"
+  names(theData)[names(theData)=="lower_95ci" ] <- "Lower 95%CI"
+  names(theData)[names(theData)=="upper_95ci" ] <- "Upper 95%CI"
+  names(theData)[names(theData)=="popshare" ] <- "Population share %"
+  names(theData)[names(theData)=="flag" ] <- "Flag"
+  # Reduce the significant figures to 2
+  names_df <- names(theData)
+  print(names_df)
+  the_numeric_names <- which(names_df %in% c("Estimate", "Lower 95%CI", "Upper 95%CI", "Population share %"))
+  print(the_numeric_names)
+  for(i in names_df[the_numeric_names]){
+    print(i)
+    theData[, i] <- 
+      round(theData[,i], 2)
+  }
+  theData
+}, options = list(dom = "ilftpr", pageLength = 10)  # see https://datatables.net/ for dataTable options
+)
 
 # 
 # # Focus country
@@ -125,16 +217,7 @@ output$dataTableItems <- renderUI({
 
 # 
 
-# # Create a download button contingent on data in the table
-# output$downloadDatatable <- renderUI({
-#   theData <- datasetInput()
-#   if(nrow(theData)==0){
-#     return(NULL)
-#   } else {
-#     list(br(),
-#          actionButton("downloadDatatable", "Download", class = "btn-primary"))
-#   }  
-# })
+
 # 
 # 
 # # Handler for downloading the data selected in the modal download table
@@ -652,21 +735,7 @@ output$dataTableItems <- renderUI({
 # })
 # 
 # 
-# # A *Reactive* to read data in from the Health Equity Toolkit DB
-# getData2 <- reactive({
-#   # This *reactive* gets the data from HETKdb
-#   input$getdata
-#   isolate({  # Isolate holds of the getting of the data until the Process button in the ui.R is pressed
-#     if(input$dataSource == 'HETK'){  # Get the data from the HETKdb
-#       hetk.data <- getHETKdata(indicator=input$healthIndicator, stratifier=input$equityDimension, 
-#                                countries=input$equityCountry, years=input$years, mostrecent=input$mostrecent,
-#                                datasource=input$data_source)
-#       updateTextInput(session, inputId='countryVar', label='Cry the lost country', value=unique(hetk.data$country))
-#       return (hetk.data)
-#     }
-#   })
-# })
-# 
+
 # 
 # # A *Reactive* to upload your own data
 # getData3 <- reactive({
@@ -825,17 +894,7 @@ output$dataTableItems <- renderUI({
 # 
 # 
 # 
-# # Return the requested dataset based on the UI selection (dataSource)
-# datasetInput <- reactive({
-#   switch(input$dataSource,
-#          "GHO" = getData1a(),
-#          "HETK" = getData2(),
-#          "OWN" = getData3()
-#   )
-# })
-# 
-# 
-# 
+
 # 
 # ## Download the datset
 # output$downloadData <- downloadHandler(
@@ -879,47 +938,7 @@ output$dataTableItems <- renderUI({
 # 
 # 
 # 
-# # Generate a view of the Managed Data
-# output$dataTable <- renderDataTable({
-#   print('Enter the disaggregated data table')
-#   theData <- datasetInput()
-#   if(is.null(theData)){
-#     return(NULL)
-#   }
-#   if(nrow(theData)==0){
-#     return(NULL)
-#   }
-#   if(theData$source[1] %in% c('DHS', 'MICS')){
-#     theData <- theData[, input$dataTableItems]
-#     #      theData <- theData[, c('country', 'year', 'source', 'indic', 'dimension', 'subgroup', 'estimate', 'lower_95ci', 'upper_95ci', 'popshare', 'flag')]
-#   }
-#   else{
-#     theData <- theData[, c('country', 'year', 'source', 'indic', 'dimension', 'subgroup', 'estimate', 'se')]
-#   }
-#   names(theData)[names(theData)=="country" ] <- "Country" 
-#   names(theData)[names(theData)=="year" ] <- "Year"
-#   names(theData)[names(theData)=="source" ] <- "Data source"    
-#   names(theData)[names(theData)=="indic" ] <- "Health indicator" 
-#   names(theData)[names(theData)=="dimension" ] <- "Inequality dimension" 
-#   names(theData)[names(theData)=="subgroup" ] <- "Subgroup"
-#   names(theData)[names(theData)=="estimate" ] <- "Estimate"
-#   names(theData)[names(theData)=="lower_95ci" ] <- "Lower 95%CI"
-#   names(theData)[names(theData)=="upper_95ci" ] <- "Upper 95%CI"
-#   names(theData)[names(theData)=="popshare" ] <- "Population share %"
-#   names(theData)[names(theData)=="flag" ] <- "Flag"
-#   # Reduce the significant figures to 2
-#   names_df <- names(theData)
-#   print(names_df)
-#   the_numeric_names <- which(names_df %in% c("Estimate", "Lower 95%CI", "Upper 95%CI", "Population share %"))
-#   print(the_numeric_names)
-#   for(i in names_df[the_numeric_names]){
-#     print(i)
-#     theData[, i] <- 
-#       round(theData[,i], 2)
-#   }
-#   theData
-# }, options = list(dom = "ilftpr", pageLength = 10)  # see https://datatables.net/ for dataTable options
-# )
+
 # 
 # 
 # 
