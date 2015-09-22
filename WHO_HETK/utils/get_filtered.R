@@ -1,15 +1,17 @@
 
+
+
+
 getFilteredCountries <- function(WBgroup, WHOregion, database)
 {
   # This function filters a list of countries according to their WHO Region and
   # World Bank income group
+
   
   if (database == "HETK")
   {
-    # Connect to the local GHO (HEMTK) SQLite database
-    require("RSQLite")
-    drv <- dbDriver("SQLite")
-    con <- dbConnect(drv, "data/HEMTK.db")
+
+    con <- .connection
     
     strWHOregion <- ""
     if (!is.null(WHOregion))
@@ -41,9 +43,9 @@ getFilteredCountries <- function(WBgroup, WHOregion, database)
       selectStr <- "SELECT DISTINCT country FROM maindata"
     }
     
-    print(selectStr)
+    #print(selectStr)
     data <- dbGetQuery(con, selectStr)$country
-    dbDisconnect(con)
+    #dbDisconnect(con)
     return(data)
   } else {
     return(NULL)
@@ -56,9 +58,7 @@ getFilteredIndim <- function(country, years=NULL, mostrecent=F, datasource='All'
   # This function filters the Health Indicators and Health Dimensions based on earlier choices about the Country
   # the Year(s), the Datasource and the Database 
   
-  require('RSQLite')
-  drv <- dbDriver('SQLite')
-  con <- dbConnect(drv, 'data/HEMTK.db')
+con<-.connection
   
   
   # if(length(years)==2){
@@ -90,7 +90,7 @@ getFilteredIndim <- function(country, years=NULL, mostrecent=F, datasource='All'
     # base string now includes the country    
     baseStr <- paste(baseStr, country, '"', sep="")
     
-    print(baseStr)
+    #print(baseStr)
     
     # base string now includes years
     if(mostrecent){
@@ -111,7 +111,7 @@ getFilteredIndim <- function(country, years=NULL, mostrecent=F, datasource='All'
     }
     
     selectStr <- paste(baseStr, ';', sep='')
-    print(selectStr)
+    #print(selectStr)
     data <- as.list(dbGetQuery(con, selectStr))
     
     if(option=='hlth_indic'){
@@ -131,7 +131,7 @@ getFilteredIndim <- function(country, years=NULL, mostrecent=F, datasource='All'
       }
     }
     
-    dbDisconnect(con)
+    #dbDisconnect(con)
     return(data)
   }
   else{
@@ -145,9 +145,7 @@ getFilteredYear <-  function(country, datasource='All', database){
   # This function filters the Years of surveys based on earlier choices about the Country
   # the Datasource and the Database 
   
-  require('RSQLite')
-  drv <- dbDriver('SQLite')
-  con <- dbConnect(drv, 'data/HEMTK.db')
+  con<-.connection
   
   
   if(database=='HETK'){    
@@ -159,7 +157,7 @@ getFilteredYear <-  function(country, datasource='All', database){
     # base string now includes the country    
     baseStr <- paste(baseStr, country, '" ', sep='')
     
-    print(baseStr)
+    #print(baseStr)
     
     
     # base string now includes survey source (DHS/MICS)
@@ -171,7 +169,7 @@ getFilteredYear <-  function(country, datasource='All', database){
     
     data <- as.list(dbGetQuery(con, baseStr))
     
-    dbDisconnect(con)
+    #dbDisconnect(con)
     return(data$year)
   }
   else{

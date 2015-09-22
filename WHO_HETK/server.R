@@ -9,20 +9,28 @@ library(RSQLite)
 library(digest)
 
 
-source('helper.R')
+
 
 
 shinyServer(function(input, output, session){  
-  
+  #if(!dbIsValid(.connection)) dbDisconnect(.connection)
+  drv <- dbDriver("SQLite")
+  .connection<<-dbConnect(drv, "data/HEMTK.db")
+
+  source("ui/data_management.R", local=TRUE)
+  source("ui/explore_inequality.R", local=TRUE)
+  source("utils/get_filtered.R", local=TRUE)
+  source("utils/health_indicator_list.R", local=TRUE)
+  source("server/tmp_all_server.R", local=TRUE)
   #source("server/tmp_all_server.R", local = TRUE)
   serverfiles <- list.files("server/", pattern="\\.(r|R)$", full.names = TRUE)
   uifiles     <- list.files("ui/", pattern="\\.(r|R)$", full.names = TRUE)
   utils     <- list.files("utils/", pattern="\\.(r|R)$", full.names = TRUE)
 
   
-  for (file in c(serverfiles, uifiles, utils)) {
-    source(file, local = TRUE)
-    
-  }
+#  for (file in c(serverfiles, utils)) {
+#    source(file, local = TRUE)
+#     
+#  }
   
 })
