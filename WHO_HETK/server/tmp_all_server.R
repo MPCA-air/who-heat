@@ -104,7 +104,7 @@ output$downloadDatatable <- renderUI({
 })
 
 ##############################################################
-# required in explore inequality: table and plot
+# required in explore inequality: disaggregated table and plot
 #############################################################
 
 
@@ -189,7 +189,7 @@ output$dataTable <- renderDataTable({
 
 
 ##############################################################
-# required in explore inequality: plot
+# required in explore inequality: disaggregated plot
 #############################################################
 
 
@@ -221,7 +221,8 @@ theDataPlot <- reactive({
   
   print("Reactive: theDataPlot")
   plotData <- datasetInput()[, c('country', 'year', 'indic', 'subgroup', 'dimension', 'estimate', 'se')]
-  if(nrow(plotData)>0){
+
+  if(!is.null(plotData) & nrow(plotData)>0){
     chartopt <- list()
     # Chart options for axis max and min values
     chartopt <- lappend(chartopt, 'axmax' = as.integer(input$axis_limitsmax1))
@@ -368,6 +369,8 @@ output$downloadSummtable <- renderUI({
 
 datasetInequal <- reactive({
   
+  print("In datasetInequal")
+  
   if(input$dataSource!='HETK'){
     tmpDF <- datasetInput()      
     relevant.rows <- which(tmpDF$year %in% input$sumtableYears & tmpDF$indic %in% input$sumtableHealthIndicator & tmpDF$dimension %in% input$sumtableEquityDimension)
@@ -385,12 +388,13 @@ datasetInequal <- reactive({
     }
   }
   if(input$dataSource=='HETK' & input$assessment_panel=='sumtable'){
-    print('Getting equity data table')
+    print('Getting equity data table a')
     ineqDF <- getInequal(indicator=input$sumtableHealthIndicator, 
                          stratifier=input$sumtableEquityDimension, 
                          countries=input$equityCountry, 
                          years=input$sumtableYears,  
                          inequal_types=input$sumtableSumMeasure)
+    print('Getting equity data table b')
     return(ineqDF)
   }    
   if(input$dataSource=='HETK' & input$assessment_panel=='sumplot'){
@@ -410,10 +414,15 @@ datasetInequal <- reactive({
 
 # Generate a view of the HETKB 
 output$dataTableInequal <- renderDataTable({
-  if(!is.null(datasetInequal())){
-    theData <- datasetInequal()
+  print("In dataTableInequal")
+
+  theData <- datasetInequal()
+  print(head(theData))
+  if(!is.null(theData) && nrow(theData>0)){
+    #theData <- datasetInequal()
     
     if(input$summultiplier1==T){
+      print("In dataTableInequal a")
       theData$inequal[theData$measure=='ti'] <- theData$inequal[theData$measure=='ti'] *1000
       theData$inequal[theData$measure=='mld'] <- theData$inequal[theData$measure=='mld'] *1000
       theData$se[theData$measure=='ti'] <- theData$se[theData$measure=='ti'] *1000
@@ -436,7 +445,9 @@ output$dataTableInequal <- renderDataTable({
       theData$combo.upperci[theData$measure=='mld'] <- theData$combo.upperci[theData$measure=='mld'] *1000
       
     }
+    
     if(input$summultiplier2==T){
+      print("In dataTableInequal b")
       theData$inequal[theData$measure=='rci'] <- theData$inequal[theData$measure=='rci'] *100
       theData$se[theData$measure=='rci'] <- theData$se[theData$measure=='rci'] *100
       theData$se.lowerci[theData$measure=='rci'] <- theData$se.lowerci[theData$measure=='rci'] *100
@@ -449,9 +460,10 @@ output$dataTableInequal <- renderDataTable({
       theData$combo.upperci[theData$measure=='rci'] <- theData$combo.upperci[theData$measure=='rci'] *100
     }
     
-    
+    print("In dataTableInequal c")
     var_names <- names(theData)
     # Round the data to selected significant figure
+    
     theData[, c('inequal', 'se', 'boot.se', 'combo.se', 'se.lowerci', 'se.upperci', 'boot.lowerci', 'boot.upperci', 'combo.lowerci', 'combo.upperci' )] <- 
       round(theData[, c('inequal', 'se', 'boot.se', 'combo.se', 'se.lowerci', 'se.upperci', 'boot.lowerci', 'boot.upperci', 'combo.lowerci', 'combo.upperci' )], input$sumsigfig)
     
@@ -500,8 +512,171 @@ output$dataTableInequal <- renderDataTable({
 )
 
 
+##############################################################
+# required in explore inequality: summary plot
+#############################################################
 
 
+
+### Creating reactive input for the Summary Plots
+###
+
+output$sumplotSumMeasures <- renderUI({
+  if(length(input$sumplotEquityDimension)>0){
+    if(input$sumplotEquityDimension %in% rankable){
+      selectionOptions <- allSummaryMeasures
+    }
+    if(!input$sumplotEquityDimension %in% rankable){
+      selectionOptions <- unrankSummaryMeasures
+    }
+  }
+  else{
+    selectionOptions <- NULL
+  }
+  selectInput("sumplotSumMeasures", 
+              h5("Select summary measure"), 
+              choices=selectionOptions, 
+              selected=c("Range difference" = "rd"), 
+              multiple=F)
+})
+
+
+output$sumplotHealthIndicator <- renderUI({    
+  # Multiple select for the health indicator 
+  if(length(input$sumtableHealthIndicator)<1){ 
+    selectionOptions <- c()
+  }
+  else{    
+    selectionOptions <- sort(input$sumtableHealthIndicator)
+    selectionOptions <- healthIndicatorList(option='full')[which(healthIndicatorList(option='core') %in% selectionOptions)]
+  }
+  selectInput("sumplotHealthIndicator", 
+              h5("Select health indicators"), 
+              choices = selectionOptions, 
+              selected = selectionOptions,
+              multiple = T)
+})
+
+
+output$sumplotEquityDimension <- renderUI({    
+  # Multiple select for the equity indicator 
+  if(is.null(input$equityDimension)){ 
+    selectionOptions <- c()
+  }
+  else{
+    selectionOptions <- input$equityDimension
+  }
+  selectInput("sumplotEquityDimension", 
+              h5("Select inequality dimensions"), 
+              choices=selectionOptions, 
+              multiple=F)
+})
+
+
+output$sumplotYears <- renderUI({    
+  # Multiple select for the years of interest
+  if(length(input$sumtableYears)<1){ 
+    selectionOptions <- c()
+  }
+  else{
+    selectionOptions <- input$sumtableYears
+  }
+  selectInput("sumplotYears", 
+              h5("Select years"), 
+              choices=selectionOptions, 
+              selected=selectionOptions, 
+              multiple=T)
+})
+
+
+
+output$downloadSummplot <- renderUI({
+  thePlot <- theSummaryPlot()
+  if(is.null(thePlot)){
+    return(NULL)
+  } else {
+    list(br(),
+         actionButton("downloadSummplot", "Download Plot", class = "btn-primary"))
+  }  
+})
+
+output$theSumPlot_web <- renderPlot({
+  print(theSummaryPlot())  # Remember that print(theSummaryPlot) just prints the code
+}, res=90, height=exprToFunction(input$plot_height_sum), width=exprToFunction(input$plot_width_sum))
+
+
+
+
+
+# Generate a reactive element for plotting the Summary Data.
+# Pass to the webpage using renderPlot(print(theDataPlot))
+theSummaryPlot <- reactive({ 
+  plotData <- datasetInequal()
+  print(class(plotData))
+  print("Reactive: theSummaryPlot")
+  if(is.null(plotData)) return(NULL)
+
+    #plotData <- datasetInequal()
+    if(class(plotData)=="data.frame" && nrow(plotData)>0 ){
+      
+      chartopt <- list()
+      chartopt <- lappend(chartopt, 'axmax' = as.integer(input$axis_limitsmax2))
+      chartopt <- lappend(chartopt, 'axmin' = as.integer(input$axis_limitsmin2))
+      
+      if(input$main_title2 != ""){
+        chartopt <- lappend(chartopt, 'main_title' = input$main_title2)
+      }
+      if(input$xaxis_title2 != ""){
+        chartopt <- lappend(chartopt, 'xaxis_title' = input$xaxis_title2)
+      }
+      if(input$yaxis_title2 != ""){
+        chartopt <- lappend(chartopt, 'yaxis_title' = input$yaxis_title2)
+      }
+      
+      relevant.rows <- which(plotData$year %in% input$sumplotYears & plotData$indic %in% input$sumplotHealthIndicator & 
+                               plotData$dimension %in% input$sumplotEquityDimension & plotData$measure %in% input$sumplotSumMeasures)
+      
+      if(length(relevant.rows)>0){  # This will generally fail because the Health Indicator has not *yet* been selected
+        
+        plotData <- plotData[relevant.rows, ]      
+        
+        if(input$long_names2==T){
+          relevant_names <- which(names(healthIndicatorAbbreviations) %in% unique(plotData$indic))
+          plotData$indic <- factor(plotData$indic,
+                                   levels = names(healthIndicatorAbbreviations)[relevant_names],
+                                   labels = unname(healthIndicatorAbbreviations)[relevant_names]) 
+        }
+        
+        
+        if(input$assessment_panel == 'sumplot' & input$sumplot_type=='data_bar'){                   
+          p <- plotFigure3(plotData, chartoptions=chartopt)
+          return(p)
+        }
+        if(input$assessment_panel == 'sumplot' & input$sumplot_type=='data_line'){          
+          p <- plotFigure4(plotData, chartoptions=chartopt)
+          return(p)
+        }    
+      }
+    }
+    else{
+      return(NULL)
+    }
+  
+})  
+
+
+
+# #####  Comparison Plot 1  Download
+# # Create a download button contingent on the existence of a plot of the comparison disaggregated data
+# output$downloadCompplot1 <- renderUI({
+#   thePlot <- theComparisonPlot1()
+#   if(is.null(thePlot)){
+#     return(NULL)
+#   } else {
+#     list(br(),
+#          actionButton("downloadCompplot1", "Download Plot", class = "btn-primary"))
+#   }  
+# })
 
 
 # 
@@ -623,87 +798,7 @@ output$dataTableInequal <- renderDataTable({
 # 
 # 
 # 
-# ### Creating reactive input for the Summary Plots
-# ###
-# 
-# output$sumplotSumMeasures <- renderUI({
-#   if(length(input$sumplotEquityDimension)>0){
-#     if(input$sumplotEquityDimension %in% rankable){
-#       selectionOptions <- allSummaryMeasures
-#     }
-#     if(!input$sumplotEquityDimension %in% rankable){
-#       selectionOptions <- unrankSummaryMeasures
-#     }
-#   }
-#   else{
-#     selectionOptions <- NULL
-#   }
-#   selectInput("sumplotSumMeasures", 
-#               h5("Select summary measure"), 
-#               choices=selectionOptions, 
-#               selected=c("Range difference" = "rd"), 
-#               multiple=F)
-# })
-# 
-# 
-# output$sumplotHealthIndicator <- renderUI({    
-#   # Multiple select for the health indicator 
-#   if(length(input$sumtableHealthIndicator)<1){ 
-#     selectionOptions <- c()
-#   }
-#   else{    
-#     selectionOptions <- sort(input$sumtableHealthIndicator)
-#     selectionOptions <- healthIndicatorList(option='full')[which(healthIndicatorList(option='core') %in% selectionOptions)]
-#   }
-#   selectInput("sumplotHealthIndicator", 
-#               h5("Select health indicators"), 
-#               choices = selectionOptions, 
-#               selected = selectionOptions,
-#               multiple = T)
-# })
-# 
-# 
-# output$sumplotEquityDimension <- renderUI({    
-#   # Multiple select for the equity indicator 
-#   if(is.null(input$equityDimension)){ 
-#     selectionOptions <- c()
-#   }
-#   else{
-#     selectionOptions <- input$equityDimension
-#   }
-#   selectInput("sumplotEquityDimension", 
-#               h5("Select inequality dimensions"), 
-#               choices=selectionOptions, 
-#               multiple=F)
-# })
-# 
-# 
-# output$sumplotYears <- renderUI({    
-#   # Multiple select for the years of interest
-#   if(length(input$sumtableYears)<1){ 
-#     selectionOptions <- c()
-#   }
-#   else{
-#     selectionOptions <- input$sumtableYears
-#   }
-#   selectInput("sumplotYears", 
-#               h5("Select years"), 
-#               choices=selectionOptions, 
-#               selected=selectionOptions, 
-#               multiple=T)
-# })
-# 
-# 
-# output$downloadSummplot <- renderUI({
-#   thePlot <- theSummaryPlot()
-#   if(is.null(thePlot)){
-#     return(NULL)
-#   } else {
-#     list(br(),
-#          actionButton("downloadSummplot", "Download Plot", class = "btn-primary"))
-#   }  
-# })
-# 
+
 # 
 # # Handler for downloading the data selected in the modal download table
 # output$downloadSummPlot <- downloadHandler(
@@ -1214,64 +1309,6 @@ output$dataTableInequal <- renderDataTable({
 # 
 
 # 
-# 
-# # Generate a reactive element for plotting the Summary Data.
-# # Pass to the webpage using renderPlot(print(theDataPlot))
-# theSummaryPlot <- reactive({ 
-#   print("Reactive: theSummaryPlot")
-#   if(is.null(datasetInequal())){
-#     return(NULL)
-#   } else {
-#     plotData <- datasetInequal()
-#     if(nrow(plotData)>0 ){
-#       
-#       chartopt <- list()
-#       chartopt <- lappend(chartopt, 'axmax' = as.integer(input$axis_limitsmax2))
-#       chartopt <- lappend(chartopt, 'axmin' = as.integer(input$axis_limitsmin2))
-#       
-#       if(input$main_title2 != ""){
-#         chartopt <- lappend(chartopt, 'main_title' = input$main_title2)
-#       }
-#       if(input$xaxis_title2 != ""){
-#         chartopt <- lappend(chartopt, 'xaxis_title' = input$xaxis_title2)
-#       }
-#       if(input$yaxis_title2 != ""){
-#         chartopt <- lappend(chartopt, 'yaxis_title' = input$yaxis_title2)
-#       }
-#       
-#       relevant.rows <- which(plotData$year %in% input$sumplotYears & plotData$indic %in% input$sumplotHealthIndicator & 
-#                                plotData$dimension %in% input$sumplotEquityDimension & plotData$measure %in% input$sumplotSumMeasures)
-#       
-#       if(length(relevant.rows)>0){  # This will generally fail because the Health Indicator has not *yet* been selected
-#         
-#         plotData <- plotData[relevant.rows, ]      
-#         
-#         if(input$long_names2==T){
-#           relevant_names <- which(names(healthIndicatorAbbreviations) %in% unique(plotData$indic))
-#           plotData$indic <- factor(plotData$indic,
-#                                    levels = names(healthIndicatorAbbreviations)[relevant_names],
-#                                    labels = unname(healthIndicatorAbbreviations)[relevant_names]) 
-#         }
-#         
-#         
-#         if(input$mainPanel == 'assess_inequality' & input$assessment_panel == 'sumplot' & input$sumplot_type=='data_bar'){                   
-#           p <- plotFigure3(plotData, chartoptions=chartopt)
-#           return(p)
-#         }
-#         if(input$mainPanel == 'assess_inequality' & input$assessment_panel == 'sumplot' & input$sumplot_type=='data_line'){          
-#           p <- plotFigure4(plotData, chartoptions=chartopt)
-#           return(p)
-#         }    
-#       }
-#     }
-#     else{
-#       return(NULL)
-#     }
-#   }
-# })  
-# 
-# 
-# 
 # # Generate a reactive element for plotting the Disaggregated Comparison data.
 # # Pass to the webpage using renderPlot(print(theDataPlot))
 # theComparisonPlot1 <- reactive({ 
@@ -1416,25 +1453,7 @@ output$dataTableInequal <- renderDataTable({
 # )
 # 
 # 
-# output$theSumPlot_web <- renderPlot({
-#   print(theSummaryPlot())  # Remember that print(theSummaryPlot) just prints the code
-# }, res=90, height=exprToFunction(input$plot_height_sum), width=exprToFunction(input$plot_width_sum))
-# 
-# 
-# 
-# 
-# #####  Comparison Plot 1  Download
-# # Create a download button contingent on the existence of a plot of the comparison disaggregated data
-# output$downloadCompplot1 <- renderUI({
-#   thePlot <- theComparisonPlot1()
-#   if(is.null(thePlot)){
-#     return(NULL)
-#   } else {
-#     list(br(),
-#          actionButton("downloadCompplot1", "Download Plot", class = "btn-primary"))
-#   }  
-# })
-# 
+
 # 
 # 
 # # Handler for downloading the data selected in the modal download plot

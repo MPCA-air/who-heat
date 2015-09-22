@@ -4,8 +4,7 @@
 ############################################################################
 
 getHETKdata <- function(indicator, stratifier, countries, years, mostrecent=F, datasource='All'){
-  require('RSQLite')
-  
+
   con <- .connection
   
   if(mostrecent){

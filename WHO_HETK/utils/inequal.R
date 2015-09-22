@@ -265,14 +265,17 @@ calcInequal <- function(data_frame,  inequal.types='all'){
 
 
 getInequal <- function(indicator, stratifier, countries, years,  inequal_types='all'){
-  
+  print("In getInequal function a")
+  print(paste0(indicator, stratifier, countries, years))
   # Fetch the inequalities data from the inbuilt database  
   
   # Return NULL if any of the function-parameters are missing
   if(is.null(indicator)){
+    print("In getInequal function b")
     return(NULL)
   }
   if(length(indicator)==0){
+  
     return(NULL)
   }
   if(is.null(stratifier)){
@@ -295,10 +298,7 @@ getInequal <- function(indicator, stratifier, countries, years,  inequal_types='
   }
   
   
-  
-  require('RSQLite')
-  drv <- dbDriver("SQLite")
-  con <- dbConnect(drv, "data/HEMTK.db")
+  con <- .connection
   
   if(is.null(inequal_types)){
     return(NULL)
@@ -343,10 +343,10 @@ getInequal <- function(indicator, stratifier, countries, years,  inequal_types='
   
   selectStr <- paste(baseStr, countryStr, ") AND year IN (", yearStr, ") AND indic IN (", indicStr, ") AND dimension IN (", stratStr, ") AND measure IN (", measureStr, ");", sep="", collapse="")
   
-  print(selectStr)
+  #print(selectStr)
   
   ineqDF <- dbGetQuery(con, selectStr)
-  dbDisconnect(con)
+  #dbDisconnect(con)
   if(is.null(ineqDF)){
     return(NULL)
   }
@@ -369,7 +369,7 @@ getInequal <- function(indicator, stratifier, countries, years,  inequal_types='
   
   
   ineqDF$combo.se[is.na(ineqDF$combo.se)] <- ineqDF$boot.se[is.na(ineqDF$combo.se)]  #  Make an se that is analytic if it exists, otherwise a boostrap
-  
+  print("In getInequal function b")
   return(ineqDF)
 }
 

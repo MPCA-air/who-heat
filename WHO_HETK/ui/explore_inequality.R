@@ -88,10 +88,10 @@ output$explore_inequality_ui <- renderUI({
                        #h4(textOutput('focusCountry3')),
                        hr(),
                        
-                       #uiOutput("sumplotSumMeasures"),
-                       #uiOutput("sumplotHealthIndicator"),
-                       #uiOutput("sumplotEquityDimension"),
-                       #uiOutput("sumplotYears"),
+                       uiOutput("sumplotSumMeasures"),
+                       uiOutput("sumplotHealthIndicator"),
+                       uiOutput("sumplotEquityDimension"),
+                       uiOutput("sumplotYears"),
                        br(),
                        radioButtons("sumplot_type", h3("Plot options"),
                                     c("Bar Chart" = "data_bar",
@@ -142,9 +142,9 @@ output$explore_inequality_ui <- renderUI({
                            uiOutput('downloadSummtable'),
                            dataTableOutput(outputId="dataTableInequal")
                   ),              
-                  tabPanel(HTML("<h6 style='text-align: center;'>Summary measures</br>(graphs)<h6>"), value='sumplot' #,
-                           #uiOutput('downloadSummplot'),
-                           #plotOutput('theSumPlot_web')
+                  tabPanel(HTML("<h6 style='text-align: center;'>Summary measures</br>(graphs)<h6>"), value='sumplot' ,
+                           uiOutput('downloadSummplot'),
+                           plotOutput('theSumPlot_web')
                   )
       )
               
