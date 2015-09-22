@@ -36,11 +36,11 @@ getFilteredCountries <- function(WBgroup, WHOregion, database)
       strWHERE <- " WHERE "
     }
     
-    selectStr <- paste("SELECT DISTINCT country FROM maindata", strWHERE, 
+    selectStr <- paste("SELECT DISTINCT country FROM maindata_countries", strWHERE, 
                        strWHOregion, strWBgroup, ";", sep = "")
     
     if(is.null(WBgroup) & is.null(WHOregion)){
-      selectStr <- "SELECT DISTINCT country FROM maindata"
+      selectStr <- "SELECT DISTINCT country FROM maindata_countries"
     }
     
     #print(selectStr)
@@ -151,7 +151,7 @@ getFilteredYear <-  function(country, datasource='All', database){
   if(database=='HETK'){    
     
     
-    baseStr <- 'SELECT DISTINCT year FROM maindata WHERE country="'
+    baseStr <- 'SELECT DISTINCT year FROM maindata_years WHERE country="'
     
     
     # base string now includes the country    

@@ -1,9 +1,4 @@
-library(shiny)
-library(shinythemes)
-library(shinyBS)  # devtools::install_github("ebailey78/shinyBS")
-library(ggplot2)
-library(digest)
-source('utils/useful.R')
+
 
 shinyUI(navbarPage("WHO HEAT", id= "who_heat", inverse=TRUE, collapsible = TRUE,
                    #   fluidPage(  theme = shinytheme("readable"), 

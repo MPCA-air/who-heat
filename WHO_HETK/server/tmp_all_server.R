@@ -268,6 +268,242 @@ theDataPlot <- reactive({
 })  
 
 
+##############################################################
+# required in explore inequality: summary table
+#############################################################
+
+### Creating reactive input for the Summary Tables
+###
+
+output$sumtableSumMeasure <- renderUI({
+  if(length(input$sumtableEquityDimension)>0){
+    if(input$sumtableEquityDimension %in% rankable){
+      selectionOptions <- allSummaryMeasures
+    }
+    if(!input$sumtableEquityDimension %in% rankable){
+      selectionOptions <- unrankSummaryMeasures
+    }
+  }
+  else{
+    selectionOptions <- NULL
+  }
+  print(selectionOptions)
+  selectInput("sumtableSumMeasure", 
+              h5("Select summary measure"), 
+              choices=selectionOptions, 
+              selected=c("Range difference" = "rd"), 
+              multiple=T)
+})
+
+output$sumtableHealthIndicator <- renderUI({    
+  # Multiple select for the health indicator 
+  if(is.null(input$healthIndicator)){ 
+    selectionOptions <- c()
+  }
+  else{
+    selectionOptions <- sort(input$healthIndicator)
+    print(input$healthIndicator)
+    selectionOptions <- healthIndicatorList(option='full')[which(healthIndicatorList(option='core') %in% selectionOptions)]
+  }
+  selectInput("sumtableHealthIndicator", 
+              h5("Select health indicators"), 
+              choices=selectionOptions, 
+              selected=selectionOptions, 
+              multiple=T)
+})
+
+
+
+
+output$sumtableEquityDimension <- renderUI({    
+  # Multiple select for the equity indicator 
+  if(is.null(input$equityDimension)){ 
+    selectionOptions <- c()
+  }
+  else{
+    selectionOptions <- sort(input$equityDimension)
+  }
+  selectInput("sumtableEquityDimension", 
+              h5("Select inequality dimensions"), 
+              choices=selectionOptions, 
+              selected=selectionOptions, 
+              multiple=T)
+})
+
+
+output$sumtableYears <- renderUI({    
+  # Multiple select for the years of interest
+  yearsOfInterest <- sort(unique(datasetInput()$year))
+  if(is.null(yearsOfInterest)){ 
+    selectionOptions <- c()
+  }
+  else{
+    selectionOptions <- yearsOfInterest
+  }
+  selectInput("sumtableYears", 
+              h5("Select years"), 
+              choices=selectionOptions, 
+              selected=selectionOptions, 
+              multiple=T)
+})
+
+
+# Create a download button contingent on data in the table
+output$downloadSummtable <- renderUI({ 
+  theData <- datasetInequal()
+  if(is.null(theData)){
+    return(NULL)
+  }
+  if(nrow(theData)==0){
+    return(NULL)
+  } else {
+    list(br(),
+         actionButton("downloadSummtable", "Download", class = "btn-primary"))
+  }  
+})
+
+
+
+
+
+datasetInequal <- reactive({
+  
+  if(input$dataSource!='HETK'){
+    tmpDF <- datasetInput()      
+    relevant.rows <- which(tmpDF$year %in% input$sumtableYears & tmpDF$indic %in% input$sumtableHealthIndicator & tmpDF$dimension %in% input$sumtableEquityDimension)
+    
+    tmpDF <- tmpDF[ relevant.rows, ]
+    
+    print(tmpDF)
+    if(is.null(relevant.rows)){
+      return(NULL)
+    }
+    if(!is.null(relevant.rows)){
+      ineqDF <- calcInequal(tmpDF, inequal.types='all')
+      print(ineqDF)
+      return(ineqDF)
+    }
+  }
+  if(input$dataSource=='HETK' & input$assessment_panel=='sumtable'){
+    print('Getting equity data table')
+    ineqDF <- getInequal(indicator=input$sumtableHealthIndicator, 
+                         stratifier=input$sumtableEquityDimension, 
+                         countries=input$equityCountry, 
+                         years=input$sumtableYears,  
+                         inequal_types=input$sumtableSumMeasure)
+    return(ineqDF)
+  }    
+  if(input$dataSource=='HETK' & input$assessment_panel=='sumplot'){
+    print('Getting equity data plot')
+    ineqDF <- getInequal(indicator=input$sumtableHealthIndicator, 
+                         stratifier=input$sumtableEquityDimension, 
+                         countries=input$equityCountry, 
+                         years=input$sumtableYears,  
+                         inequal_types=input$sumplotSumMeasures)
+    ineqDF$boot.se[ ineqDF$boot.se == 0] <- NA
+    ineqDF$se[ ineqDF$se == 0] <- NA
+    return(ineqDF)
+  }     
+})
+
+
+
+# Generate a view of the HETKB 
+output$dataTableInequal <- renderDataTable({
+  if(!is.null(datasetInequal())){
+    theData <- datasetInequal()
+    
+    if(input$summultiplier1==T){
+      theData$inequal[theData$measure=='ti'] <- theData$inequal[theData$measure=='ti'] *1000
+      theData$inequal[theData$measure=='mld'] <- theData$inequal[theData$measure=='mld'] *1000
+      theData$se[theData$measure=='ti'] <- theData$se[theData$measure=='ti'] *1000
+      theData$se[theData$measure=='mld'] <- theData$se[theData$measure=='mld'] *1000
+      theData$se.lowerci[theData$measure=='ti'] <- theData$se.lowerci[theData$measure=='ti'] *1000
+      theData$se.lowerci[theData$measure=='mld'] <- theData$se.lowerci[theData$measure=='mld'] *1000
+      theData$se.upperci[theData$measure=='ti'] <- theData$se.upperci[theData$measure=='ti'] *1000
+      theData$se.upperci[theData$measure=='mld'] <- theData$se.upperci[theData$measure=='mld'] *1000
+      theData$boot.se[theData$measure=='ti'] <- theData$boot.se[theData$measure=='ti'] *1000
+      theData$boot.se[theData$measure=='mld'] <- theData$boot.se[theData$measure=='mld'] *1000
+      theData$boot.lowerci[theData$measure=='ti'] <- theData$boot.lowerci[theData$measure=='ti'] *1000
+      theData$boot.lowerci[theData$measure=='mld'] <- theData$boot.lowerci[theData$measure=='mld'] *1000
+      theData$boot.upperci[theData$measure=='ti'] <- theData$boot.upperci[theData$measure=='ti'] *1000
+      theData$boot.upperci[theData$measure=='mld'] <- theData$boot.upperci[theData$measure=='mld'] *1000
+      theData$combo.se[theData$measure=='ti'] <- theData$combo.se[theData$measure=='ti'] *1000
+      theData$combo.se[theData$measure=='mld'] <- theData$combo.se[theData$measure=='mld'] *1000
+      theData$combo.lowerci[theData$measure=='ti'] <- theData$combo.lowerci[theData$measure=='ti'] *1000
+      theData$combo.upperci[theData$measure=='mld'] <- theData$combo.upperci[theData$measure=='mld'] *1000
+      theData$combo.lowerci[theData$measure=='ti'] <- theData$combo.lowerci[theData$measure=='ti'] *1000
+      theData$combo.upperci[theData$measure=='mld'] <- theData$combo.upperci[theData$measure=='mld'] *1000
+      
+    }
+    if(input$summultiplier2==T){
+      theData$inequal[theData$measure=='rci'] <- theData$inequal[theData$measure=='rci'] *100
+      theData$se[theData$measure=='rci'] <- theData$se[theData$measure=='rci'] *100
+      theData$se.lowerci[theData$measure=='rci'] <- theData$se.lowerci[theData$measure=='rci'] *100
+      theData$se.upperci[theData$measure=='rci'] <- theData$se.upperci[theData$measure=='rci'] *100
+      theData$boot.se[theData$measure=='rci'] <- theData$boot.se[theData$measure=='rci'] *100
+      theData$boot.lowerci[theData$measure=='rci'] <- theData$boot.lowerci[theData$measure=='rci'] *100
+      theData$boot.upperci[theData$measure=='rci'] <- theData$boot.upperci[theData$measure=='rci'] *100
+      theData$combo.se[theData$measure=='rci'] <- theData$combo.se[theData$measure=='rci'] *100
+      theData$combo.lowerci[theData$measure=='rci'] <- theData$combo.lowerci[theData$measure=='rci'] *100
+      theData$combo.upperci[theData$measure=='rci'] <- theData$combo.upperci[theData$measure=='rci'] *100
+    }
+    
+    
+    var_names <- names(theData)
+    # Round the data to selected significant figure
+    theData[, c('inequal', 'se', 'boot.se', 'combo.se', 'se.lowerci', 'se.upperci', 'boot.lowerci', 'boot.upperci', 'combo.lowerci', 'combo.upperci' )] <- 
+      round(theData[, c('inequal', 'se', 'boot.se', 'combo.se', 'se.lowerci', 'se.upperci', 'boot.lowerci', 'boot.upperci', 'combo.lowerci', 'combo.upperci' )], input$sumsigfig)
+    
+    if(input$se_type == 'analytic'){
+      theData <- theData[, setdiff(var_names, c('boot.se', 'boot.upperci', 'boot.lowerci', 'combo.se', 'combo.lowerci', 'combo.upperci', 'se'))]
+      names(theData)[names(theData)=="se.upperci" ] <- "Analytic Upper 95%CI"
+      names(theData)[names(theData)=="se.lowerci" ] <- "Analytic Lower 95%CI"
+    }
+    if(input$se_type == 'bootstrap'){
+      theData <- theData[, setdiff(var_names, c('se', 'se.upperci', 'se.lowerci', 'combo.se', 'combo.lowerci', 'combo.upperci', 'boot.se'))]
+      names(theData)[names(theData)=="boot.upperci" ] <- "Bootstrap Upper 95%CI"
+      names(theData)[names(theData)=="boot.lowerci" ] <- "Bootstrap Lower 95%CI"
+    }
+    if(input$se_type == 'both'){
+      theData <- theData[, setdiff(var_names, c('combo.se', 'combo.lowerci', 'combo.upperci', 'se', 'boot.se'))]
+      names(theData)[names(theData)=="boot.upperci" ] <- "Bootstrap Upper 95%CI"
+      names(theData)[names(theData)=="boot.lowerci" ] <- "Bootstrap Lower 95%CI"
+      names(theData)[names(theData)=="se.upperci" ] <- "Analytic Upper 95%CI"
+      names(theData)[names(theData)=="se.lowerci" ] <- "Analytic Lower 95%CI"
+    }
+    
+    if(input$se_type == 'balance'){
+      theData <- theData[, setdiff(var_names, c('boot.se', 'boot.upperci', 'boot.lowerci', 'se', 'se.lowerci', 'se.upperci', 'combo.se'))]
+      names(theData)[names(theData)=="combo.upperci" ] <- "Upper 95%CI"
+      names(theData)[names(theData)=="combo.lowerci" ] <- "Lower 95%CI"
+      
+    }
+    
+    names(theData)[names(theData)=="country" ] <- "Country" 
+    names(theData)[names(theData)=="year" ] <- "Year"
+    names(theData)[names(theData)=="indic" ] <- "Health indicator" 
+    names(theData)[names(theData)=="dimension" ] <- "Inequality dimension" 
+    names(theData)[names(theData)=="inequal" ] <- "Estimate"
+    names(theData)[names(theData)=="measure" ] <- "Summary measure"
+    
+    print(theData)
+  }
+  if(is.null(theData)){
+    return(NULL)
+  }
+  if(nrow(theData)==0){
+    return(NULL)
+  }
+  theData
+}, options = list(dom = "ilftpr", pageLength = 10)  # see https://datatables.net/ for dataTable options
+)
+
+
+
+
+
+
 # 
 # # Focus country
 # output$focusCountry1 <- renderText({ 
@@ -366,93 +602,9 @@ theDataPlot <- reactive({
 # })
 # 
 # 
-# ### Creating reactive input for the Summary Tables
-# ###
-# 
-# output$sumtableSumMeasure <- renderUI({
-#   if(length(input$sumtableEquityDimension)>0){
-#     if(input$sumtableEquityDimension %in% rankable){
-#       selectionOptions <- allSummaryMeasures
-#     }
-#     if(!input$sumtableEquityDimension %in% rankable){
-#       selectionOptions <- unrankSummaryMeasures
-#     }
-#   }
-#   else{
-#     selectionOptions <- NULL
-#   }
-#   print(selectionOptions)
-#   selectInput("sumtableSumMeasure", 
-#               h5("Select summary measure"), 
-#               choices=selectionOptions, 
-#               selected=c("Range difference" = "rd"), 
-#               multiple=T)
-# })
-# 
-# output$sumtableHealthIndicator <- renderUI({    
-#   # Multiple select for the health indicator 
-#   if(is.null(input$healthIndicator)){ 
-#     selectionOptions <- c()
-#   }
-#   else{
-#     selectionOptions <- sort(input$healthIndicator)
-#     print(input$healthIndicator)
-#     selectionOptions <- healthIndicatorList(option='full')[which(healthIndicatorList(option='core') %in% selectionOptions)]
-#   }
-#   selectInput("sumtableHealthIndicator", 
-#               h5("Select health indicators"), 
-#               choices=selectionOptions, 
-#               selected=selectionOptions, 
-#               multiple=T)
-# })
-# 
-# 
-# output$sumtableEquityDimension <- renderUI({    
-#   # Multiple select for the equity indicator 
-#   if(is.null(input$equityDimension)){ 
-#     selectionOptions <- c()
-#   }
-#   else{
-#     selectionOptions <- sort(input$equityDimension)
-#   }
-#   selectInput("sumtableEquityDimension", 
-#               h5("Select inequality dimensions"), 
-#               choices=selectionOptions, 
-#               selected=selectionOptions, 
-#               multiple=T)
-# })
-# 
-# 
-# output$sumtableYears <- renderUI({    
-#   # Multiple select for the years of interest
-#   yearsOfInterest <- sort(unique(datasetInput()$year))
-#   if(is.null(yearsOfInterest)){ 
-#     selectionOptions <- c()
-#   }
-#   else{
-#     selectionOptions <- yearsOfInterest
-#   }
-#   selectInput("sumtableYears", 
-#               h5("Select years"), 
-#               choices=selectionOptions, 
-#               selected=selectionOptions, 
-#               multiple=T)
-# })
-# 
-# # Create a download button contingent on data in the table
-# output$downloadSummtable <- renderUI({ 
-#   theData <- datasetInequal()
-#   if(is.null(theData)){
-#     return(NULL)
-#   }
-#   if(nrow(theData)==0){
-#     return(NULL)
-#   } else {
-#     list(br(),
-#          actionButton("downloadSummtable", "Download", class = "btn-primary"))
-#   }  
-# })
-# 
+
+
+ 
 # # Handler for downloading the data selected in the modal download table
 # output$downloadAnySumm <- downloadHandler(
 #   filename = function() {
@@ -1027,138 +1179,10 @@ theDataPlot <- reactive({
 # 
 # 
 # 
-# datasetInequal <- reactive({
-#   
-#   if(input$dataSource!='HETK'){
-#     tmpDF <- datasetInput()      
-#     relevant.rows <- which(tmpDF$year %in% input$sumtableYears & tmpDF$indic %in% input$sumtableHealthIndicator & tmpDF$dimension %in% input$sumtableEquityDimension)
-#     
-#     tmpDF <- tmpDF[ relevant.rows, ]
-#     
-#     print(tmpDF)
-#     if(is.null(relevant.rows)){
-#       return(NULL)
-#     }
-#     if(!is.null(relevant.rows)){
-#       ineqDF <- calcInequal(tmpDF, inequal.types='all')
-#       print(ineqDF)
-#       return(ineqDF)
-#     }
-#   }
-#   if(input$dataSource=='HETK' & input$assessment_panel=='sumtable'){
-#     print('Getting equity data table')
-#     ineqDF <- getInequal(indicator=input$sumtableHealthIndicator, 
-#                          stratifier=input$sumtableEquityDimension, 
-#                          countries=input$equityCountry, 
-#                          years=input$sumtableYears,  
-#                          inequal_types=input$sumtableSumMeasure)
-#     return(ineqDF)
-#   }    
-#   if(input$dataSource=='HETK' & input$assessment_panel=='sumplot'){
-#     print('Getting equity data plot')
-#     ineqDF <- getInequal(indicator=input$sumtableHealthIndicator, 
-#                          stratifier=input$sumtableEquityDimension, 
-#                          countries=input$equityCountry, 
-#                          years=input$sumtableYears,  
-#                          inequal_types=input$sumplotSumMeasures)
-#     ineqDF$boot.se[ ineqDF$boot.se == 0] <- NA
-#     ineqDF$se[ ineqDF$se == 0] <- NA
-#     return(ineqDF)
-#   }     
-# })
+
 # 
 # 
-# 
-# # Generate a view of the HETKB 
-# output$dataTableInequal <- renderDataTable({
-#   if(!is.null(datasetInequal())){
-#     theData <- datasetInequal()
-#     
-#     if(input$summultiplier1==T){
-#       theData$inequal[theData$measure=='ti'] <- theData$inequal[theData$measure=='ti'] *1000
-#       theData$inequal[theData$measure=='mld'] <- theData$inequal[theData$measure=='mld'] *1000
-#       theData$se[theData$measure=='ti'] <- theData$se[theData$measure=='ti'] *1000
-#       theData$se[theData$measure=='mld'] <- theData$se[theData$measure=='mld'] *1000
-#       theData$se.lowerci[theData$measure=='ti'] <- theData$se.lowerci[theData$measure=='ti'] *1000
-#       theData$se.lowerci[theData$measure=='mld'] <- theData$se.lowerci[theData$measure=='mld'] *1000
-#       theData$se.upperci[theData$measure=='ti'] <- theData$se.upperci[theData$measure=='ti'] *1000
-#       theData$se.upperci[theData$measure=='mld'] <- theData$se.upperci[theData$measure=='mld'] *1000
-#       theData$boot.se[theData$measure=='ti'] <- theData$boot.se[theData$measure=='ti'] *1000
-#       theData$boot.se[theData$measure=='mld'] <- theData$boot.se[theData$measure=='mld'] *1000
-#       theData$boot.lowerci[theData$measure=='ti'] <- theData$boot.lowerci[theData$measure=='ti'] *1000
-#       theData$boot.lowerci[theData$measure=='mld'] <- theData$boot.lowerci[theData$measure=='mld'] *1000
-#       theData$boot.upperci[theData$measure=='ti'] <- theData$boot.upperci[theData$measure=='ti'] *1000
-#       theData$boot.upperci[theData$measure=='mld'] <- theData$boot.upperci[theData$measure=='mld'] *1000
-#       theData$combo.se[theData$measure=='ti'] <- theData$combo.se[theData$measure=='ti'] *1000
-#       theData$combo.se[theData$measure=='mld'] <- theData$combo.se[theData$measure=='mld'] *1000
-#       theData$combo.lowerci[theData$measure=='ti'] <- theData$combo.lowerci[theData$measure=='ti'] *1000
-#       theData$combo.upperci[theData$measure=='mld'] <- theData$combo.upperci[theData$measure=='mld'] *1000
-#       theData$combo.lowerci[theData$measure=='ti'] <- theData$combo.lowerci[theData$measure=='ti'] *1000
-#       theData$combo.upperci[theData$measure=='mld'] <- theData$combo.upperci[theData$measure=='mld'] *1000
-#       
-#     }
-#     if(input$summultiplier2==T){
-#       theData$inequal[theData$measure=='rci'] <- theData$inequal[theData$measure=='rci'] *100
-#       theData$se[theData$measure=='rci'] <- theData$se[theData$measure=='rci'] *100
-#       theData$se.lowerci[theData$measure=='rci'] <- theData$se.lowerci[theData$measure=='rci'] *100
-#       theData$se.upperci[theData$measure=='rci'] <- theData$se.upperci[theData$measure=='rci'] *100
-#       theData$boot.se[theData$measure=='rci'] <- theData$boot.se[theData$measure=='rci'] *100
-#       theData$boot.lowerci[theData$measure=='rci'] <- theData$boot.lowerci[theData$measure=='rci'] *100
-#       theData$boot.upperci[theData$measure=='rci'] <- theData$boot.upperci[theData$measure=='rci'] *100
-#       theData$combo.se[theData$measure=='rci'] <- theData$combo.se[theData$measure=='rci'] *100
-#       theData$combo.lowerci[theData$measure=='rci'] <- theData$combo.lowerci[theData$measure=='rci'] *100
-#       theData$combo.upperci[theData$measure=='rci'] <- theData$combo.upperci[theData$measure=='rci'] *100
-#     }
-#     
-#     
-#     var_names <- names(theData)
-#     # Round the data to selected significant figure
-#     theData[, c('inequal', 'se', 'boot.se', 'combo.se', 'se.lowerci', 'se.upperci', 'boot.lowerci', 'boot.upperci', 'combo.lowerci', 'combo.upperci' )] <- 
-#       round(theData[, c('inequal', 'se', 'boot.se', 'combo.se', 'se.lowerci', 'se.upperci', 'boot.lowerci', 'boot.upperci', 'combo.lowerci', 'combo.upperci' )], input$sumsigfig)
-#     
-#     if(input$se_type == 'analytic'){
-#       theData <- theData[, setdiff(var_names, c('boot.se', 'boot.upperci', 'boot.lowerci', 'combo.se', 'combo.lowerci', 'combo.upperci', 'se'))]
-#       names(theData)[names(theData)=="se.upperci" ] <- "Analytic Upper 95%CI"
-#       names(theData)[names(theData)=="se.lowerci" ] <- "Analytic Lower 95%CI"
-#     }
-#     if(input$se_type == 'bootstrap'){
-#       theData <- theData[, setdiff(var_names, c('se', 'se.upperci', 'se.lowerci', 'combo.se', 'combo.lowerci', 'combo.upperci', 'boot.se'))]
-#       names(theData)[names(theData)=="boot.upperci" ] <- "Bootstrap Upper 95%CI"
-#       names(theData)[names(theData)=="boot.lowerci" ] <- "Bootstrap Lower 95%CI"
-#     }
-#     if(input$se_type == 'both'){
-#       theData <- theData[, setdiff(var_names, c('combo.se', 'combo.lowerci', 'combo.upperci', 'se', 'boot.se'))]
-#       names(theData)[names(theData)=="boot.upperci" ] <- "Bootstrap Upper 95%CI"
-#       names(theData)[names(theData)=="boot.lowerci" ] <- "Bootstrap Lower 95%CI"
-#       names(theData)[names(theData)=="se.upperci" ] <- "Analytic Upper 95%CI"
-#       names(theData)[names(theData)=="se.lowerci" ] <- "Analytic Lower 95%CI"
-#     }
-#     
-#     if(input$se_type == 'balance'){
-#       theData <- theData[, setdiff(var_names, c('boot.se', 'boot.upperci', 'boot.lowerci', 'se', 'se.lowerci', 'se.upperci', 'combo.se'))]
-#       names(theData)[names(theData)=="combo.upperci" ] <- "Upper 95%CI"
-#       names(theData)[names(theData)=="combo.lowerci" ] <- "Lower 95%CI"
-#       
-#     }
-#     
-#     names(theData)[names(theData)=="country" ] <- "Country" 
-#     names(theData)[names(theData)=="year" ] <- "Year"
-#     names(theData)[names(theData)=="indic" ] <- "Health indicator" 
-#     names(theData)[names(theData)=="dimension" ] <- "Inequality dimension" 
-#     names(theData)[names(theData)=="inequal" ] <- "Estimate"
-#     names(theData)[names(theData)=="measure" ] <- "Summary measure"
-#     
-#     print(theData)
-#   }
-#   if(is.null(theData)){
-#     return(NULL)
-#   }
-#   if(nrow(theData)==0){
-#     return(NULL)
-#   }
-#   theData
-# }, options = list(dom = "ilftpr", pageLength = 10)  # see https://datatables.net/ for dataTable options
-# )
+
 # 
 # 
 # # Generate a TEMPORARY view of the Comparison Summary Data

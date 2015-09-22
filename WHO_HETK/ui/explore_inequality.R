@@ -66,10 +66,10 @@ output$explore_inequality_ui <- renderUI({
                        h4(textOutput('focusCountry2')),
                        hr(),
                        
-                       #uiOutput("sumtableSumMeasure"),                 
-                       #uiOutput("sumtableHealthIndicator"),
-                       #uiOutput("sumtableEquityDimension"),
-                       #uiOutput("sumtableYears"),
+                       uiOutput("sumtableSumMeasure"),                 
+                       uiOutput("sumtableHealthIndicator"),
+                       uiOutput("sumtableEquityDimension"),
+                       uiOutput("sumtableYears"),
                        h4('Summary measure options'),
                        checkboxInput('summultiplier1', 'MLD and TI x1000', TRUE),
                        checkboxInput('summultiplier2', 'RCI x100', TRUE),
@@ -130,19 +130,19 @@ output$explore_inequality_ui <- renderUI({
     
     mainPanel(
       tabsetPanel(id="assessment_panel",
-                  tabPanel(h6("Disaggregated data - tables"), value='datatable' , 
+                  tabPanel(HTML("<h6 style='text-align: center;'>Disaggregated data</br>(tables)<h6>"), value='datatable' , 
                            uiOutput('downloadDatatable'),
                            dataTableOutput(outputId="dataTable")
                   ), 
-                  tabPanel(h6("Disaggregated data - graphs"), value='dataplot' ,
+                  tabPanel(HTML("<h6 style='text-align: center;'>Disaggregated data</br>(graphs)<h6>"), value='dataplot' ,
                            uiOutput('downloadDataplot'),
                            plotOutput('theDataPlot_web')
                            ), 
-                  tabPanel(h6("Summary measures - tables"), value='sumtable' #, 
-                           #uiOutput('downloadSummtable'),
-                           #dataTableOutput(outputId="dataTableInequal")
+                  tabPanel(HTML("<h6 style='text-align: center;'>Summary measures</br>(tables)<h6>"), value='sumtable' , 
+                           uiOutput('downloadSummtable'),
+                           dataTableOutput(outputId="dataTableInequal")
                   ),              
-                  tabPanel(h6("Summary measures - graphs"), value='sumplot' #,
+                  tabPanel(HTML("<h6 style='text-align: center;'>Summary measures</br>(graphs)<h6>"), value='sumplot' #,
                            #uiOutput('downloadSummplot'),
                            #plotOutput('theSumPlot_web')
                   )
