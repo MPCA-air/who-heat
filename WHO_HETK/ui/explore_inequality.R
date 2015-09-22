@@ -134,9 +134,9 @@ output$explore_inequality_ui <- renderUI({
                            uiOutput('downloadDatatable'),
                            dataTableOutput(outputId="dataTable")
                   ), 
-                  tabPanel(h6("Disaggregated data - graphs"), value='dataplot' #,
-                           #uiOutput('downloadDataplot'),
-                           #plotOutput('theDataPlot_web')
+                  tabPanel(h6("Disaggregated data - graphs"), value='dataplot' ,
+                           uiOutput('downloadDataplot'),
+                           plotOutput('theDataPlot_web')
                            ), 
                   tabPanel(h6("Summary measures - tables"), value='sumtable' #, 
                            #uiOutput('downloadSummtable'),

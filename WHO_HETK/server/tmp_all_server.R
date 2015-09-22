@@ -9,7 +9,7 @@
 # Countries can be filtered by input$WHOregion and input$wbGroup, but currently 'No Filter' is the default
 output$equityCountry <- renderUI({
   #    countries <- getFilteredCountries(input$WBgroup, input$WHOregion, input$dataSource) 
-  
+  print("In equityCountry")
   countries <- getFilteredCountries(NULL, NULL, input$dataSource)
   if(is.null(countries)){ countries <- c()}
   selectInput("equityCountry", 
@@ -22,6 +22,7 @@ output$equityCountry <- renderUI({
 
 # Year is filtered by the survey availability by country and the source (MICS/DHS of the survey)
 output$years <- renderUI({
+  print("In years")
   #    countries <- getFilteredCountries(input$WBgroup, input$WHOregion, input$dataSource)    
   selectYears <- getFilteredYear(country=input$equityCountry, datasource=input$data_source, database='HETK')
   if(is.null(selectYears)){ selectYears <- c()}
@@ -36,6 +37,8 @@ output$years <- renderUI({
 
 #  Set up the selectInput for the selection of health indicator
 output$healthIndicator <- renderUI({
+  print("In healthIndicator")
+  
   selectionOptions <- healthIndicatorList(option = 'full')      
   if(is.null(selectionOptions)){ selectionOptions <- c()}
   selectInput("healthIndicator", 
@@ -47,6 +50,8 @@ output$healthIndicator <- renderUI({
 
 #  Set up the selectInput for the selection of the equity dimensions
 output$equityDimension <- renderUI({
+  print("In equityDimension")
+  
   selectInput(inputId = "equityDimension",
               h5("Select inequality dimensions"),
               choices = c("Economic status", "Geographic region", "Mother's education",
@@ -57,6 +62,8 @@ output$equityDimension <- renderUI({
 
 # Set up the selectInput for the display of data in the Disaggregated Data Table view
 output$dataTableItems <- renderUI({
+  print("In dataTableItems")
+  
   dataTmp <- datasetInput()
   if(nrow(dataTmp)>0  & input$assessment_panel == "datatable"){ 
     selectOptions <- c("Country" = 'country', 
@@ -85,6 +92,8 @@ output$dataTableItems <- renderUI({
 
 # Create a download button contingent on data in the table
 output$downloadDatatable <- renderUI({
+  print("In downloadDatatable")
+  
   theData <- datasetInput()
   if(nrow(theData)==0){
     return(NULL)
@@ -95,13 +104,15 @@ output$downloadDatatable <- renderUI({
 })
 
 ##############################################################
-# required in explore inequality: table
+# required in explore inequality: table and plot
 #############################################################
 
 
 
 # Return the requested dataset based on the UI selection (dataSource)
 datasetInput <- reactive({
+  print("In datasetInput")
+  
   dat<-switch(input$dataSource,
          #"GHO" = getData1a(),
          "HETK" = getData2()
@@ -114,6 +125,8 @@ datasetInput <- reactive({
 
 # A *Reactive* to read data in from the Health Equity Toolkit DB
 getData2 <- reactive({
+  print("In getData2")
+  
   # This *reactive* gets the data from HETKdb
  
   input$getdata
@@ -132,7 +145,8 @@ getData2 <- reactive({
 
 # Generate a view of the Managed Data
 output$dataTable <- renderDataTable({
-  print('Enter the disaggregated data table')
+  print("In dataTable")
+
   theData <- datasetInput()
   if(is.null(theData)){
     return(NULL)
@@ -171,6 +185,88 @@ output$dataTable <- renderDataTable({
   theData
 }, options = list(dom = "ilftpr", pageLength = 10)  # see https://datatables.net/ for dataTable options
 )
+
+
+
+##############################################################
+# required in explore inequality: plot
+#############################################################
+
+
+# Create a download button contingent on the existence of a plot of the disaggregated data
+output$downloadDataplot <- renderUI({
+  print("In downloadDataplot")
+  
+  thePlot <- theDataPlot()
+  if(is.null(thePlot)){
+    return(NULL)
+  } else {
+    list(br(),
+         actionButton("downloadDataplot", "Download Plot", class = "btn-primary"))
+  }  
+})
+
+
+output$theDataPlot_web <- renderPlot({
+  print("In theDataPlot_web")
+  
+  print(theDataPlot())  # Remember that print(theDataPlot) just prints the code
+}, res=90, height=exprToFunction(input$plot_height1), width=exprToFunction(input$plot_width1))
+
+
+# Generate a reactive element for plotting the Managed Data.
+# Pass to the webpage using renderPlot(print(theDataPlot))
+theDataPlot <- reactive({ 
+  print("In theDataPlot")
+  
+  print("Reactive: theDataPlot")
+  plotData <- datasetInput()[, c('country', 'year', 'indic', 'subgroup', 'dimension', 'estimate', 'se')]
+  if(nrow(plotData)>0){
+    chartopt <- list()
+    # Chart options for axis max and min values
+    chartopt <- lappend(chartopt, 'axmax' = as.integer(input$axis_limitsmax1))
+    chartopt <- lappend(chartopt, 'axmin' = as.integer(input$axis_limitsmin1))
+    # Chart options for whether the chart only carries geographic region data
+    geo_only <- geoOnly(plotData)
+    if(geo_only){
+      chartopt <- lappend(chartopt, 'geo_only' = geo_only)     
+    }
+    
+    if(input$main_title1 != ""){
+      chartopt <- lappend(chartopt, 'main_title' = input$main_title1)
+    }
+    if(input$xaxis_title1 != ""){
+      chartopt <- lappend(chartopt, 'xaxis_title' = input$xaxis_title1)
+    }
+    if(input$yaxis_title1 != ""){
+      chartopt <- lappend(chartopt, 'yaxis_title' = input$yaxis_title1)
+    }
+    
+    
+    
+    if(input$long_names1==T){
+      relevant_names <- which(names(healthIndicatorAbbreviations) %in% unique(plotData$indic))
+      plotData$indic <- factor(plotData$indic,
+                               levels = names(healthIndicatorAbbreviations)[relevant_names],
+                               labels = unname(healthIndicatorAbbreviations)[relevant_names]) 
+    }
+    
+    if(input$assessment_panel == 'dataplot' & input$ai_plot_type=='data_bar'){        
+      p <- plotFigure1(plotData, chartoptions=chartopt)
+      return(p)
+    }
+    if(input$assessment_panel == 'dataplot' & input$ai_plot_type=='data_line'){
+      
+      p <- plotFigure2(plotData, chartoptions=chartopt)
+      return(p)
+    }
+  }
+  else{
+    return(NULL)
+  }
+  
+})  
+
 
 # 
 # # Focus country
@@ -235,18 +331,7 @@ output$dataTable <- renderDataTable({
 # )
 # 
 # 
-# # Create a download button contingent on the existence of a plot of the disaggregated data
-# output$downloadDataplot <- renderUI({
-#   thePlot <- theDataPlot()
-#   if(is.null(thePlot)){
-#     return(NULL)
-#   } else {
-#     list(br(),
-#          actionButton("downloadDataplot", "Download Plot", class = "btn-primary"))
-#   }  
-# })
-# 
-# 
+
 # 
 # # Handler for downloading the data selected in the modal download table
 # output$downloadAnyPlot <- downloadHandler(
@@ -1103,57 +1188,7 @@ output$dataTable <- renderDataTable({
 # 
 # 
 # 
-# # Generate a reactive element for plotting the Managed Data.
-# # Pass to the webpage using renderPlot(print(theDataPlot))
-# theDataPlot <- reactive({ 
-#   print("Reactive: theDataPlot")
-#   plotData <- datasetInput()[, c('country', 'year', 'indic', 'subgroup', 'dimension', 'estimate', 'se')]
-#   if(nrow(plotData)>0){
-#     chartopt <- list()
-#     # Chart options for axis max and min values
-#     chartopt <- lappend(chartopt, 'axmax' = as.integer(input$axis_limitsmax1))
-#     chartopt <- lappend(chartopt, 'axmin' = as.integer(input$axis_limitsmin1))
-#     # Chart options for whether the chart only carries geographic region data
-#     geo_only <- geoOnly(plotData)
-#     if(geo_only){
-#       chartopt <- lappend(chartopt, 'geo_only' = geo_only)     
-#     }
-#     
-#     if(input$main_title1 != ""){
-#       chartopt <- lappend(chartopt, 'main_title' = input$main_title1)
-#     }
-#     if(input$xaxis_title1 != ""){
-#       chartopt <- lappend(chartopt, 'xaxis_title' = input$xaxis_title1)
-#     }
-#     if(input$yaxis_title1 != ""){
-#       chartopt <- lappend(chartopt, 'yaxis_title' = input$yaxis_title1)
-#     }
-#     
-#     
-#     
-#     if(input$long_names1==T){
-#       relevant_names <- which(names(healthIndicatorAbbreviations) %in% unique(plotData$indic))
-#       plotData$indic <- factor(plotData$indic,
-#                                levels = names(healthIndicatorAbbreviations)[relevant_names],
-#                                labels = unname(healthIndicatorAbbreviations)[relevant_names]) 
-#     }
-#     
-#     if(input$mainPanel == 'assess_inequality' & input$assessment_panel == 'dataplot' & input$ai_plot_type=='data_bar'){        
-#       p <- plotFigure1(plotData, chartoptions=chartopt)
-#       return(p)
-#     }
-#     if(input$mainPanel == 'assess_inequality' & input$assessment_panel == 'dataplot' & input$ai_plot_type=='data_line'){
-#       
-#       p <- plotFigure2(plotData, chartoptions=chartopt)
-#       return(p)
-#     }
-#   }
-#   else{
-#     return(NULL)
-#   }
-#   
-# })  
-# 
+
 # 
 # 
 # # Generate a reactive element for plotting the Summary Data.
@@ -1307,10 +1342,7 @@ output$dataTable <- renderDataTable({
 # 
 # 
 # 
-# output$theDataPlot_web <- renderPlot({
-#   print(theDataPlot())  # Remember that print(theDataPlot) just prints the code
-# }, res=90, height=exprToFunction(input$plot_height1), width=exprToFunction(input$plot_width1))
-# 
+
 # 
 # output$theComparisonPlot1_web <- renderPlot({
 #   if(is.null(theComparisonPlot1())){

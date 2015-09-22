@@ -27,3 +27,14 @@ myHiddenText <-function (inputId, label, value = ""){
       tags$label(label, `for` = inputId), 
       tags$input(id = inputId, type = "text", value = value, class="input-text"))
 }
+
+
+####################
+
+lappend <- function (lst, ...){
+  # Append an item to a list; e.g.:
+  # vara <- list("axislimit"=T)
+  # vara <- lappend(vara, "print"=F)
+  lst <- c(lst, list(...))
+  return(lst)
+}
