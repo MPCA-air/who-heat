@@ -29,6 +29,7 @@ shinyServer(function(input, output, session){
   source("utils/hetkdb.R", local=TRUE)
   source("utils/plotter.R", local=TRUE)
   source("utils/inequal.R", local=TRUE)
+  source("utils/comparisonCountries.R", local=TRUE)
 
   source("ui/data_management.R", local=TRUE)
   source("ui/explore_inequality.R", local=TRUE)

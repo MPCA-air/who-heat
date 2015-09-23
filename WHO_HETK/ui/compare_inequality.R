@@ -38,7 +38,7 @@ output$compare_inequality_ui <- renderUI({
                        
                        
                        # On the fly drop down menu to select countries of interest
-                       #uiOutput("benchmarkCountries"),
+                       uiOutput("benchmarkCountries"),
                        
                        sliderInput('benchmarkYears', h5('Select years'), min=0, max=5, value=2, step = 1,
                                    round = T, ticks = TRUE, animate = FALSE),
@@ -113,18 +113,18 @@ output$compare_inequality_ui <- renderUI({
     
     mainPanel(
       tabsetPanel(id = "comparison_panel", 
-                  tabPanel(h6("Benchmark countries"), value='inequalbenchmark'#, 
-                           #dataTableOutput(outputId="dataTableBenchmark")
+                  tabPanel(h6("Benchmark countries"), value='inequalbenchmark', 
+                           dataTableOutput(outputId="dataTableBenchmark")
                   ),
-                  tabPanel(h6("Disaggregated plot"), value='inequaldisag'#, 
-                           #uiOutput('downloadCompplot1'),
-                           #div(class="container-fluid", style="overflow:visible;height:1000px;", plotOutput('theComparisonPlot1_web'))
+                  tabPanel(h6("Disaggregated plot"), value='inequaldisag', 
+                           uiOutput('downloadCompplot1'),
+                           div(class="container-fluid", style="overflow:visible;height:1000px;", plotOutput('theComparisonPlot1_web'))
                   ),
                   tabPanel(h6("Summary plot"), value='inequalsum', 
                            # Plot points (default) or country codes on the Comparison Summary Plot
-                           checkboxInput(inputId='points_ccode', 'Show country codes', value=FALSE)#,
-                           #uiOutput('downloadCompplot2'),
-                           #div(class="container-fluid", style="overflow:visible;height:800px;", plotOutput('theComparisonPlot2_web'))
+                           checkboxInput(inputId='points_ccode', 'Show country codes', value=FALSE),
+                           uiOutput('downloadCompplot2'),
+                           div(class="container-fluid", style="overflow:visible;height:800px;", plotOutput('theComparisonPlot2_web'))
                   )
       )#endtabsetpanel
       

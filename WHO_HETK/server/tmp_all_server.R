@@ -98,9 +98,9 @@ output$downloadDatatable <- renderUI({
   if(nrow(theData)==0){
     return(NULL)
   } else {
-    list(br(),
-         actionButton("downloadDatatable", "Download", class = "btn-primary"))
-  }  
+     list(br(),
+          actionButton("downloadDatatable", "Download", class = "btn-primary"))
+   }  
 })
 
 ##############################################################
@@ -674,7 +674,7 @@ theSummaryPlot <- reactive({
 
 
 ##############################################################
-# Comparison Benchmark
+# Comparison Benchmark SIDEPANEL
 #############################################################
 
 
@@ -729,10 +729,19 @@ output$compplotBenchYears <- renderUI({
               multiple=F)
 })
 
+output$benchmarkCountries <- renderUI({
+  countries <- getFilteredCountries(input$benchmarkWBgroup, input$benchmarkWHOregion, input$dataSource)  
+  selectInput("benchmarkCountries", 
+              h5("Select countries"), 
+              choices=countries, 
+              selected=countries,
+              multiple=T)
+})
+
 
 
 ##############################################################
-# Comparison disaggregated plots
+# Comparison disaggregated plots SIDEPANEL
 #############################################################
 
 
@@ -788,7 +797,7 @@ output$compplotDisagYears <- renderUI({
 })
 
 ##############################################################
-# Comparison summary plots
+# Comparison summary plots SIDEPANEL
 #############################################################
 
 
@@ -864,19 +873,294 @@ output$compplotSumYears <- renderUI({
 
 
 
+##############################################################
+# Comparison benchmark MAINPANEL -----
+#############################################################
 
 
-# #####  Comparison Plot 1  Download
-# # Create a download button contingent on the existence of a plot of the comparison disaggregated data
-# output$downloadCompplot1 <- renderUI({
-#   thePlot <- theComparisonPlot1()
-#   if(is.null(thePlot)){
-#     return(NULL)
-#   } else {
-#     list(br(),
-#          actionButton("downloadCompplot1", "Download Plot", class = "btn-primary"))
-#   }  
-# })
+
+# Generate a TEMPORARY view of the Comparison Summary Data
+output$dataTableBenchmark <- renderDataTable({
+  if(!is.null(getData4())){
+    theData <- getData4()[, c('country', 'year', 'source', 'indic', 'dimension', 'subgroup', 'estimate')]
+    names(theData)[names(theData)=="country" ] <- "Country" 
+    names(theData)[names(theData)=="year" ] <- "Year"
+    names(theData)[names(theData)=="source" ] <- "Data source"
+    names(theData)[names(theData)=="indic" ] <- "Health indicator" 
+    names(theData)[names(theData)=="dimension" ] <- "Inequality dimension"
+    names(theData)[names(theData)=="subgroup" ] <- "Subgroup"
+    names(theData)[names(theData)=="estimate" ] <- "Estimate"
+    theData    
+  }
+}, options = list(dom = "ilftpr", pageLength = 10)  # see https://datatables.net/ for dataTable options
+)
+
+
+# A *Reactive* to fetch benchmark country disaggregated and merge it with fetched data
+getData4 <- reactive({
+  # This *reactive* fetches benchmark country data for the Disaggregated TABLE
+  input$getcomparisondata1
+  #    input$getcomparisondata2
+  print(input$getcomparisondata1)
+  isolate({
+    
+    anchordata <- datasetInput()
+    
+    relevant.rows <- which(anchordata$year %in% input$compplotBenchYears &   # Select only the right years ...
+                             anchordata$indic == input$compplotBenchHealthIndicator &  # health indicator, and ... 
+                             anchordata$dimension == input$compplotBenchEquityDimension)  # equity dimension 
+    
+    anchordata <- anchordata[ relevant.rows , ]
+    
+    #print('Pre Benchmark')    
+    benchmarkdata <- getComparisonCountries(indicator = input$compplotBenchHealthIndicator, 
+                                            stratifier = input$compplotBenchEquityDimension, 
+                                            countries = input$benchmarkCountries, 
+                                            years =  unique(anchordata$year), 
+                                            elasticity = input$benchmarkYears, matchyears=F)
+    #print('Post Benchmark')    
+    
+    thedata <- rbind(anchordata, benchmarkdata)  # Merge the relevant initial data with benchmarkdata
+    #print(thedata)
+    if(is.null(thedata)){
+      return(NULL)
+    }
+    if(nrow(thedata)==0){
+      return(NULL)
+    }
+    else{
+      return(thedata)
+    }
+  })
+})
+
+
+##############################################################
+# Comparison benchmark MAINPANEL diaggregated plot tab -----
+#############################################################
+
+
+
+#####  Comparison Plot 1  Download
+# Create a download button contingent on the existence of a plot of the comparison disaggregated data
+output$downloadCompplot1 <- renderUI({
+  thePlot <- theComparisonPlot1()
+  if(is.null(thePlot)){
+    return(NULL)
+  } else {
+    list(br(),
+         actionButton("downloadCompplot1", "Download Plot", class = "btn-primary"))
+  }  
+})
+
+output$theComparisonPlot1_web <- renderPlot({
+  if(is.null(theComparisonPlot1())){
+    return(NULL)
+  }
+  print(theComparisonPlot1())  # Remember that print(theDataPlot) just prints the code
+}, res=90, height=exprToFunction(input$plot_height2), width=exprToFunction(input$plot_width2))
+
+
+
+# Generate a reactive element for plotting the Disaggregated Comparison data.
+# Pass to the webpage using renderPlot(print(theDataPlot))
+theComparisonPlot1 <- reactive({ 
+
+  
+  plotData <- getData4a()
+
+  if(is.null(plotData)){
+    return(NULL)
+  }
+  else{
+    plotData <- plotData[, c('country', 'year', 'indic', 'subgroup', 'dimension', 'estimate', 'se')]
+    
+    if(input$long_names3==T){
+      relevant_names <- which(names(healthIndicatorAbbreviations) %in% unique(plotData$indic))
+      plotData$indic <- factor(plotData$indic,
+                               levels = names(healthIndicatorAbbreviations)[relevant_names],
+                               labels = unname(healthIndicatorAbbreviations)[relevant_names]) 
+    }
+    
+    
+    chartopt <- list()
+    chartopt <- lappend(chartopt, 'axmax' = as.integer(input$axis_limitsmax3))
+    chartopt <- lappend(chartopt, 'axmin' = as.integer(input$axis_limitsmin3))
+    
+    if(input$main_title3 != ""){
+      chartopt <- lappend(chartopt, 'main_title' = input$main_title3)
+    }
+    if(input$xaxis_title3 != ""){
+      chartopt <- lappend(chartopt, 'xaxis_title' = input$xaxis_title3)
+    }
+    if(input$yaxis_title3 != ""){
+      chartopt <- lappend(chartopt, 'yaxis_title' = input$yaxis_title3)
+    }
+    
+    print("near p")
+    p <- plotFigure5(plotData, chartoptions=chartopt)
+    return(p)
+  }
+})  
+
+
+
+
+# A *Reactive* to fetch benchmark country FOR the Disaggregated Comparison Plot
+getData4a <- reactive({
+  # This *reactive* fetches benchmark country data for the PLOT
+  #print("Reactive: getData4a")
+  if(input$comparison_panel != 'inequaldisag'){
+    return(NULL)
+  }
+  if(length(input$compplotDisagYears)==0 | length(input$compplotDisagHealthIndicator)==0 | length(input$compplotDisagEquityDimension)==0){
+    return(NULL)
+  }
+  print(paste(input$compplotBenchYears, input$compplotDisagYears, input$compplotBenchHealthIndicator, input$compplotDisagHealthIndicator, input$compplotBenchEquityDimension, input$compplotDisagEquityDimension, sep=' >> '))
+  if(input$compplotBenchYears == input$compplotDisagYears & input$compplotBenchHealthIndicator == input$compplotDisagHealthIndicator & input$compplotBenchEquityDimension == input$compplotDisagEquityDimension){
+    return( getData4() )
+  } else {
+    
+    anchordata <- datasetInput()
+    
+    relevant.rows <- which(anchordata$year %in% input$compplotDisagYears &   # Select only the right years ...
+                             anchordata$indic == input$compplotDisagHealthIndicator &  # health indicator, and ... 
+                             anchordata$dimension == input$compplotDisagEquityDimension)  # equity dimension 
+    
+    anchordata <- anchordata[ relevant.rows , ]
+    
+    benchmarkdata <- getComparisonCountries(indicator = input$compplotDisagHealthIndicator, 
+                                            stratifier = input$compplotDisagEquityDimension, 
+                                            countries = input$benchmarkCountries, 
+                                            years =  unique(anchordata$year), 
+                                            elasticity = input$benchmarkYears, matchyears=F)
+    
+    thedata <- rbind(anchordata, benchmarkdata)  # Merge the relevant initial data with benchmarkdata
+    if(is.null(thedata) | nrow(thedata)==0){
+      return(NULL)
+    }
+    else{
+      return(thedata)
+    }
+  }
+})
+
+
+
+
+
+##############################################################
+# Comparison benchmark MAINPANEL summary plot tab -----
+#############################################################
+
+
+#####  Comparison Plot 2  Download
+# Create a download button contingent on the existence of a plot of the comparison disaggregated data
+output$downloadCompplot2 <- renderUI({
+  thePlot <- theComparisonPlot2()
+  if(is.null(thePlot)){
+    return(NULL)
+  } else {
+    list(br(),
+         actionButton("downloadCompplot2", "Download Plot", class = "btn-primary"))
+  }  
+})
+
+
+
+
+
+
+
+# Generate a reactive element for plotting the Summary Comparison data.
+# Pass to the webpage using renderPlot(print(theDataPlot))
+theComparisonPlot2 <- reactive({ 
+  #print("Reactive: theComparisonPlot2")
+  print(getData5())
+  if(is.null(getData5())){
+    return(NULL)
+  }
+  if(nrow(getData5())==0){
+    return(NULL)
+  }    
+  else{
+    #print('Never got here')
+    plotData <- getData5()[, c('country', 'ccode', 'year', 'indic', 'estimate', 'dimension', 'measure', 'inequal', 'boot.se', 'se', 'anchor')]
+    
+    chartopt <- list()
+    chartopt <- lappend(chartopt, 'xaxmax' = as.integer(input$xaxis_limitsmax4))
+    chartopt <- lappend(chartopt, 'xaxmin' = as.integer(input$xaxis_limitsmin4))
+    chartopt <- lappend(chartopt, 'yaxmax' = as.integer(input$yaxis_limitsmax4))
+    chartopt <- lappend(chartopt, 'yaxmin' = as.integer(input$yaxis_limitsmin4))
+    chartopt <- lappend(chartopt, 'yaxmin' = as.integer(input$yaxis_limitsmin4))
+    
+    if(input$points_ccode == TRUE){
+      chartopt <- lappend(chartopt, 'points_dot' = input$points_ccode)
+    }
+    
+    if(input$main_title4 != ""){
+      chartopt <- lappend(chartopt, 'main_title' = input$main_title4)
+    }
+    if(input$xaxis_title4 != ""){
+      chartopt <- lappend(chartopt, 'xaxis_title' = input$xaxis_title4)
+    }
+    if(input$yaxis_title4 != ""){
+      chartopt <- lappend(chartopt, 'yaxis_title' = input$yaxis_title4)
+    }
+    
+    p <- plotFigure6(plotData, chartoptions=chartopt)
+    return(p)
+  }
+})  
+
+
+
+
+
+
+#A *Reactive* to fetch benchmark country summary data
+getData5 <- reactive({
+  # This *reactive* fetches benchmark country summary data
+  if(length(input$equityCountry) > 0){
+    thecountries <- unique(c(input$equityCountry, input$benchmarkCountries))
+    print(thecountries)
+    print(input$compplotSumMeasure) 
+    print(input$compplotSumHealthIndicator)
+    print(input$compplotSumEquityDimension) 
+    print(thecountries) 
+    print(input$compplotSumYears)
+    print(input$benchmarkYearsSum)
+    thedata <- getComparisonSummaries(summeasure=input$compplotSumMeasure, 
+                                      indicator=input$compplotSumHealthIndicator, 
+                                      stratifier=input$compplotSumEquityDimension, 
+                                      countries=thecountries, 
+                                      years=input$compplotSumYears, 
+                                      elasticity=input$benchmarkYears, matchyears=T)
+    thedata$anchor <- 0
+    thedata$anchor[thedata$country==input$equityCountry] <- 1
+    
+  } else {
+    thedata <- NULL
+  }
+  return(thedata)
+})
+
+
+
+output$theComparisonPlot2_web <- renderPlot({    
+  if(is.null(theComparisonPlot2())){
+    return(NULL)
+  }
+  print(theComparisonPlot2())  # Remember that print(theDataPlot) just prints the code
+}, res=90, height=exprToFunction(input$plot_height3), width=exprToFunction(input$plot_width3))
+
+
+
+
+
+##############################################################
+# Comparison benchmark MAINPANEL diaggregated plot tab
+#############################################################
 
 
 # 
@@ -1015,16 +1299,7 @@ output$compplotSumYears <- renderUI({
 # 
 # 
 #  
-# output$benchmarkCountries <- renderUI({
-#   countries <- getFilteredCountries(input$benchmarkWBgroup, input$benchmarkWHOregion, input$dataSource)  
-#   selectInput("benchmarkCountries", 
-#               h5("Select countries"), 
-#               choices=countries, 
-#               selected=countries,
-#               multiple=T)
-# })
-# 
-# 
+
 
 # # Create a download button contingent on the existence of a comparison plot of the disaggregated data
 # output$downloadCompplot1 <- renderUI({
@@ -1134,117 +1409,7 @@ output$compplotSumYears <- renderUI({
 # outputOptions(output, 'fileUploaded', suspendWhenHidden=FALSE)
 # 
 # 
-# 
-# # A *Reactive* to fetch benchmark country disaggregated and merge it with fetched data
-# getData4 <- reactive({
-#   # This *reactive* fetches benchmark country data for the Disaggregated TABLE
-#   input$getcomparisondata1
-#   #    input$getcomparisondata2
-#   print(input$getcomparisondata1)
-#   isolate({
-#     
-#     anchordata <- datasetInput()
-#     
-#     relevant.rows <- which(anchordata$year %in% input$compplotBenchYears &   # Select only the right years ...
-#                              anchordata$indic == input$compplotBenchHealthIndicator &  # health indicator, and ... 
-#                              anchordata$dimension == input$compplotBenchEquityDimension)  # equity dimension 
-#     
-#     anchordata <- anchordata[ relevant.rows , ]
-#     
-#     #print('Pre Benchmark')    
-#     benchmarkdata <- getComparisonCountries(indicator = input$compplotBenchHealthIndicator, 
-#                                             stratifier = input$compplotBenchEquityDimension, 
-#                                             countries = input$benchmarkCountries, 
-#                                             years =  unique(anchordata$year), 
-#                                             elasticity = input$benchmarkYears, matchyears=F)
-#     #print('Post Benchmark')    
-#     
-#     thedata <- rbind(anchordata, benchmarkdata)  # Merge the relevant initial data with benchmarkdata
-#     print(thedata)
-#     if(is.null(thedata)){
-#       return(NULL)
-#     }
-#     if(nrow(thedata)==0){
-#       return(NULL)
-#     }
-#     else{
-#       return(thedata)
-#     }
-#   })
-# })
-# 
-# 
-# 
-# # A *Reactive* to fetch benchmark country FOR the Disaggregated Comparison Plot
-# getData4a <- reactive({
-#   # This *reactive* fetches benchmark country data for the PLOT
-#   #print("Reactive: getData4a")
-#   if(input$mainPanel != "compare_inequality" & input$comparison_panel != 'inequaldisag'){
-#     return(NULL)
-#   }
-#   if(length(input$compplotDisagYears)==0 | length(input$compplotDisagHealthIndicator)==0 | length(input$compplotDisagEquityDimension)==0){
-#     return(NULL)
-#   }
-#   print(paste(input$compplotBenchYears, input$compplotDisagYears, input$compplotBenchHealthIndicator, input$compplotDisagHealthIndicator, input$compplotBenchEquityDimension, input$compplotDisagEquityDimension, sep=' >> '))
-#   if(input$compplotBenchYears == input$compplotDisagYears & input$compplotBenchHealthIndicator == input$compplotDisagHealthIndicator & input$compplotBenchEquityDimension == input$compplotDisagEquityDimension){
-#     return( getData4() )
-#   } else {
-#     
-#     anchordata <- datasetInput()
-#     
-#     relevant.rows <- which(anchordata$year %in% input$compplotDisagYears &   # Select only the right years ...
-#                              anchordata$indic == input$compplotDisagHealthIndicator &  # health indicator, and ... 
-#                              anchordata$dimension == input$compplotDisagEquityDimension)  # equity dimension 
-#     
-#     anchordata <- anchordata[ relevant.rows , ]
-#     
-#     benchmarkdata <- getComparisonCountries(indicator = input$compplotDisagHealthIndicator, 
-#                                             stratifier = input$compplotDisagEquityDimension, 
-#                                             countries = input$benchmarkCountries, 
-#                                             years =  unique(anchordata$year), 
-#                                             elasticity = input$benchmarkYears, matchyears=F)
-#     
-#     thedata <- rbind(anchordata, benchmarkdata)  # Merge the relevant initial data with benchmarkdata
-#     if(is.null(thedata) | nrow(thedata)==0){
-#       return(NULL)
-#     }
-#     else{
-#       return(thedata)
-#     }
-#   }
-# })
-# 
-# 
-# 
-# 
-# # A *Reactive* to fetch benchmark country summary data
-# getData5 <- reactive({
-#   # This *reactive* fetches benchmark country summary data
-#   if(length(input$equityCountry) > 0){
-#     thecountries <- unique(c(input$equityCountry, input$benchmarkCountries))
-#     print(thecountries)
-#     print(input$compplotSumMeasure) 
-#     print(input$compplotSumHealthIndicator)
-#     print(input$compplotSumEquityDimension) 
-#     print(thecountries) 
-#     print(input$compplotSumYears)
-#     print(input$benchmarkYearsSum)
-#     thedata <- getComparisonSummaries(summeasure=input$compplotSumMeasure, 
-#                                       indicator=input$compplotSumHealthIndicator, 
-#                                       stratifier=input$compplotSumEquityDimension, 
-#                                       countries=thecountries, 
-#                                       years=input$compplotSumYears, 
-#                                       elasticity=input$benchmarkYears, matchyears=T)
-#     thedata$anchor <- 0
-#     thedata$anchor[thedata$country==input$equityCountry] <- 1
-#     
-#   } else {
-#     thedata <- NULL
-#   }
-#   return(thedata)
-# })
-# 
-# 
+
 # 
 # 
 # 
@@ -1303,22 +1468,7 @@ output$compplotSumYears <- renderUI({
 
 # 
 # 
-# # Generate a TEMPORARY view of the Comparison Summary Data
-# output$dataTableBenchmark <- renderDataTable({
-#   if(!is.null(getData4())){
-#     theData <- getData4()[, c('country', 'year', 'source', 'indic', 'dimension', 'subgroup', 'estimate')]
-#     names(theData)[names(theData)=="country" ] <- "Country" 
-#     names(theData)[names(theData)=="year" ] <- "Year"
-#     names(theData)[names(theData)=="source" ] <- "Data source"
-#     names(theData)[names(theData)=="indic" ] <- "Health indicator" 
-#     names(theData)[names(theData)=="dimension" ] <- "Inequality dimension"
-#     names(theData)[names(theData)=="subgroup" ] <- "Subgroup"
-#     names(theData)[names(theData)=="estimate" ] <- "Estimate"
-#     theData    
-#   }
-# }, options = list(dom = "ilftpr", pageLength = 10)  # see https://datatables.net/ for dataTable options
-# )
-# 
+
 # 
 # # Generate a TEMPORARY view of the Comparison Summary Data
 # output$dataTableCompSum <- renderDataTable({
@@ -1331,87 +1481,6 @@ output$compplotSumYears <- renderUI({
 # 
 # 
 
-# 
-# # Generate a reactive element for plotting the Disaggregated Comparison data.
-# # Pass to the webpage using renderPlot(print(theDataPlot))
-# theComparisonPlot1 <- reactive({ 
-#   #print("Reactive: theComparisonPlot1")
-#   if(is.null(getData4a())){
-#     return(NULL)
-#   }
-#   else{
-#     plotData <- getData4a()[, c('country', 'year', 'indic', 'subgroup', 'dimension', 'estimate', 'se')]
-#     
-#     if(input$long_names3==T){
-#       relevant_names <- which(names(healthIndicatorAbbreviations) %in% unique(plotData$indic))
-#       plotData$indic <- factor(plotData$indic,
-#                                levels = names(healthIndicatorAbbreviations)[relevant_names],
-#                                labels = unname(healthIndicatorAbbreviations)[relevant_names]) 
-#     }
-#     
-#     
-#     chartopt <- list()
-#     chartopt <- lappend(chartopt, 'axmax' = as.integer(input$axis_limitsmax3))
-#     chartopt <- lappend(chartopt, 'axmin' = as.integer(input$axis_limitsmin3))
-#     
-#     if(input$main_title3 != ""){
-#       chartopt <- lappend(chartopt, 'main_title' = input$main_title3)
-#     }
-#     if(input$xaxis_title3 != ""){
-#       chartopt <- lappend(chartopt, 'xaxis_title' = input$xaxis_title3)
-#     }
-#     if(input$yaxis_title3 != ""){
-#       chartopt <- lappend(chartopt, 'yaxis_title' = input$yaxis_title3)
-#     }
-#     
-#     p <- plotFigure5(plotData, chartoptions=chartopt)
-#     return(p)
-#   }
-# })  
-# 
-# 
-# 
-# # Generate a reactive element for plotting the Summary Comparison data.
-# # Pass to the webpage using renderPlot(print(theDataPlot))
-# theComparisonPlot2 <- reactive({ 
-#   #print("Reactive: theComparisonPlot2")
-#   print(getData5())
-#   if(is.null(getData5())){
-#     return(NULL)
-#   }
-#   if(nrow(getData5())==0){
-#     return(NULL)
-#   }    
-#   else{
-#     #print('Never got here')
-#     plotData <- getData5()[, c('country', 'ccode', 'year', 'indic', 'estimate', 'dimension', 'measure', 'inequal', 'boot.se', 'se', 'anchor')]
-#     
-#     chartopt <- list()
-#     chartopt <- lappend(chartopt, 'xaxmax' = as.integer(input$xaxis_limitsmax4))
-#     chartopt <- lappend(chartopt, 'xaxmin' = as.integer(input$xaxis_limitsmin4))
-#     chartopt <- lappend(chartopt, 'yaxmax' = as.integer(input$yaxis_limitsmax4))
-#     chartopt <- lappend(chartopt, 'yaxmin' = as.integer(input$yaxis_limitsmin4))
-#     chartopt <- lappend(chartopt, 'yaxmin' = as.integer(input$yaxis_limitsmin4))
-#     
-#     if(input$points_ccode == TRUE){
-#       chartopt <- lappend(chartopt, 'points_dot' = input$points_ccode)
-#     }
-#     
-#     if(input$main_title4 != ""){
-#       chartopt <- lappend(chartopt, 'main_title' = input$main_title4)
-#     }
-#     if(input$xaxis_title4 != ""){
-#       chartopt <- lappend(chartopt, 'xaxis_title' = input$xaxis_title4)
-#     }
-#     if(input$yaxis_title4 != ""){
-#       chartopt <- lappend(chartopt, 'yaxis_title' = input$yaxis_title4)
-#     }
-#     
-#     p <- plotFigure6(plotData, chartoptions=chartopt)
-#     return(p)
-#   }
-# })  
-# 
 # benchmarkText <- reactive({
 #   theText <- NULL
 #   input$getcomparisondata1
@@ -1427,23 +1496,7 @@ output$compplotSumYears <- renderUI({
 # 
 # 
 
-# 
-# output$theComparisonPlot1_web <- renderPlot({
-#   if(is.null(theComparisonPlot1())){
-#     return(NULL)
-#   }
-#   print(theComparisonPlot1())  # Remember that print(theDataPlot) just prints the code
-# }, res=90, height=exprToFunction(input$plot_height2), width=exprToFunction(input$plot_width2))
-# 
-# 
-# output$theComparisonPlot2_web <- renderPlot({    
-#   if(is.null(theComparisonPlot2())){
-#     return(NULL)
-#   }
-#   print(theComparisonPlot2())  # Remember that print(theDataPlot) just prints the code
-# }, res=90, height=exprToFunction(input$plot_height3), width=exprToFunction(input$plot_width3))
-# 
-# 
+
 # 
 # ## Download the plot of the managed data
 # 
@@ -1492,19 +1545,7 @@ output$compplotSumYears <- renderUI({
 # )   
 # 
 # 
-# #####  Comparison Plot 2  Download
-# # Create a download button contingent on the existence of a plot of the comparison disaggregated data
-# output$downloadCompplot2 <- renderUI({
-#   thePlot <- theComparisonPlot2()
-#   if(is.null(thePlot)){
-#     return(NULL)
-#   } else {
-#     list(br(),
-#          actionButton("downloadCompplot2", "Download Plot", class = "btn-primary"))
-#   }  
-# })
-# 
-# 
+
 # 
 # # Handler for downloading the data selected in the modal download plot
 # output$downloadCompPlot2 <- downloadHandler(
