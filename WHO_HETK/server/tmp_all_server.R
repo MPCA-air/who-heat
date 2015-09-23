@@ -671,6 +671,201 @@ theSummaryPlot <- reactive({
 
 
 
+
+
+##############################################################
+# Comparison Benchmark
+#############################################################
+
+
+
+###  Comparison Benchmark Countries
+
+output$compplotBenchHealthIndicator <- renderUI({    
+  # Multiple select for the health indicator 
+  if(is.null(input$healthIndicator)){ 
+    selectionOptions <- c()
+  }
+  else{
+    selectionOptions <- sort(input$healthIndicator)
+    selectionOptions <- healthIndicatorList(option='full')[which(healthIndicatorList(option='core') %in% selectionOptions)]
+  }
+  selectInput("compplotBenchHealthIndicator", 
+              h5("Select health indicators"), 
+              choice=selectionOptions, 
+              selected=selectionOptions,
+              multiple=T)
+})
+
+
+output$compplotBenchEquityDimension <- renderUI({    
+  # Multiple select for the equity indicator 
+  if(is.null(input$equityDimension)){ 
+    selectionOptions <- c()
+  }
+  else{
+    selectionOptions <- input$equityDimension
+  }
+  selectInput("compplotBenchEquityDimension", 
+              h5("Select inequality dimensions"), 
+              choices=selectionOptions, 
+              multiple=F)
+})
+
+
+output$compplotBenchYears <- renderUI({    
+  # Multiple select for the years of interest
+  yearsOfInterest <- sort(unique(datasetInput()$year))
+  if(is.null(yearsOfInterest)){ 
+    selectionOptions <- c()
+  }
+  else{
+    selectionOptions <- yearsOfInterest
+  }
+  selectInput("compplotBenchYears", 
+              h5("Select years"), 
+              choices=selectionOptions, 
+              selected=max(selectionOptions), 
+              multiple=F)
+})
+
+
+
+##############################################################
+# Comparison disaggregated plots
+#############################################################
+
+
+
+###  Comparison Disaggregated Plots
+
+output$compplotDisagHealthIndicator <- renderUI({    
+  # Multiple select for the health indicator 
+  if(is.null(input$healthIndicator)){ 
+    selectionOptions <- c()
+  }
+  else{
+    selectionOptions <- sort(input$healthIndicator)
+    selectionOptions <- healthIndicatorList(option='full')[which(healthIndicatorList(option='core') %in% selectionOptions)]
+  }
+  selectInput("compplotDisagHealthIndicator", 
+              h5("Select health indicators"), 
+              choice=selectionOptions, 
+              selected=selectionOptions,
+              multiple=T)
+})
+
+
+output$compplotDisagEquityDimension <- renderUI({    
+  # Multiple select for the equity indicator 
+  if(is.null(input$equityDimension)){ 
+    selectionOptions <- c()
+  }
+  else{
+    selectionOptions <- input$equityDimension
+  }
+  selectInput("compplotDisagEquityDimension", 
+              h5("Select inequality dimensions"), 
+              choices=selectionOptions, 
+              multiple=F)
+})
+
+
+output$compplotDisagYears <- renderUI({    
+  # Multiple select for the years of interest
+  yearsOfInterest <- sort(unique(datasetInput()$year))
+  if(is.null(yearsOfInterest)){ 
+    selectionOptions <- c()
+  }
+  else{
+    selectionOptions <- yearsOfInterest
+  }
+  selectInput("compplotDisagYears", 
+              h5("Select years"), 
+              choices=selectionOptions, 
+              selected=max(selectionOptions), 
+              multiple=F)
+})
+
+##############################################################
+# Comparison summary plots
+#############################################################
+
+
+
+output$compplotSumMeasure <- renderUI({
+  if(length(input$compplotSumEquityDimension)>0){
+    if(input$compplotSumEquityDimension %in% rankable){
+      selectionOptions <- allSummaryMeasures
+    }
+    if(!input$compplotSumEquityDimension %in% rankable){
+      selectionOptions <- unrankSummaryMeasures
+    }
+  }
+  else{
+    selectionOptions <- NULL
+  }
+  
+  selectInput("compplotSumMeasure", 
+              h5("Select summary measure"), 
+              choices=selectionOptions,
+              selected=c("Range difference" = "rd"), 
+              multiple=F)
+})
+
+
+
+output$compplotSumHealthIndicator <- renderUI({    
+  # Multiple select for the health indicator 
+  if(is.null(input$healthIndicator)){ 
+    selectionOptions <- c()
+  }
+  else{
+    selectionOptions <- sort(input$healthIndicator)
+    selectionOptions <- healthIndicatorList(option='full')[which(healthIndicatorList(option='core') %in% selectionOptions)]
+  }
+  selectInput("compplotSumHealthIndicator", 
+              h5("Select health indicators"), 
+              choices=selectionOptions, 
+              multiple=F)
+})
+
+
+output$compplotSumEquityDimension <- renderUI({    
+  # Multiple select for the equity indicator 
+  if(is.null(input$equityDimension)){ 
+    selectionOptions <- c()
+  }
+  else{
+    selectionOptions <- input$equityDimension
+  }
+  selectInput("compplotSumEquityDimension", 
+              h5("Select inequality dimensions"), 
+              choices=selectionOptions, 
+              multiple=F)
+})
+
+
+output$compplotSumYears <- renderUI({    
+  # Multiple select for the years of interest
+  yearsOfInterest <- sort(unique(datasetInput()$year))
+  if(is.null(yearsOfInterest)){ 
+    selectionOptions <- c()
+  }
+  else{
+    selectionOptions <- yearsOfInterest
+  }
+  selectInput("compplotSumYears", 
+              h5("Select years"), 
+              choices=selectionOptions, 
+              selected=max(selectionOptions), 
+              multiple=F)
+})
+
+
+
+
+
 # #####  Comparison Plot 1  Download
 # # Create a download button contingent on the existence of a plot of the comparison disaggregated data
 # output$downloadCompplot1 <- renderUI({
@@ -819,61 +1014,7 @@ theSummaryPlot <- reactive({
 # 
 # 
 # 
-# 
-# 
-# ### Creating reactive input for the Comparison Plots
-# 
-# 
-# ###  Comparison Benchmark Countries
-# 
-# output$compplotBenchHealthIndicator <- renderUI({    
-#   # Multiple select for the health indicator 
-#   if(is.null(input$healthIndicator)){ 
-#     selectionOptions <- c()
-#   }
-#   else{
-#     selectionOptions <- sort(input$healthIndicator)
-#     selectionOptions <- healthIndicatorList(option='full')[which(healthIndicatorList(option='core') %in% selectionOptions)]
-#   }
-#   selectInput("compplotBenchHealthIndicator", 
-#               h5("Select health indicators"), 
-#               choice=selectionOptions, 
-#               selected=selectionOptions,
-#               multiple=T)
-# })
-# 
-# 
-# output$compplotBenchEquityDimension <- renderUI({    
-#   # Multiple select for the equity indicator 
-#   if(is.null(input$equityDimension)){ 
-#     selectionOptions <- c()
-#   }
-#   else{
-#     selectionOptions <- input$equityDimension
-#   }
-#   selectInput("compplotBenchEquityDimension", 
-#               h5("Select inequality dimensions"), 
-#               choices=selectionOptions, 
-#               multiple=F)
-# })
-# 
-# 
-# output$compplotBenchYears <- renderUI({    
-#   # Multiple select for the years of interest
-#   yearsOfInterest <- sort(unique(datasetInput()$year))
-#   if(is.null(yearsOfInterest)){ 
-#     selectionOptions <- c()
-#   }
-#   else{
-#     selectionOptions <- yearsOfInterest
-#   }
-#   selectInput("compplotBenchYears", 
-#               h5("Select years"), 
-#               choices=selectionOptions, 
-#               selected=max(selectionOptions), 
-#               multiple=F)
-# })
-# 
+#  
 # output$benchmarkCountries <- renderUI({
 #   countries <- getFilteredCountries(input$benchmarkWBgroup, input$benchmarkWHOregion, input$dataSource)  
 #   selectInput("benchmarkCountries", 
@@ -884,57 +1025,7 @@ theSummaryPlot <- reactive({
 # })
 # 
 # 
-# 
-# ###  Comparison Disaggregated Plots
-# 
-# output$compplotDisagHealthIndicator <- renderUI({    
-#   # Multiple select for the health indicator 
-#   if(is.null(input$healthIndicator)){ 
-#     selectionOptions <- c()
-#   }
-#   else{
-#     selectionOptions <- sort(input$healthIndicator)
-#     selectionOptions <- healthIndicatorList(option='full')[which(healthIndicatorList(option='core') %in% selectionOptions)]
-#   }
-#   selectInput("compplotDisagHealthIndicator", 
-#               h5("Select health indicators"), 
-#               choice=selectionOptions, 
-#               selected=selectionOptions,
-#               multiple=T)
-# })
-# 
-# 
-# output$compplotDisagEquityDimension <- renderUI({    
-#   # Multiple select for the equity indicator 
-#   if(is.null(input$equityDimension)){ 
-#     selectionOptions <- c()
-#   }
-#   else{
-#     selectionOptions <- input$equityDimension
-#   }
-#   selectInput("compplotDisagEquityDimension", 
-#               h5("Select inequality dimensions"), 
-#               choices=selectionOptions, 
-#               multiple=F)
-# })
-# 
-# 
-# output$compplotDisagYears <- renderUI({    
-#   # Multiple select for the years of interest
-#   yearsOfInterest <- sort(unique(datasetInput()$year))
-#   if(is.null(yearsOfInterest)){ 
-#     selectionOptions <- c()
-#   }
-#   else{
-#     selectionOptions <- yearsOfInterest
-#   }
-#   selectInput("compplotDisagYears", 
-#               h5("Select years"), 
-#               choices=selectionOptions, 
-#               selected=max(selectionOptions), 
-#               multiple=F)
-# })
-# 
+
 # # Create a download button contingent on the existence of a comparison plot of the disaggregated data
 # output$downloadCompplot1 <- renderUI({
 #   thePlot <- theDataPlot()
@@ -947,80 +1038,7 @@ theSummaryPlot <- reactive({
 # })
 # 
 # 
-# ### Comparison Summary Plots
-# 
-# #  Select the summary measures from the legitimate choices available, given the 
-# 
-# 
-# output$compplotSumMeasure <- renderUI({
-#   if(length(input$compplotSumEquityDimension)>0){
-#     if(input$compplotSumEquityDimension %in% rankable){
-#       selectionOptions <- allSummaryMeasures
-#     }
-#     if(!input$compplotSumEquityDimension %in% rankable){
-#       selectionOptions <- unrankSummaryMeasures
-#     }
-#   }
-#   else{
-#     selectionOptions <- NULL
-#   }
-#   
-#   selectInput("compplotSumMeasure", 
-#               h5("Select summary measure"), 
-#               choices=selectionOptions,
-#               selected=c("Range difference" = "rd"), 
-#               multiple=F)
-# })
-# 
-# 
-# 
-# output$compplotSumHealthIndicator <- renderUI({    
-#   # Multiple select for the health indicator 
-#   if(is.null(input$healthIndicator)){ 
-#     selectionOptions <- c()
-#   }
-#   else{
-#     selectionOptions <- sort(input$healthIndicator)
-#     selectionOptions <- healthIndicatorList(option='full')[which(healthIndicatorList(option='core') %in% selectionOptions)]
-#   }
-#   selectInput("compplotSumHealthIndicator", 
-#               h5("Select health indicators"), 
-#               choices=selectionOptions, 
-#               multiple=F)
-# })
-# 
-# 
-# output$compplotSumEquityDimension <- renderUI({    
-#   # Multiple select for the equity indicator 
-#   if(is.null(input$equityDimension)){ 
-#     selectionOptions <- c()
-#   }
-#   else{
-#     selectionOptions <- input$equityDimension
-#   }
-#   selectInput("compplotSumEquityDimension", 
-#               h5("Select inequality dimensions"), 
-#               choices=selectionOptions, 
-#               multiple=F)
-# })
-# 
-# 
-# output$compplotSumYears <- renderUI({    
-#   # Multiple select for the years of interest
-#   yearsOfInterest <- sort(unique(datasetInput()$year))
-#   if(is.null(yearsOfInterest)){ 
-#     selectionOptions <- c()
-#   }
-#   else{
-#     selectionOptions <- yearsOfInterest
-#   }
-#   selectInput("compplotSumYears", 
-#               h5("Select years"), 
-#               choices=selectionOptions, 
-#               selected=max(selectionOptions), 
-#               multiple=F)
-# })
-# 
+
 # output$benchmarkCountriesSum <- renderUI({
 #   countries <- getFilteredCountries(input$benchmarkWBgroup, input$benchmarkWHOregion, input$dataSource)   
 #   if(is.null(countries)){ countries <- c()}

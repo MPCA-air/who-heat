@@ -7,7 +7,7 @@ shinyUI(navbarPage("WHO HEAT", id= "who_heat", inverse=TRUE, collapsible = TRUE,
                    
                    tabPanel("Select Database", uiOutput("data_management_ui")),
                    tabPanel("Explore Inequality", uiOutput('explore_inequality_ui')),
-                   tabPanel("Compare Inequality"),
+                   tabPanel("Compare Inequality", uiOutput('compare_inequality_ui')),
                    navbarMenu("Information", tabPanel("Glossary"), 
                               tabPanel("About"), 
                               tabPanel("Information"))

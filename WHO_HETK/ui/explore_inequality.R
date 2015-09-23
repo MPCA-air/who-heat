@@ -146,9 +146,9 @@ output$explore_inequality_ui <- renderUI({
                            uiOutput('downloadSummplot'),
                            plotOutput('theSumPlot_web')
                   )
-      )
+      )#end tabsetPanel
               
-    )
+    )#end mainPanel
   )
   
   

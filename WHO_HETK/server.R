@@ -32,6 +32,7 @@ shinyServer(function(input, output, session){
 
   source("ui/data_management.R", local=TRUE)
   source("ui/explore_inequality.R", local=TRUE)
+  source("ui/compare_inequality.R", local=TRUE)
   source("server/tmp_all_server.R", local=TRUE)
   #source("server/tmp_all_server.R", local = TRUE)
   serverfiles <- list.files("server/", pattern="\\.(r|R)$", full.names = TRUE)
