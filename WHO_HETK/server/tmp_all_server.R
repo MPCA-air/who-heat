@@ -2,7 +2,8 @@
 # required in explore inequality: table
 #############################################################
 
-
+print(a)
+#print(a)
 
 ### Creating reactive input for the Data Table and Data Plot tabs
 ###
@@ -102,6 +103,27 @@ output$downloadDatatable <- renderUI({
           actionButton("downloadDatatable", "Download", class = "btn-primary"))
    }  
 })
+
+
+
+
+
+
+#Handler for downloading the data selected in the modal download table
+output$downloadAnyData <- downloadHandler(
+  filename = function() {
+    paste(input$equityCountry, Sys.Date(), '.csv', sep='')
+  },
+  content = function(file) {
+    sep <- switch(input$filetype1, "csv" = ",", "tsv" = "\t")
+    
+    # Write to a file specified by the 'file' argument
+    write.table(datasetInput(), file, sep = sep,
+                row.names = FALSE)
+  }
+)
+
+
 
 ##############################################################
 # required in explore inequality: disaggregated table and plot
@@ -269,6 +291,19 @@ theDataPlot <- reactive({
 })  
 
 
+# Handler for downloading the data selected in the modal download table
+output$downloadAnyPlot <- downloadHandler(
+  filename = function() { 
+    paste(input$equityCountry, '_disag_', Sys.Date(), '.pdf', sep='')
+  },
+  content = function(file) {
+    pdf(file, width=(as.numeric(input$plot1_width)/2.54), height=(as.numeric(input$plot1_height)/2.45), paper=input$papersize1)
+    print(theDataPlot()) 
+    dev.off()
+  }
+)   
+
+
 ##############################################################
 # required in explore inequality: summary table
 #############################################################
@@ -303,7 +338,7 @@ output$sumtableHealthIndicator <- renderUI({
   }
   else{
     selectionOptions <- sort(input$healthIndicator)
-    print(input$healthIndicator)
+    #print(input$healthIndicator)
     selectionOptions <- healthIndicatorList(option='full')[which(healthIndicatorList(option='core') %in% selectionOptions)]
   }
   selectInput("sumtableHealthIndicator", 
@@ -517,6 +552,23 @@ output$dataTableInequal <- renderDataTable({
 )
 
 
+
+
+# Handler for downloading the data selected in the modal download table
+output$downloadAnySumm <- downloadHandler(
+  filename = function() {
+    paste(input$equityCountry, Sys.Date(), '.csv', sep='')
+  },
+  content = function(file) {
+    sep <- switch(input$filetype2, "csv" = ",", "tsv" = "\t")
+    
+    # Write to a file specified by the 'file' argument
+    write.table(datasetInequal(), file, sep = sep,
+                row.names = FALSE)
+  }
+)
+
+
 ##############################################################
 # required in explore inequality: summary plot
 #############################################################
@@ -668,6 +720,27 @@ theSummaryPlot <- reactive({
     }
   
 })  
+
+
+
+
+
+# Handler for downloading the data selected in the modal download table
+output$downloadSummPlot <- downloadHandler(
+  filename = function() { 
+    paste(input$equityCountry, '_summ_', Sys.Date(), '.pdf', sep='')
+  },
+  content = function(file) {
+    pdf(file, width=(as.numeric(input$plot2_width)/2.54), height=(as.numeric(input$plot2_height)/2.45), paper=input$papersize2)
+    print(theSummaryPlot()) 
+    dev.off()
+  }
+)   
+
+
+
+
+
 
 
 
@@ -901,7 +974,7 @@ getData4 <- reactive({
   # This *reactive* fetches benchmark country data for the Disaggregated TABLE
   input$getcomparisondata1
   #    input$getcomparisondata2
-  print(input$getcomparisondata1)
+  #print(input$getcomparisondata1)
   isolate({
     
     anchordata <- datasetInput()
@@ -997,7 +1070,7 @@ theComparisonPlot1 <- reactive({
       chartopt <- lappend(chartopt, 'yaxis_title' = input$yaxis_title3)
     }
     
-    print("near p")
+
     p <- plotFigure5(plotData, chartoptions=chartopt)
     return(p)
   }
@@ -1016,7 +1089,7 @@ getData4a <- reactive({
   if(length(input$compplotDisagYears)==0 | length(input$compplotDisagHealthIndicator)==0 | length(input$compplotDisagEquityDimension)==0){
     return(NULL)
   }
-  print(paste(input$compplotBenchYears, input$compplotDisagYears, input$compplotBenchHealthIndicator, input$compplotDisagHealthIndicator, input$compplotBenchEquityDimension, input$compplotDisagEquityDimension, sep=' >> '))
+  #print(paste(input$compplotBenchYears, input$compplotDisagYears, input$compplotBenchHealthIndicator, input$compplotDisagHealthIndicator, input$compplotBenchEquityDimension, input$compplotDisagEquityDimension, sep=' >> '))
   if(input$compplotBenchYears == input$compplotDisagYears & input$compplotBenchHealthIndicator == input$compplotDisagHealthIndicator & input$compplotBenchEquityDimension == input$compplotDisagEquityDimension){
     return( getData4() )
   } else {
@@ -1076,16 +1149,18 @@ output$downloadCompplot2 <- renderUI({
 # Pass to the webpage using renderPlot(print(theDataPlot))
 theComparisonPlot2 <- reactive({ 
   #print("Reactive: theComparisonPlot2")
-  print(getData5())
-  if(is.null(getData5())){
+  #print(getData5())
+  plotData<-getData5()
+  
+  if(is.null(plotData)){
     return(NULL)
   }
-  if(nrow(getData5())==0){
+  if(nrow(plotData)==0){
     return(NULL)
   }    
   else{
     #print('Never got here')
-    plotData <- getData5()[, c('country', 'ccode', 'year', 'indic', 'estimate', 'dimension', 'measure', 'inequal', 'boot.se', 'se', 'anchor')]
+    plotData <- plotData[, c('country', 'ccode', 'year', 'indic', 'estimate', 'dimension', 'measure', 'inequal', 'boot.se', 'se', 'anchor')]
     
     chartopt <- list()
     chartopt <- lappend(chartopt, 'xaxmax' = as.integer(input$xaxis_limitsmax4))
@@ -1210,36 +1285,10 @@ output$theComparisonPlot2_web <- renderPlot({
 
 
 # 
-# 
-# # Handler for downloading the data selected in the modal download table
-# output$downloadAnyData <- downloadHandler(
-#   filename = function() {
-#     paste(input$equityCountry, Sys.Date(), '.csv', sep='')
-#   },
-#   content = function(file) {
-#     sep <- switch(input$filetype1, "csv" = ",", "tsv" = "\t")
-#     
-#     # Write to a file specified by the 'file' argument
-#     write.table(datasetInput(), file, sep = sep,
-#                 row.names = FALSE)
-#   }
-# )
-# 
-# 
+ 
 
 # 
-# # Handler for downloading the data selected in the modal download table
-# output$downloadAnyPlot <- downloadHandler(
-#   filename = function() { 
-#     paste(input$equityCountry, '_disag_', Sys.Date(), '.pdf', sep='')
-#   },
-#   content = function(file) {
-#     pdf(file, width=(as.numeric(input$plot1_width)/2.54), height=(as.numeric(input$plot1_height)/2.45), paper=input$papersize1)
-#     print(theDataPlot()) 
-#     dev.off()
-#   }
-# )   
-# 
+
 # 
 # #  Select the summary measures from the legitimate choices available, given the 
 # output$sumMeasures <- renderUI({
@@ -1264,41 +1313,10 @@ output$theComparisonPlot2_web <- renderPlot({
 
 
  
-# # Handler for downloading the data selected in the modal download table
-# output$downloadAnySumm <- downloadHandler(
-#   filename = function() {
-#     paste(input$equityCountry, Sys.Date(), '.csv', sep='')
-#   },
-#   content = function(file) {
-#     sep <- switch(input$filetype2, "csv" = ",", "tsv" = "\t")
-#     
-#     # Write to a file specified by the 'file' argument
-#     write.table(datasetInequal(), file, sep = sep,
-#                 row.names = FALSE)
-#   }
-# )
-# 
-# 
-# 
-# 
-# 
+
 
 # 
-# # Handler for downloading the data selected in the modal download table
-# output$downloadSummPlot <- downloadHandler(
-#   filename = function() { 
-#     paste(input$equityCountry, '_summ_', Sys.Date(), '.pdf', sep='')
-#   },
-#   content = function(file) {
-#     pdf(file, width=(as.numeric(input$plot2_width)/2.54), height=(as.numeric(input$plot2_height)/2.45), paper=input$papersize2)
-#     print(theSummaryPlot()) 
-#     dev.off()
-#   }
-# )   
-# 
-# 
-# 
-#  
+ 
 
 
 # # Create a download button contingent on the existence of a comparison plot of the disaggregated data
