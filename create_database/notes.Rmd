@@ -1,0 +1,25 @@
+PLOTSUMMARY
+
+theSumPlot_web (using renderPlot)
+  theSummaryPlot()
+    thesummaryPlot <- reactive
+      datasetInequal() this produces the table below
+          datasetInequal<-reactive()
+
+
+TABLESUMMARY
+
+dataTableInequal (using renderDataTable) creates theData and then has a ton of extra code. theData is basically the same as ineqDF from datasetInequal but with some multipliers.
+  datasetInequal()
+    datasetInequal<-reactive()
+
+
+datasetInequal: creates ineqDF. This is run for sumplot or sumtable. Only difference is 
+that se is set to NA for a plot if it's 0.
+
+      country year indic       dimension measure  inequal  boot.se       se
+1 Afghanistan 2010  anc1 Economic status      rd 52.15957 2.891294 2.960599
+  combo.se boot.lowerci boot.upperci se.lowerci se.upperci combo.lowerci
+1 2.960599     46.49264     57.82651    46.3568   57.96235       46.3568
+  combo.upperci
+1      57.96235

@@ -17,8 +17,8 @@ library(RColorBrewer)
 plotFigure1 <- function(plotData, chartoptions=NULL){
   # Plot 1: Barchart for a single country (Disaggregation of data)
   
-  print("plotFigure1() in plotter.R")
-  print(chartoptions)
+  #print("plotFigure1() in plotter.R")
+  #print(chartoptions)
   
   if(!('geo_only' %in% names(chartoptions))){
     legendRow <- 1
@@ -284,7 +284,7 @@ plotFigure2 <- function(plotData, chartoptions=NULL){
 plotFigure3 <- function(plotData, chartoptions=NULL){
   # Plot 3: Barchart for a single country (Summary data)
   
-  print("plotFigure3() in plotter.R")
+  #print("plotFigure3() in plotter.R")
   
   # Make sure that the data frame includes all the possible bars by adding missing data across the factor levels
   plotData <- plotData[,c('year', 'indic', 'inequal')]
@@ -343,7 +343,7 @@ plotFigure3 <- function(plotData, chartoptions=NULL){
 ####PLOT 4
 plotFigure4 <- function(plotData, chartoptions=NULL){
   #  Plot 4: Line chart for a single country (Disaggregation of data)
-  print("plotFigure4() in plotter.R")
+  #print("plotFigure4() in plotter.R")
   
   p <- ggplot(plotData, aes(x=as.integer(year), y=inequal, group=indic, color=indic))
   p <- p + geom_line() + geom_point()
@@ -359,7 +359,7 @@ plotFigure4 <- function(plotData, chartoptions=NULL){
   
   p <- p + scale_x_continuous(breaks=sort(unique(plotData$year)))
   
-  print(plotData)
+  #print(plotData)
   
   if('xaxis_title' %in% names(chartoptions)){
     p <- p +   xlab(chartoptions$xaxis_title)

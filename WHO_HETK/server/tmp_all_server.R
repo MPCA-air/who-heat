@@ -9,7 +9,7 @@
 # Countries can be filtered by input$WHOregion and input$wbGroup, but currently 'No Filter' is the default
 output$equityCountry <- renderUI({
   #    countries <- getFilteredCountries(input$WBgroup, input$WHOregion, input$dataSource) 
-  print("In equityCountry")
+  #print("In equityCountry")
   countries <- getFilteredCountries(NULL, NULL, input$dataSource)
   if(is.null(countries)){ countries <- c()}
   selectInput("equityCountry", 
@@ -22,7 +22,7 @@ output$equityCountry <- renderUI({
 
 # Year is filtered by the survey availability by country and the source (MICS/DHS of the survey)
 output$years <- renderUI({
-  print("In years")
+  #print("In years")
   #    countries <- getFilteredCountries(input$WBgroup, input$WHOregion, input$dataSource)    
   selectYears <- getFilteredYear(country=input$equityCountry, datasource=input$data_source, database='HETK')
   if(is.null(selectYears)){ selectYears <- c()}
@@ -37,7 +37,7 @@ output$years <- renderUI({
 
 #  Set up the selectInput for the selection of health indicator
 output$healthIndicator <- renderUI({
-  print("In healthIndicator")
+  #print("In healthIndicator")
   
   selectionOptions <- healthIndicatorList(option = 'full')      
   if(is.null(selectionOptions)){ selectionOptions <- c()}
@@ -50,7 +50,7 @@ output$healthIndicator <- renderUI({
 
 #  Set up the selectInput for the selection of the equity dimensions
 output$equityDimension <- renderUI({
-  print("In equityDimension")
+  #print("In equityDimension")
   
   selectInput(inputId = "equityDimension",
               h5("Select inequality dimensions"),
@@ -62,7 +62,7 @@ output$equityDimension <- renderUI({
 
 # Set up the selectInput for the display of data in the Disaggregated Data Table view
 output$dataTableItems <- renderUI({
-  print("In dataTableItems")
+  #print("In dataTableItems")
   
   dataTmp <- datasetInput()
   if(nrow(dataTmp)>0  & input$assessment_panel == "datatable"){ 
@@ -92,7 +92,7 @@ output$dataTableItems <- renderUI({
 
 # Create a download button contingent on data in the table
 output$downloadDatatable <- renderUI({
-  print("In downloadDatatable")
+  #print("In downloadDatatable")
   
   theData <- datasetInput()
   if(nrow(theData)==0){
@@ -111,7 +111,7 @@ output$downloadDatatable <- renderUI({
 
 # Return the requested dataset based on the UI selection (dataSource)
 datasetInput <- reactive({
-  print("In datasetInput")
+  #print("In datasetInput")
   
   dat<-switch(input$dataSource,
          #"GHO" = getData1a(),
@@ -125,7 +125,7 @@ datasetInput <- reactive({
 
 # A *Reactive* to read data in from the Health Equity Toolkit DB
 getData2 <- reactive({
-  print("In getData2")
+  #print("In getData2")
   
   # This *reactive* gets the data from HETKdb
  
@@ -145,7 +145,7 @@ getData2 <- reactive({
 
 # Generate a view of the Managed Data
 output$dataTable <- renderDataTable({
-  print("In dataTable")
+  #print("In dataTable")
 
   theData <- datasetInput()
   if(is.null(theData)){
@@ -174,11 +174,11 @@ output$dataTable <- renderDataTable({
   names(theData)[names(theData)=="flag" ] <- "Flag"
   # Reduce the significant figures to 2
   names_df <- names(theData)
-  print(names_df)
+  #print(names_df)
   the_numeric_names <- which(names_df %in% c("Estimate", "Lower 95%CI", "Upper 95%CI", "Population share %"))
-  print(the_numeric_names)
+  #print(the_numeric_names)
   for(i in names_df[the_numeric_names]){
-    print(i)
+    #print(i)
     theData[, i] <- 
       round(theData[,i], 2)
   }
@@ -195,7 +195,7 @@ output$dataTable <- renderDataTable({
 
 # Create a download button contingent on the existence of a plot of the disaggregated data
 output$downloadDataplot <- renderUI({
-  print("In downloadDataplot")
+  #print("In downloadDataplot")
   
   thePlot <- theDataPlot()
   if(is.null(thePlot)){
@@ -208,7 +208,7 @@ output$downloadDataplot <- renderUI({
 
 
 output$theDataPlot_web <- renderPlot({
-  print("In theDataPlot_web")
+  #print("In theDataPlot_web")
   
   print(theDataPlot())  # Remember that print(theDataPlot) just prints the code
 }, res=90, height=exprToFunction(input$plot_height1), width=exprToFunction(input$plot_width1))
@@ -217,9 +217,9 @@ output$theDataPlot_web <- renderPlot({
 # Generate a reactive element for plotting the Managed Data.
 # Pass to the webpage using renderPlot(print(theDataPlot))
 theDataPlot <- reactive({ 
-  print("In theDataPlot")
+  #print("In theDataPlot")
   
-  print("Reactive: theDataPlot")
+  #print("Reactive: theDataPlot")
   plotData <- datasetInput()[, c('country', 'year', 'indic', 'subgroup', 'dimension', 'estimate', 'se')]
 
   if(!is.null(plotData) & nrow(plotData)>0){
@@ -288,7 +288,7 @@ output$sumtableSumMeasure <- renderUI({
   else{
     selectionOptions <- NULL
   }
-  print(selectionOptions)
+  #print(selectionOptions)
   selectInput("sumtableSumMeasure", 
               h5("Select summary measure"), 
               choices=selectionOptions, 
@@ -369,36 +369,37 @@ output$downloadSummtable <- renderUI({
 
 datasetInequal <- reactive({
   
-  print("In datasetInequal")
+  #print("In datasetInequal")
   
   if(input$dataSource!='HETK'){
-    tmpDF <- datasetInput()      
+    tmpDF <- datasetInput() 
     relevant.rows <- which(tmpDF$year %in% input$sumtableYears & tmpDF$indic %in% input$sumtableHealthIndicator & tmpDF$dimension %in% input$sumtableEquityDimension)
     
     tmpDF <- tmpDF[ relevant.rows, ]
     
-    print(tmpDF)
+    #print(tmpDF)
     if(is.null(relevant.rows)){
       return(NULL)
     }
     if(!is.null(relevant.rows)){
       ineqDF <- calcInequal(tmpDF, inequal.types='all')
-      print(ineqDF)
+      #print(ineqDF)
       return(ineqDF)
     }
   }
   if(input$dataSource=='HETK' & input$assessment_panel=='sumtable'){
-    print('Getting equity data table a')
+    #print('Getting equity data table a')
     ineqDF <- getInequal(indicator=input$sumtableHealthIndicator, 
                          stratifier=input$sumtableEquityDimension, 
                          countries=input$equityCountry, 
                          years=input$sumtableYears,  
                          inequal_types=input$sumtableSumMeasure)
-    print('Getting equity data table b')
+    #print('Getting equity data table b')
+    
     return(ineqDF)
   }    
   if(input$dataSource=='HETK' & input$assessment_panel=='sumplot'){
-    print('Getting equity data plot')
+    #print('Getting equity data plot')
     ineqDF <- getInequal(indicator=input$sumtableHealthIndicator, 
                          stratifier=input$sumtableEquityDimension, 
                          countries=input$equityCountry, 
@@ -406,6 +407,7 @@ datasetInequal <- reactive({
                          inequal_types=input$sumplotSumMeasures)
     ineqDF$boot.se[ ineqDF$boot.se == 0] <- NA
     ineqDF$se[ ineqDF$se == 0] <- NA
+    
     return(ineqDF)
   }     
 })
@@ -414,15 +416,18 @@ datasetInequal <- reactive({
 
 # Generate a view of the HETKB 
 output$dataTableInequal <- renderDataTable({
-  print("In dataTableInequal")
+  #print("In dataTableInequal")
 
   theData <- datasetInequal()
-  print(head(theData))
-  if(!is.null(theData) && nrow(theData>0)){
+
+  if(!is.null(theData) && nrow(theData)>0){
     #theData <- datasetInequal()
     
+    # this is somewhat confusing because theData may not have most of these
+    # this could be much cleaner
+    
     if(input$summultiplier1==T){
-      print("In dataTableInequal a")
+      #print("In dataTableInequal a")
       theData$inequal[theData$measure=='ti'] <- theData$inequal[theData$measure=='ti'] *1000
       theData$inequal[theData$measure=='mld'] <- theData$inequal[theData$measure=='mld'] *1000
       theData$se[theData$measure=='ti'] <- theData$se[theData$measure=='ti'] *1000
@@ -447,7 +452,7 @@ output$dataTableInequal <- renderDataTable({
     }
     
     if(input$summultiplier2==T){
-      print("In dataTableInequal b")
+      #print("In dataTableInequal b")
       theData$inequal[theData$measure=='rci'] <- theData$inequal[theData$measure=='rci'] *100
       theData$se[theData$measure=='rci'] <- theData$se[theData$measure=='rci'] *100
       theData$se.lowerci[theData$measure=='rci'] <- theData$se.lowerci[theData$measure=='rci'] *100
@@ -460,7 +465,7 @@ output$dataTableInequal <- renderDataTable({
       theData$combo.upperci[theData$measure=='rci'] <- theData$combo.upperci[theData$measure=='rci'] *100
     }
     
-    print("In dataTableInequal c")
+    #print("In dataTableInequal c")
     var_names <- names(theData)
     # Round the data to selected significant figure
     
@@ -499,14 +504,14 @@ output$dataTableInequal <- renderDataTable({
     names(theData)[names(theData)=="inequal" ] <- "Estimate"
     names(theData)[names(theData)=="measure" ] <- "Summary measure"
     
-    print(theData)
+    #print(theData)
   }
-  if(is.null(theData)){
+  if(is.null(theData) || nrow(theData)==0){
     return(NULL)
   }
-  if(nrow(theData)==0){
-    return(NULL)
-  }
+#   if(nrow(theData)==0){
+#     return(NULL)
+#   }
   theData
 }, options = list(dom = "ilftpr", pageLength = 10)  # see https://datatables.net/ for dataTable options
 )
@@ -612,8 +617,8 @@ output$theSumPlot_web <- renderPlot({
 # Pass to the webpage using renderPlot(print(theDataPlot))
 theSummaryPlot <- reactive({ 
   plotData <- datasetInequal()
-  print(class(plotData))
-  print("Reactive: theSummaryPlot")
+  #print(class(plotData))
+  #print("Reactive: theSummaryPlot")
   if(is.null(plotData)) return(NULL)
 
     #plotData <- datasetInequal()
@@ -1128,13 +1133,13 @@ theSummaryPlot <- reactive({
 #     
 #     anchordata <- anchordata[ relevant.rows , ]
 #     
-#     print('Pre Benchmark')    
+#     #print('Pre Benchmark')    
 #     benchmarkdata <- getComparisonCountries(indicator = input$compplotBenchHealthIndicator, 
 #                                             stratifier = input$compplotBenchEquityDimension, 
 #                                             countries = input$benchmarkCountries, 
 #                                             years =  unique(anchordata$year), 
 #                                             elasticity = input$benchmarkYears, matchyears=F)
-#     print('Post Benchmark')    
+#     #print('Post Benchmark')    
 #     
 #     thedata <- rbind(anchordata, benchmarkdata)  # Merge the relevant initial data with benchmarkdata
 #     print(thedata)
@@ -1155,7 +1160,7 @@ theSummaryPlot <- reactive({
 # # A *Reactive* to fetch benchmark country FOR the Disaggregated Comparison Plot
 # getData4a <- reactive({
 #   # This *reactive* fetches benchmark country data for the PLOT
-#   print("Reactive: getData4a")
+#   #print("Reactive: getData4a")
 #   if(input$mainPanel != "compare_inequality" & input$comparison_panel != 'inequaldisag'){
 #     return(NULL)
 #   }
@@ -1312,7 +1317,7 @@ theSummaryPlot <- reactive({
 # # Generate a reactive element for plotting the Disaggregated Comparison data.
 # # Pass to the webpage using renderPlot(print(theDataPlot))
 # theComparisonPlot1 <- reactive({ 
-#   print("Reactive: theComparisonPlot1")
+#   #print("Reactive: theComparisonPlot1")
 #   if(is.null(getData4a())){
 #     return(NULL)
 #   }
@@ -1351,7 +1356,7 @@ theSummaryPlot <- reactive({
 # # Generate a reactive element for plotting the Summary Comparison data.
 # # Pass to the webpage using renderPlot(print(theDataPlot))
 # theComparisonPlot2 <- reactive({ 
-#   print("Reactive: theComparisonPlot2")
+#   #print("Reactive: theComparisonPlot2")
 #   print(getData5())
 #   if(is.null(getData5())){
 #     return(NULL)
@@ -1360,7 +1365,7 @@ theSummaryPlot <- reactive({
 #     return(NULL)
 #   }    
 #   else{
-#     print('Never got here')
+#     #print('Never got here')
 #     plotData <- getData5()[, c('country', 'ccode', 'year', 'indic', 'estimate', 'dimension', 'measure', 'inequal', 'boot.se', 'se', 'anchor')]
 #     
 #     chartopt <- list()

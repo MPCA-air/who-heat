@@ -235,8 +235,8 @@ calcInequal <- function(data_frame,  inequal.types='all'){
                                   se=tmpDF$se[relevant.rows], bs=T)
               }
               
-              print(paste('country=',i,' year=', j, ' indic=', k, ' dimension=', l, ' measure=', m, ' inequal=', ineq.result[[1]],
-                          ' boot.se=', ineq.result[[2]], ' se=', ineq.result[[3]], tmp_ccode))
+              #print(paste('country=',i,' year=', j, ' indic=', k, ' dimension=', l, ' measure=', m, ' inequal=', ineq.result[[1]],
+              #            ' boot.se=', ineq.result[[2]], ' se=', ineq.result[[3]], tmp_ccode))
               
               # Append the last calculated measure to the end of the dataframe 
               if(!is.null(ineq.result)){
@@ -265,13 +265,13 @@ calcInequal <- function(data_frame,  inequal.types='all'){
 
 
 getInequal <- function(indicator, stratifier, countries, years,  inequal_types='all'){
-  print("In getInequal function a")
-  print(paste0(indicator, stratifier, countries, years))
+  #print("In getInequal function a")
+  #print(paste0(indicator, stratifier, countries, years))
   # Fetch the inequalities data from the inbuilt database  
   
   # Return NULL if any of the function-parameters are missing
   if(is.null(indicator)){
-    print("In getInequal function b")
+    #print("In getInequal function b")
     return(NULL)
   }
   if(length(indicator)==0){
@@ -369,7 +369,7 @@ getInequal <- function(indicator, stratifier, countries, years,  inequal_types='
   
   
   ineqDF$combo.se[is.na(ineqDF$combo.se)] <- ineqDF$boot.se[is.na(ineqDF$combo.se)]  #  Make an se that is analytic if it exists, otherwise a boostrap
-  print("In getInequal function b")
+  #print("In getInequal function b")
   return(ineqDF)
 }
 
