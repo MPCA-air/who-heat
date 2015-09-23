@@ -12,6 +12,9 @@ TABLESUMMARY
 dataTableInequal (using renderDataTable) creates theData and then has a ton of extra code. theData is basically the same as ineqDF from datasetInequal but with some multipliers.
   datasetInequal()
     datasetInequal<-reactive()
+      datasetInput()
+      calcInequal()
+      getInequal()
 
 
 datasetInequal: creates ineqDF. This is run for sumplot or sumtable. Only difference is 
