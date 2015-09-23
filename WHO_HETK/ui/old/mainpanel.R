@@ -2,7 +2,7 @@ withoutAdmin <- tagList(
   
   tabPanel(tags$h5("Select Database"), value='data_management',
            conditionalPanel(condition = "input.dataSource != 'OWN'",
-                            includeHTML("./www/selectData.html")),
+                            includeHTML("../www/selectData.html")),
            conditionalPanel(condition = "input.dataSource == 'OWN'",
                             dataTableOutput(outputId="uploadTable"))),   # Up loaded/Managed data
   
@@ -33,7 +33,7 @@ withAdmin <- tagList(
   
   tabPanel(tags$h5("Select Database"), value='data_management',
            conditionalPanel(condition = "input.dataSource != 'OWN'",
-                            includeHTML("./www/selectData.html")),
+                            includeHTML("../www/selectData.html")),
            conditionalPanel(condition = "input.dataSource == 'OWN'",
                             dataTableOutput(outputId="uploadTable"))),   # Up loaded/Managed data
   

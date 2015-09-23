@@ -4,15 +4,8 @@
 ############################################################################
 
 getHETKdata <- function(indicator, stratifier, countries, years, mostrecent=F, datasource='All'){
-  require('RSQLite')
-  drv <- dbDriver("SQLite")
-  con <- dbConnect(drv, "data/HEMTK.db")
-  
-  
-  #   ## First make sure that the years are correct
-  #   if(length(years)==2){
-  #     years <- years[1]:years[2]
-  #   }
+
+  con <- .connection
   
   if(mostrecent){
     # Determine the most recent year for 'country' data in the database
@@ -54,12 +47,12 @@ getHETKdata <- function(indicator, stratifier, countries, years, mostrecent=F, d
   
   
   selectStr <- paste(baseStr, countryStr, ') AND year IN (', yearStr, ') AND indic IN (', indicStr, ') AND dimension IN (', stratStr, ');', sep='', collapse='')
-  print(selectStr)
+  #print(selectStr)
   selectNationalStr <- paste(baseStr_nationalData, countryStr, ') AND year IN (', yearStr, ') AND indic IN (', indicStr, ');', sep='', collapse='')
   
   hetk.data <- dbGetQuery(con, selectStr)
   national.data <- dbGetQuery(con, selectNationalStr)
-  dbDisconnect(con)
+  #dbDisconnect(con)
   if(mostrecent==T){
     names(hetk.data)[2] <- 'year'
     names(national.data)[2] <- 'year'

@@ -1,4 +1,6 @@
-conditionalPanel(condition = "input.mainPanel == 'data_management'",
+
+  
+  conditionalPanel(condition = "input.mainPanel == 'data_management'",
                  
                  selectInput("dataSource", label = h5("Select data sources"),
                              c("-" = "-",
@@ -13,3 +15,4 @@ conditionalPanel(condition = "input.mainPanel == 'data_management'",
                  hr()
                  
 )
+  
