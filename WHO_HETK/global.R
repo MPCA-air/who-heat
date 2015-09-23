@@ -121,7 +121,7 @@ nearest <- function(anchor, lizt, limit=1, all=F){
   # anchor: the number against which nearness is tested
   # lizt: the vector of candidate numbers
   # limit: the limit on how far away the number can be
-  print('----nearest()-------')
+  #print('----nearest()-------')
   if(!is.na(anchor) & !is.null(lizt)){
     
     anchor <- as.integer(anchor)
@@ -138,7 +138,7 @@ nearest <- function(anchor, lizt, limit=1, all=F){
         return(locasi[1])  # Return the first
       }
     }
-    print ('Why am I here?')
+
     return(NULL) 
   } else {
     return(NULL)

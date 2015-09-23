@@ -1,5 +1,5 @@
 ##############################################################
-# required in explore inequality: table
+# required in explore inequality: table -----
 #############################################################
 
 print(a)
@@ -126,14 +126,14 @@ output$downloadAnyData <- downloadHandler(
 
 
 ##############################################################
-# required in explore inequality: disaggregated table and plot
+# required in explore inequality: disaggregated table and plot-----
 #############################################################
 
 
 
 # Return the requested dataset based on the UI selection (dataSource)
 datasetInput <- reactive({
-  #print("In datasetInput")
+  print("In datasetInput")
   
   dat<-switch(input$dataSource,
          #"GHO" = getData1a(),
@@ -147,7 +147,6 @@ datasetInput <- reactive({
 
 # A *Reactive* to read data in from the Health Equity Toolkit DB
 getData2 <- reactive({
-  #print("In getData2")
   
   # This *reactive* gets the data from HETKdb
  
@@ -159,6 +158,7 @@ getData2 <- reactive({
                                countries=input$equityCountry, years=input$years, mostrecent=input$mostrecent,
                                datasource=input$data_source)
       
+      print("In getData2")
       updateTextInput(session, inputId='countryVar', label='Cry the lost country', value=unique(hetk.data$country))
       return (hetk.data)
     }
@@ -169,6 +169,11 @@ getData2 <- reactive({
 output$dataTable <- renderDataTable({
   #print("In dataTable")
 
+  
+  
+  
+  
+  
   theData <- datasetInput()
   if(is.null(theData)){
     return(NULL)
@@ -211,7 +216,7 @@ output$dataTable <- renderDataTable({
 
 
 ##############################################################
-# required in explore inequality: disaggregated plot
+# required in explore inequality: disaggregated plot----
 #############################################################
 
 
@@ -305,7 +310,7 @@ output$downloadAnyPlot <- downloadHandler(
 
 
 ##############################################################
-# required in explore inequality: summary table
+# required in explore inequality: summary table ----
 #############################################################
 
 ### Creating reactive input for the Summary Tables
@@ -567,6 +572,13 @@ output$downloadAnySumm <- downloadHandler(
                 row.names = FALSE)
   }
 )
+
+
+output$focusCountry2 <- renderText({ 
+  if(length(input$equityCountry) > 0){
+    return(input$equityCountry)
+  }
+})
 
 
 ##############################################################
@@ -978,6 +990,7 @@ getData4 <- reactive({
   isolate({
     
     anchordata <- datasetInput()
+    print(head(anchordata))
     
     relevant.rows <- which(anchordata$year %in% input$compplotBenchYears &   # Select only the right years ...
                              anchordata$indic == input$compplotBenchHealthIndicator &  # health indicator, and ... 
@@ -1198,13 +1211,7 @@ getData5 <- reactive({
   # This *reactive* fetches benchmark country summary data
   if(length(input$equityCountry) > 0){
     thecountries <- unique(c(input$equityCountry, input$benchmarkCountries))
-    print(thecountries)
-    print(input$compplotSumMeasure) 
-    print(input$compplotSumHealthIndicator)
-    print(input$compplotSumEquityDimension) 
-    print(thecountries) 
-    print(input$compplotSumYears)
-    print(input$benchmarkYearsSum)
+  
     thedata <- getComparisonSummaries(summeasure=input$compplotSumMeasure, 
                                       indicator=input$compplotSumHealthIndicator, 
                                       stratifier=input$compplotSumEquityDimension, 
@@ -1247,12 +1254,7 @@ output$theComparisonPlot2_web <- renderPlot({
 # })
 # 
 # 
-# output$focusCountry2 <- renderText({ 
-#   if(length(input$equityCountry) > 0){
-#     return(input$equityCountry)
-#   }
-# })
-# 
+
 # 
 # output$focusCountry3 <- renderText({ 
 #   if(length(input$equityCountry) > 0){

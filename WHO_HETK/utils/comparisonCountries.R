@@ -74,7 +74,7 @@ getComparisonSummaries <- function(summeasure, indicator, stratifier, countries,
                                '" AND measure="', summeasure, '";')
         natdata <- dbGetQuery(con, selectNatStr)
         sumdata <- dbGetQuery(con, selectSumStr)
-        print(selectSumStr)
+        #print(selectSumStr)
         if(nrow(natdata)>0 & matchyears==T){
           natdata$year <- as.integer(years)  # Fix the benchmark year to the anchor year not the actual benchmark year
         }

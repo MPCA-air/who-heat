@@ -199,6 +199,8 @@ output$explore_inequality_ui <- renderUI({
                                      "Tab separated values" = "tsv")),
               downloadButton(outputId = 'downloadAnySumm', label = "Start", class = NULL),
               size = "medium"),
+      
+      
       tabsetPanel(id="assessment_panel",
                   tabPanel(HTML("<h6 style='text-align: center;'>Disaggregated data</br>(tables)<h6>"), value='datatable' , 
                            uiOutput('downloadDatatable'),

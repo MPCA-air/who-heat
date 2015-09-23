@@ -1,21 +1,3 @@
-PLOTSUMMARY
-
-theSumPlot_web (using renderPlot)
-  theSummaryPlot()
-    thesummaryPlot <- reactive
-      datasetInequal() this produces the table below
-          datasetInequal<-reactive()
-
-
-TABLESUMMARY
-
-dataTableInequal (using renderDataTable) creates theData and then has a ton of extra code. theData is basically the same as ineqDF from datasetInequal but with some multipliers.
-  datasetInequal()
-    datasetInequal<-reactive()
-      datasetInput()
-      calcInequal()
-      getInequal()
-
 
 datasetInequal: creates ineqDF. This is run for sumplot or sumtable. Only difference is 
 that se is set to NA for a plot if it's 0.
@@ -26,3 +8,54 @@ that se is set to NA for a plot if it's 0.
 1 2.960599     46.49264     57.82651    46.3568   57.96235       46.3568
   combo.upperci
 1      57.96235
+
+
+When the user clicks on "Fetch data" this is an action button called getdata
+1) This is in the getData2 reactive input$getdata
+2) This runs the getHETKdata which is in the getData2 reactive. This function is in the utils hetkdb.R file. If user selected "most recent" it does an expensive query for the max year. I'm wondering if there is a problem with that query anyway since it does not see to group by. The a somewhat expensive set of for loops to add countries, years, indicators etc. Then it does a query for data (hetk.data) and for national data with the same rules. Seems like you could merge in the national data potentially?
+
+In the main tab for explore inequality there is a dataTableOutput with an id of `dataTable`. This:
+1) Goes to renderDataTable. Within render datatable
+2) It creates `theData` by running `datasetInput()`
+3) `datasetInput()` is just a reactive for switching data sources and calls `getData2`. Is this being called twice? Yes it is, but when first loading `dataTable` it runs and get gets no rows in return.
+
+
+In loading the sidepanel for explore inequality table or plot:
+1) `equityCountry` this runs `getFilteredCountries` which was an expensive query against main data but I now have it going against a sub table.
+2) `healthIndicator` this calls a function where basically the indcators are hard-coded.
+3) `equityDimension` this is just a `selectInput` that is hard-coded with "Economic status" etc.
+4) `dataTableItems`: this calles `datasetInput` also. The reason seems to be solely to find out if there exists a table so that it can show the fields. The fields are actually hard coded, though, so all it's trying to do is find out if there is a table.
+
+In loading the sidepanel for explore inequality just plot:
+Nothing special
+
+In loading the sidepanel for the summary table:
+1) It tests if `input$equityCountry > 0` then uses this
+2) `sumtableSumMeasure` it looks at equity dimension and assuming it's filled, if the equite dimension is rankable it uses `allSummaryMeasures` otherwise it uses `unrankSummaryMeasures` both of which are defined in helper.R
+3) `sumtableHealthIndicator` chooses selection iptions based on if `healthIndicator` length is < 1
+4) `sumtableEquityDimension` same 
+5) `sumtableYears` this makes another call to `datasetInput()$year`
+
+In loading the sidepanel for the summary plot:
+Same as the table.
+
+
+In loading the main panel for the summary table:
+1) `dataTableOutput` with id `dataTableInequal`.
+2) Within the `dataTableInequal` renderDataTable statement, the first call is to `datasetInequal`
+3) The `datasetInequal` calls `getInequal()` with the list of input$sumtableHealthIndicator etc. 
+4) The `getInequal` function is in the utils/inequal.R file. This assembles the query and then queries the `inequal` database. 
+
+
+When you click on compare inequality fetch data:
+1) The button is `getcomparisondata1` and it is connected to `getData4` in that the getData4 reactive has input$getcomparisondata1 in it. 
+2) The `getData4` inititally this calls `datasetInput()`  (result is called anchor data). Remember that `datasetInput` calls getData2.
+
+
+KEY
+`datasetInput()`: just a selector that runs -- everytime? getData2
+
+
+BIG QUESTION on comparison:
+
+does the anchordata <- datasetInput line run right away when you go to that panel and not again?

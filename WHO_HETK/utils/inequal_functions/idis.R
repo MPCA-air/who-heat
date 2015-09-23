@@ -10,9 +10,7 @@
 
 wrap.idis <- function(x, national_est){  
   # The wrapper for the Index of Disparity
-  
-  print(x)
-  print(national_est)
+
   
   sum.disparity <- sum(abs(x - national_est))  # Calculate the differences between each x and the reference rate (min(x))
   mean.disparity <- sum.disparity/(length(x))
@@ -31,8 +29,8 @@ idis <- function(x, w=-1, se=-1, bs=F, national_est){
   #  
   
   # If the reference category for best performance iz zero, return NULL otherwise there is a div0 problem
-  print(x)
-  print(national_est)
+  #print(x)
+  #print(national_est)
   
   if(any(is.na(w))){
     w <- -1

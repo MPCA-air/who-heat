@@ -104,9 +104,7 @@ mld <- function(x, w=-1, se=-1, bs=F, national_est=NULL){
     se.formula <- sqrt(sum(el4))   
   }
   else{
-    print(length(x))
-    print(length(se))
-    print(length(se)==length(x))
+
     se.formula <- NA
   }
   if(is.nan(se.formula)){
