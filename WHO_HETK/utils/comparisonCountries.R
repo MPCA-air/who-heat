@@ -3,25 +3,35 @@
 #
 ############################################################################
 
+
+
 getComparisonCountries <- function(indicator, stratifier, countries, years, elasticity, matchyears=F){
   # indicator: one pre-selected health indicator
   # stratifier: one pre-selected equity dimension
   # countries: one or more pre-selected benchmark countries
   # years: one or more comparison years
   # elasticity: the number of years around which the benchmark countries' years of data collection can vary from the base country
-  require('RSQLite')
+
+  # countries<-c("Afghanistan", "Armenia")
+  # elasticity <-c(2010)
+  
   
   for(i in countries){
-    drv <- dbDriver("SQLite")
-    con <- dbConnect(drv, 'data/HEMTK.db')
-    yearsStr <- paste('SELECT DISTINCT year FROM maindata WHERE country="', i, '";', sep="")
-    available_years <- dbGetQuery(con, yearsStr)$year
+    #i<-"Afghanistan"
+    available_years <- filter(.rdata[['years']], country == i) %>% .$year
+
     for(j in as.integer(years)){
+      #j<-2010
       elastic_years <- available_years[nearest(j, available_years, limit=elasticity, all=T)]
+      
       if(length(elastic_years)>0){
         if(!(elastic_years==F)){  # Check to see that there is a relevant year
           elastic_years <- max(elastic_years)      
-          yearsdata <- getHETKdata(indicator, stratifier, i, elastic_years, datasource='All')
+          yearsdata <- getHETKdata(indicator=indicator,
+                                   stratifier=stratifier, 
+                                   countries = i, 
+                                   years = elastic_years, 
+                                   datasource='All')
           if(nrow(yearsdata)>0 & matchyears==T){
             yearsdata$year <- j  # Fix the benchmark year to the anchor year not the actual benchmark year
           }
@@ -43,6 +53,49 @@ getComparisonCountries <- function(indicator, stratifier, countries, years, elas
     return(NULL)
   }
 }
+
+# 
+# 
+# getComparisonCountries <- function(indicator, stratifier, countries, years, elasticity, matchyears=F){
+#   # indicator: one pre-selected health indicator
+#   # stratifier: one pre-selected equity dimension
+#   # countries: one or more pre-selected benchmark countries
+#   # years: one or more comparison years
+#   # elasticity: the number of years around which the benchmark countries' years of data collection can vary from the base country
+#   require('RSQLite')
+#   
+#   for(i in countries){
+#     drv <- dbDriver("SQLite")
+#     con <- dbConnect(drv, 'data/HEMTK.db')
+#     yearsStr <- paste('SELECT DISTINCT year FROM maindata WHERE country="', i, '";', sep="")
+#     available_years <- dbGetQuery(con, yearsStr)$year
+#     for(j in as.integer(years)){
+#       elastic_years <- available_years[nearest(j, available_years, limit=elasticity, all=T)]
+#       if(length(elastic_years)>0){
+#         if(!(elastic_years==F)){  # Check to see that there is a relevant year
+#           elastic_years <- max(elastic_years)      
+#           yearsdata <- getHETKdata(indicator, stratifier, i, elastic_years, datasource='All')
+#           if(nrow(yearsdata)>0 & matchyears==T){
+#             yearsdata$year <- j  # Fix the benchmark year to the anchor year not the actual benchmark year
+#           }
+#           if(exists('mergedDF') & nrow(yearsdata)>0){
+#             mergedDF <- rbind(mergedDF, yearsdata)
+#           }
+#           if(!exists('mergedDF') & nrow(yearsdata)>0){
+#             mergedDF <- yearsdata
+#           }
+#         }
+#       }
+#     }
+#   }
+#   #  dbDisconnect(con)
+#   if(exists('mergedDF')){
+#     return(mergedDF)
+#   }
+#   else{
+#     return(NULL)
+#   }
+# }
 
 
 getComparisonSummaries <- function(summeasure, indicator, stratifier, countries, years, elasticity, matchyears=F){

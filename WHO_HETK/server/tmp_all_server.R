@@ -182,7 +182,7 @@ output$downloadDatatable <- renderUI({
   
   theData <- datasetInput()
   if(nrow(theData)==0){
-    return(NULL)
+    return()
   } else {
      list(br(),
           actionButton("downloadDatatable", "Download", class = "btn-primary"))
@@ -218,21 +218,13 @@ output$downloadAnyData <- downloadHandler(
 
 # Return the requested dataset based on the UI selection (dataSource)
 datasetInput <- reactive({
-  print("In datasetInput")
-  
-  #input$getdata
-  
-  isolate({  
-    
-#       hetk.data <- getHETKdata(indicator=input$healthIndicator, stratifier=input$equityDimension,  # in hetkdb.R
-#                                countries=input$equityCountry, years=input$years, mostrecent=input$mostrecent,
-#                                datasource=input$data_source)
-#       
-#       updateTextInput(session, inputId='countryVar', label='Cry the lost country', value=unique(hetk.data$country))
-      })
-  
 
-  return(hetk.data)
+  getHETKdata(indicator=input$healthIndicator, 
+              stratifier=input$equityDimension,  # in hetkdb.R
+              countries=input$equityCountry, 
+              years=input$years, 
+              mostrecent=input$mostrecent,
+              datasource=input$data_source)
 })
 
 
@@ -247,12 +239,14 @@ output$dataTable <- renderDataTable({
   
   #isolate({ 
   
-  theData <- getHETKdata(indicator=input$healthIndicator, 
-                         stratifier=input$equityDimension,  # in hetkdb.R
-                         countries=input$equityCountry, 
-                         years=input$years, 
-                         mostrecent=input$mostrecent,
-                         datasource=input$data_source)
+  theData <- datasetInput()
+    
+#     getHETKdata(indicator=input$healthIndicator, 
+#                          stratifier=input$equityDimension,  # in hetkdb.R
+#                          countries=input$equityCountry, 
+#                          years=input$years, 
+#                          mostrecent=input$mostrecent,
+#                          datasource=input$data_source)
   
   
   
@@ -289,7 +283,7 @@ output$dataTable <- renderDataTable({
   #})
   
   #if(is.null(theData)) return()
-  #if(nrow(theData)==0)return(NULL)
+  #if(nrow(theData)==0)return()
   
   theData
 }, options = list(dom = "ilftpr", pageLength = 10)  # see https://datatables.net/ for dataTable options
@@ -308,7 +302,7 @@ output$downloadDataplot <- renderUI({
   
   thePlot <- theDataPlot()
   if(is.null(thePlot)){
-    return(NULL)
+    return()
   } else {
     list(br(),
          actionButton("downloadDataplot", "Download Plot", class = "btn-primary"))
@@ -329,7 +323,8 @@ theDataPlot <- reactive({
   #print("In theDataPlot")
   
   #print("Reactive: theDataPlot")
-  plotData <- datasetInput()[, c('country', 'year', 'indic', 'subgroup', 'dimension', 'estimate', 'se')]
+  plotData <- datasetInput()
+  plotData <- select(plotData, country, year, indic, subgroup, dimension, estimate, se)
 
   if(!is.null(plotData) & nrow(plotData)>0){
     chartopt <- list()
@@ -372,7 +367,7 @@ theDataPlot <- reactive({
     }
   }
   else{
-    return(NULL)
+    return()
   }
   
 })  
@@ -474,11 +469,12 @@ output$sumtableYears <- renderUI({
 # Create a download button contingent on data in the table
 output$downloadSummtable <- renderUI({ 
   theData <- datasetInequal()
+  
   if(is.null(theData)){
-    return(NULL)
+    return()
   }
   if(nrow(theData)==0){
-    return(NULL)
+    return()
   } else {
     list(br(),
          actionButton("downloadSummtable", "Download", class = "btn-primary"))
@@ -491,24 +487,7 @@ output$downloadSummtable <- renderUI({
 
 datasetInequal <- reactive({
   
-  #print("In datasetInequal")
-  
-  if(input$dataSource!='HETK'){
-    tmpDF <- datasetInput() 
-    relevant.rows <- which(tmpDF$year %in% input$sumtableYears & tmpDF$indic %in% input$sumtableHealthIndicator & tmpDF$dimension %in% input$sumtableEquityDimension)
-    
-    tmpDF <- tmpDF[ relevant.rows, ]
-    
-    #print(tmpDF)
-    if(is.null(relevant.rows)){
-      return(NULL)
-    }
-    if(!is.null(relevant.rows)){
-      ineqDF <- calcInequal(tmpDF, inequal.types='all')
-      #print(ineqDF)
-      return(ineqDF)
-    }
-  }
+
   if(input$dataSource=='HETK' & input$assessment_panel=='sumtable'){
     #print('Getting equity data table a')
     ineqDF <- getInequal(indicator=input$sumtableHealthIndicator, 
@@ -516,7 +495,7 @@ datasetInequal <- reactive({
                          countries=input$equityCountry, 
                          years=input$sumtableYears,  
                          inequal_types=input$sumtableSumMeasure)
-    #print('Getting equity data table b')
+
     
     return(ineqDF)
   }    
@@ -629,10 +608,10 @@ output$dataTableInequal <- renderDataTable({
     #print(theData)
   }
   if(is.null(theData) || nrow(theData)==0){
-    return(NULL)
+    return()
   }
 #   if(nrow(theData)==0){
-#     return(NULL)
+#     return()
 #   }
   theData
 }, options = list(dom = "ilftpr", pageLength = 10)  # see https://datatables.net/ for dataTable options
@@ -650,7 +629,10 @@ output$downloadAnySumm <- downloadHandler(
     sep <- switch(input$filetype2, "csv" = ",", "tsv" = "\t")
     
     # Write to a file specified by the 'file' argument
-    write.table(datasetInequal(), file, sep = sep,
+    dat <- datasetInequal()
+
+    
+    write.table(dat, file, sep = sep,
                 row.names = FALSE)
   }
 )
@@ -744,7 +726,7 @@ output$sumplotYears <- renderUI({
 output$downloadSummplot <- renderUI({
   thePlot <- theSummaryPlot()
   if(is.null(thePlot)){
-    return(NULL)
+    return()
   } else {
     list(br(),
          actionButton("downloadSummplot", "Download Plot", class = "btn-primary"))
@@ -762,10 +744,14 @@ output$theSumPlot_web <- renderPlot({
 # Generate a reactive element for plotting the Summary Data.
 # Pass to the webpage using renderPlot(print(theDataPlot))
 theSummaryPlot <- reactive({ 
+  
+  
   plotData <- datasetInequal()
+  
+  
   #print(class(plotData))
   #print("Reactive: theSummaryPlot")
-  if(is.null(plotData)) return(NULL)
+  if(is.null(plotData)) return()
 
     #plotData <- datasetInequal()
     if(class(plotData)=="data.frame" && nrow(plotData)>0 ){
@@ -810,7 +796,7 @@ theSummaryPlot <- reactive({
       }
     }
     else{
-      return(NULL)
+      return()
     }
   
 })  
@@ -846,7 +832,6 @@ output$downloadSummPlot <- downloadHandler(
 
 
 
-###  Comparison Benchmark Countries
 
 output$compplotBenchHealthIndicator <- renderUI({    
   # Multiple select for the health indicator 
@@ -882,7 +867,14 @@ output$compplotBenchEquityDimension <- renderUI({
 
 output$compplotBenchYears <- renderUI({    
   # Multiple select for the years of interest
-  yearsOfInterest <- sort(unique(datasetInput()$year))
+  years<-getHETKdata(indicator=input$healthIndicator, 
+              stratifier=input$equityDimension,  # in hetkdb.R
+              countries=input$equityCountry, 
+              years=input$years, 
+              mostrecent=input$mostrecent,
+              datasource=input$data_source)
+  
+  yearsOfInterest <- sort(unique(years$years))
   if(is.null(yearsOfInterest)){ 
     selectionOptions <- c()
   }
@@ -897,11 +889,11 @@ output$compplotBenchYears <- renderUI({
 })
 
 output$benchmarkCountries <- renderUI({
-  countries <- getFilteredCountries(input$benchmarkWBgroup, input$benchmarkWHOregion, input$dataSource)  
+  countries <- getFilteredCountries(input$benchmarkWBgroup, input$benchmarkWHOregion)  
   selectInput("benchmarkCountries", 
               h5("Select countries"), 
               choices=countries, 
-              selected=countries,
+              selected=countries[1:5],
               multiple=T)
 })
 
@@ -1048,8 +1040,40 @@ output$compplotSumYears <- renderUI({
 
 # Generate a TEMPORARY view of the Comparison Summary Data
 output$dataTableBenchmark <- renderDataTable({
-  if(!is.null(getData4())){
-    theData <- getData4()[, c('country', 'year', 'source', 'indic', 'dimension', 'subgroup', 'estimate')]
+  
+  input$benchmarkWBgroup
+  input$benchmarkWHOregion
+  input$getcomparisondata1
+
+  
+  isolate({
+    
+    anchordata <-   getHETKdata(indicator=input$compplotBenchHealthIndicator, 
+                                stratifier=input$compplotBenchEquityDimension,  # in hetkdb.R
+                                countries=input$equityCountry, 
+                                years=input$compplotBenchYears)
+
+#     relevant.rows <- which(anchordata$year %in% input$compplotBenchYears &   # Select only the right years ...
+#                              anchordata$indic == input$compplotBenchHealthIndicator &  # health indicator, and ... 
+#                              anchordata$dimension == input$compplotBenchEquityDimension)  # equity dimension 
+    
+    #anchordata <- anchordata[ relevant.rows , ]
+    
+  
+    benchmarkdata <- getComparisonCountries(indicator = input$compplotBenchHealthIndicator, 
+                                            stratifier = input$compplotBenchEquityDimension, 
+                                            countries = input$benchmarkCountries, 
+                                            years =  unique(anchordata$year), 
+                                            elasticity = input$benchmarkYears, matchyears=F)
+  
+    
+    theData <- rbind(anchordata, benchmarkdata)  # Merge the relevant initial data with benchmarkdata
+
+    if(is.null(theData)) return()
+    if(nrow(theData)==0) return()
+
+    
+    theData <- select(theData, country, year, source, indic, dimension, subgroup, estimate)
     names(theData)[names(theData)=="country" ] <- "Country" 
     names(theData)[names(theData)=="year" ] <- "Year"
     names(theData)[names(theData)=="source" ] <- "Data source"
@@ -1057,50 +1081,56 @@ output$dataTableBenchmark <- renderDataTable({
     names(theData)[names(theData)=="dimension" ] <- "Inequality dimension"
     names(theData)[names(theData)=="subgroup" ] <- "Subgroup"
     names(theData)[names(theData)=="estimate" ] <- "Estimate"
-    theData    
-  }
+ 
+    
+    
+      return(theData)
+
+  })
+  
+
 }, options = list(dom = "ilftpr", pageLength = 10)  # see https://datatables.net/ for dataTable options
 )
 
-
-# A *Reactive* to fetch benchmark country disaggregated and merge it with fetched data
-getData4 <- reactive({
-  # This *reactive* fetches benchmark country data for the Disaggregated TABLE
-  input$getcomparisondata1
-  #    input$getcomparisondata2
-  #print(input$getcomparisondata1)
-  isolate({
-    
-    anchordata <- datasetInput()
-    print(head(anchordata))
-    
-    relevant.rows <- which(anchordata$year %in% input$compplotBenchYears &   # Select only the right years ...
-                             anchordata$indic == input$compplotBenchHealthIndicator &  # health indicator, and ... 
-                             anchordata$dimension == input$compplotBenchEquityDimension)  # equity dimension 
-    
-    anchordata <- anchordata[ relevant.rows , ]
-    
-    #print('Pre Benchmark')    
-    benchmarkdata <- getComparisonCountries(indicator = input$compplotBenchHealthIndicator, 
-                                            stratifier = input$compplotBenchEquityDimension, 
-                                            countries = input$benchmarkCountries, 
-                                            years =  unique(anchordata$year), 
-                                            elasticity = input$benchmarkYears, matchyears=F)
-    #print('Post Benchmark')    
-    
-    thedata <- rbind(anchordata, benchmarkdata)  # Merge the relevant initial data with benchmarkdata
-    #print(thedata)
-    if(is.null(thedata)){
-      return(NULL)
-    }
-    if(nrow(thedata)==0){
-      return(NULL)
-    }
-    else{
-      return(thedata)
-    }
-  })
-})
+# 
+# # A *Reactive* to fetch benchmark country disaggregated and merge it with fetched data
+# getData4 <- reactive({
+#   # This *reactive* fetches benchmark country data for the Disaggregated TABLE
+#   input$getcomparisondata1
+#   #    input$getcomparisondata2
+#   #print(input$getcomparisondata1)
+#   isolate({
+#     
+#     anchordata <- datasetInput()
+#     print(head(anchordata))
+#     
+#     relevant.rows <- which(anchordata$year %in% input$compplotBenchYears &   # Select only the right years ...
+#                              anchordata$indic == input$compplotBenchHealthIndicator &  # health indicator, and ... 
+#                              anchordata$dimension == input$compplotBenchEquityDimension)  # equity dimension 
+#     
+#     anchordata <- anchordata[ relevant.rows , ]
+#     
+#     #print('Pre Benchmark')    
+#     benchmarkdata <- getComparisonCountries(indicator = input$compplotBenchHealthIndicator, 
+#                                             stratifier = input$compplotBenchEquityDimension, 
+#                                             countries = input$benchmarkCountries, 
+#                                             years =  unique(anchordata$year), 
+#                                             elasticity = input$benchmarkYears, matchyears=F)
+#     #print('Post Benchmark')    
+#     
+#     thedata <- rbind(anchordata, benchmarkdata)  # Merge the relevant initial data with benchmarkdata
+#     #print(thedata)
+#     if(is.null(thedata)){
+#       return()
+#     }
+#     if(nrow(thedata)==0){
+#       return()
+#     }
+#     else{
+#       return(thedata)
+#     }
+#   })
+# })
 
 
 ##############################################################
@@ -1114,7 +1144,7 @@ getData4 <- reactive({
 output$downloadCompplot1 <- renderUI({
   thePlot <- theComparisonPlot1()
   if(is.null(thePlot)){
-    return(NULL)
+    return()
   } else {
     list(br(),
          actionButton("downloadCompplot1", "Download Plot", class = "btn-primary"))
@@ -1123,7 +1153,7 @@ output$downloadCompplot1 <- renderUI({
 
 output$theComparisonPlot1_web <- renderPlot({
   if(is.null(theComparisonPlot1())){
-    return(NULL)
+    return()
   }
   print(theComparisonPlot1())  # Remember that print(theDataPlot) just prints the code
 }, res=90, height=exprToFunction(input$plot_height2), width=exprToFunction(input$plot_width2))
@@ -1138,7 +1168,7 @@ theComparisonPlot1 <- reactive({
   plotData <- getData4a()
 
   if(is.null(plotData)){
-    return(NULL)
+    return()
   }
   else{
     plotData <- plotData[, c('country', 'year', 'indic', 'subgroup', 'dimension', 'estimate', 'se')]
@@ -1179,10 +1209,10 @@ getData4a <- reactive({
   # This *reactive* fetches benchmark country data for the PLOT
   #print("Reactive: getData4a")
   if(input$comparison_panel != 'inequaldisag'){
-    return(NULL)
+    return()
   }
   if(length(input$compplotDisagYears)==0 | length(input$compplotDisagHealthIndicator)==0 | length(input$compplotDisagEquityDimension)==0){
-    return(NULL)
+    return()
   }
   #print(paste(input$compplotBenchYears, input$compplotDisagYears, input$compplotBenchHealthIndicator, input$compplotDisagHealthIndicator, input$compplotBenchEquityDimension, input$compplotDisagEquityDimension, sep=' >> '))
   if(input$compplotBenchYears == input$compplotDisagYears & input$compplotBenchHealthIndicator == input$compplotDisagHealthIndicator & input$compplotBenchEquityDimension == input$compplotDisagEquityDimension){
@@ -1205,7 +1235,7 @@ getData4a <- reactive({
     
     thedata <- rbind(anchordata, benchmarkdata)  # Merge the relevant initial data with benchmarkdata
     if(is.null(thedata) | nrow(thedata)==0){
-      return(NULL)
+      return()
     }
     else{
       return(thedata)
@@ -1227,7 +1257,7 @@ getData4a <- reactive({
 output$downloadCompplot2 <- renderUI({
   thePlot <- theComparisonPlot2()
   if(is.null(thePlot)){
-    return(NULL)
+    return()
   } else {
     list(br(),
          actionButton("downloadCompplot2", "Download Plot", class = "btn-primary"))
@@ -1248,10 +1278,10 @@ theComparisonPlot2 <- reactive({
   plotData<-getData5()
   
   if(is.null(plotData)){
-    return(NULL)
+    return()
   }
   if(nrow(plotData)==0){
-    return(NULL)
+    return()
   }    
   else{
     #print('Never got here')
@@ -1313,7 +1343,7 @@ getData5 <- reactive({
 
 output$theComparisonPlot2_web <- renderPlot({    
   if(is.null(theComparisonPlot2())){
-    return(NULL)
+    return()
   }
   print(theComparisonPlot2())  # Remember that print(theDataPlot) just prints the code
 }, res=90, height=exprToFunction(input$plot_height3), width=exprToFunction(input$plot_width3))
@@ -1407,7 +1437,7 @@ output$theComparisonPlot2_web <- renderPlot({
 # output$downloadCompplot1 <- renderUI({
 #   thePlot <- theDataPlot()
 #   if(is.null(thePlot)){
-#     return(NULL)
+#     return()
 #   } else {
 #     list(br(),
 #          actionButton("downloadCompplot1", "Download Plot", class = "btn-primary"))
@@ -1482,14 +1512,14 @@ output$theComparisonPlot2_web <- renderPlot({
 #   inFile <- input$ownData
 #   
 #   if (is.null(inFile))
-#     return(NULL)
+#     return()
 #   
 #   minimum_headers <- c('country', 'year', 'source', 'indic', 'dimension', 'subgroup', 'estimate', 'se', 'pop', 'flag', 'rankable', 'order', 'maxoptimum')
 #   tmpDF <- read.csv(inFile$datapath, sep=input$sep_type, header=T, stringsAsFactors = F)
 #   if(setdiff(names(tmpDF), minimum_headers) %in%  minimum_headers){
 #     # If the header does not contains the minimum required variables, it returns NULL
 #     toggleModal(session, "upload_error1")
-#     return(NULL)
+#     return()
 #   }
 #   
 #   # Remove rows with missing estimates or stratifiers; all else is forgiven 
@@ -1504,7 +1534,7 @@ output$theComparisonPlot2_web <- renderPlot({
 #   if(!is.null(theData)){
 #     return()
 #   } else {
-#     return(NULL)
+#     return()
 #   }
 #   
 # })
@@ -1532,10 +1562,10 @@ output$theComparisonPlot2_web <- renderPlot({
 # output$uploadTable <- renderDataTable({
 #   theData <- datasetInput()
 #   if(is.null(theData)){
-#     return(NULL)
+#     return()
 #   }
 #   if(nrow(theData)==0){
-#     return(NULL)
+#     return()
 #   } 
 #   
 #   theData <- theData[, c('country', 'year', 'source', 'indic', 'dimension', 'subgroup', 'estimate', 'lower_95ci', 'upper_95ci', 'popshare', 'flag')] 

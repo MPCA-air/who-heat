@@ -5,6 +5,7 @@ library(grid)
 library(plyr)
 library(countrycode)
 library(RColorBrewer)
+library(dplyr)
 library(RSQLite)
 library(digest)
 library(stringr) # this was in the userful.R file, not sure how important
