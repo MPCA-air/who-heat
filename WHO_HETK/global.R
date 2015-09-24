@@ -1,3 +1,10 @@
+# library(RSQLite)
+# drv <- dbDriver("SQLite")
+# .connection<<-dbConnect(drv, "X:/projects/who_heat/web/who-heat/WHO_HETK/data/HEMTK.db")
+
+#maindata<<-dbGetQuery(.connection, "SELECT * FROM maindata")
+
+
 textInputRow <-function (inputId, label, value = ""){
   # A function to handle the creation of side-by-side numeric input boxes
   div(style="display: inline-block;",

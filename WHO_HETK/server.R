@@ -18,6 +18,7 @@ shinyServer(function(input, output, session){
 
   drv <- dbDriver("SQLite")
   .connection<<-dbConnect(drv, "data/HEMTK.db")
+  maindata<<-dbGetQuery(.connection, "SELECT * FROM maindata")
 
   source("helper.R", local=TRUE)
   source("utils/get_filtered.R", local=TRUE)
