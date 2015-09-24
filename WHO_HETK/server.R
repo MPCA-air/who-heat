@@ -16,9 +16,12 @@ library(shinythemes)
 
 shinyServer(function(input, output, session){  
 
+  
+  
   drv <- dbDriver("SQLite")
   .connection<<-dbConnect(drv, "data/HEMTK.db")
-  maindata<<-dbGetQuery(.connection, "SELECT * FROM maindata")
+  .rdata <<- list()
+  #maindata<<-dbGetQuery(.connection, "SELECT * FROM maindata")
 
   source("helper.R", local=TRUE)
   source("utils/get_filtered.R", local=TRUE)
@@ -34,6 +37,6 @@ shinyServer(function(input, output, session){
   source("ui/information.R", local=TRUE)
   source("server/tmp_all_server.R", local=TRUE)
   
-
+  
   
 })
