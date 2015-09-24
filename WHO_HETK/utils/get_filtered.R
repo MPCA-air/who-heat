@@ -24,7 +24,7 @@ getFilteredCountries <- function(WBgroup=NULL, WHOregion=NULL)
 
 
 
-getFilteredYear <-  function(countryname, datasource='All', database){
+getFilteredYear <-  function(countryname, datasource='All'){
   # This function filters the Years of surveys based on earlier choices about the Country
   # the Datasource and the Database 
   
@@ -34,7 +34,7 @@ getFilteredYear <-  function(countryname, datasource='All', database){
   if(datasource != 'All') filt_source <- datasource
   
   years <- filter(.rdata[['years']], filt_country, filt_source) %>%
-    arrange(year) %>% .$year
+    arrange(desc(year)) %>% .$year
   
   return(years)
   

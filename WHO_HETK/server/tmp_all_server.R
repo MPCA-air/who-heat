@@ -110,7 +110,7 @@ output$years <- renderUI({
               label='', 
               choices=selectYears, 
               multiple=T, 
-              selected=NULL)
+              selected=selectYears[1])
 })
 
 
@@ -123,7 +123,8 @@ output$healthIndicator <- renderUI({
   if(is.null(selectionOptions)){ selectionOptions <- c()}
   selectInput("healthIndicator", 
               h5("Select health indicators"), 
-              selectionOptions, 
+              choices = selectionOptions, 
+              selected = selectionOptions[1],
               multiple=T)
 })
 
@@ -132,9 +133,11 @@ output$healthIndicator <- renderUI({
 output$equityDimension <- renderUI({
   #print("In equityDimension")
   
+  selectionOptions <- .rdata[['equity_dimensions']]
   selectInput(inputId = "equityDimension",
               h5("Select inequality dimensions"),
-              choices = .rdata[['equity_dimensions']],
+              choices = selectionOptions,
+              selected = selectionOptions[1],
               multiple=T)
 })
 
@@ -143,27 +146,31 @@ output$equityDimension <- renderUI({
 output$dataTableItems <- renderUI({
   #print("In dataTableItems")
   
-  dataTmp <- datasetInput()
-  if(nrow(dataTmp)>0  & input$assessment_panel == "datatable"){ 
-    selectOptions <- c("Country" = 'country', 
-                       "Year" = "year", 
-                       "Data source" = "source", 
-                       "Health indicator" = "indic", 
-                       "Inequality dimension" = "dimension",
-                       "Subgroup" = "subgroup",
-                       "Estimate" = "estimate",
-                       "Lower 95%CI"  = "lower_95ci",
-                       "Upper 95%CI"  = "upper_95ci",
-                       "Population share %"   = "popshare",
+  # TODO: there is a test for whether the user's selected data has rows
+  # but this requires another call to the data creation so for now I'm 
+  # turning off
+
+  if(input$assessment_panel == "datatable"){ 
+    selectOptions <- c("Country" = 'Country', 
+                       "Year" = "Year", 
+                       "Data source" = "Data source", 
+                       "Health indicator" = "Health indicator", 
+                       "Inequality dimension" = "Inequality dimension",
+                       "Subgroup" = "Subgroup",
+                       "Estimate" = "Estimate",
+                       "Lower 95%CI"  = "Lower 95%CI",
+                       "Upper 95%CI"  = "Upper 95%CI",
+                       "Population share %"   = "Population share %",
                        "Flag" = "flag")
-    selectedOptions <- c("country", "year", "source", "indic", "dimension", "subgroup", "estimate")
+    selectedOptions <- c("Country", "Year", "Source", "Health indicator", "Inequality dimension", 
+                         "Subgroup", "Estimate", "Population share %", "Lower 95%CI", "Upper 95%CI")
     selectInput(inputId = "dataTableItems",
                 h4("Select table content"),
                 choices = selectOptions,
                 selected = selectedOptions,
                 multiple=T)
   } else {
-    return(NULL)
+    return()
   }
 })
 
@@ -213,80 +220,77 @@ output$downloadAnyData <- downloadHandler(
 datasetInput <- reactive({
   print("In datasetInput")
   
-  dat<-switch(input$dataSource,
-         #"GHO" = getData1a(),
-         "HETK" = getData2()
-         #"OWN" = getData3()
-  )
+  #input$getdata
   
-  return(dat)
-})
-
-
-# A *Reactive* to read data in from the Health Equity Toolkit DB
-getData2 <- reactive({
-  
-  # This *reactive* gets the data from HETKdb
- 
-  input$getdata
-  isolate({  # Isolate holds of the getting of the data until the Process button in the ui.R is pressed
+  isolate({  
     
-    if(input$dataSource == 'HETK'){  # Get the data from the HETKdb
-      hetk.data <- getHETKdata(indicator=input$healthIndicator, stratifier=input$equityDimension,  # in hetkdb.R
-                               countries=input$equityCountry, years=input$years, mostrecent=input$mostrecent,
-                               datasource=input$data_source)
-      
-      print("In getData2")
-      updateTextInput(session, inputId='countryVar', label='Cry the lost country', value=unique(hetk.data$country))
-      return (hetk.data)
-    }
-  })
+#       hetk.data <- getHETKdata(indicator=input$healthIndicator, stratifier=input$equityDimension,  # in hetkdb.R
+#                                countries=input$equityCountry, years=input$years, mostrecent=input$mostrecent,
+#                                datasource=input$data_source)
+#       
+#       updateTextInput(session, inputId='countryVar', label='Cry the lost country', value=unique(hetk.data$country))
+      })
+  
+
+  return(hetk.data)
 })
+
+
+
 
 # Generate a view of the Managed Data
 output$dataTable <- renderDataTable({
-  #print("In dataTable")
+  
 
   
+  #input$getdata
+  
+  #isolate({ 
+  
+  theData <- getHETKdata(indicator=input$healthIndicator, 
+                         stratifier=input$equityDimension,  # in hetkdb.R
+                         countries=input$equityCountry, 
+                         years=input$years, 
+                         mostrecent=input$mostrecent,
+                         datasource=input$data_source)
   
   
   
   
-  theData <- datasetInput()
-  if(is.null(theData)){
-    return(NULL)
-  }
-  if(nrow(theData)==0){
-    return(NULL)
-  }
-  if(theData$source[1] %in% c('DHS', 'MICS')){
+  theData <- theData %>% 
+    mutate(estimate = round(estimate, 2),
+           lower_95ci = round(lower_95ci,2),
+           upper_95ci = round(upper_95ci,2),
+           popshare = round(popshare, 2))
+  
+  theData<-theData %>% 
+    rename(
+      Country                = country,
+      Year                   = year,
+      `Data source`          = source,
+      `Health indicator`     = indic,
+      `Inequality dimension` = dimension,
+      Subgroup               = subgroup,
+      Estimate               = estimate,
+      `Lower 95%CI`          = lower_95ci,
+      `Upper 95%CI`          = upper_95ci,
+      `Population share %`   = popshare,
+      Flag                   = flag
+    ) 
+  
+  if(theData[["Data source"]][1] %in% c('DHS', 'MICS')){
     theData <- theData[, input$dataTableItems]
-    #      theData <- theData[, c('country', 'year', 'source', 'indic', 'dimension', 'subgroup', 'estimate', 'lower_95ci', 'upper_95ci', 'popshare', 'flag')]
+    
   }
   else{
-    theData <- theData[, c('country', 'year', 'source', 'indic', 'dimension', 'subgroup', 'estimate', 'se')]
+    theData <- theData[, c('Country', 'Year', 'Data source', 'Health indicator', 
+                           'Inequality dimension', 'Subgroup', 'Estimate')]
   }
-  names(theData)[names(theData)=="country" ] <- "Country" 
-  names(theData)[names(theData)=="year" ] <- "Year"
-  names(theData)[names(theData)=="source" ] <- "Data source"    
-  names(theData)[names(theData)=="indic" ] <- "Health indicator" 
-  names(theData)[names(theData)=="dimension" ] <- "Inequality dimension" 
-  names(theData)[names(theData)=="subgroup" ] <- "Subgroup"
-  names(theData)[names(theData)=="estimate" ] <- "Estimate"
-  names(theData)[names(theData)=="lower_95ci" ] <- "Lower 95%CI"
-  names(theData)[names(theData)=="upper_95ci" ] <- "Upper 95%CI"
-  names(theData)[names(theData)=="popshare" ] <- "Population share %"
-  names(theData)[names(theData)=="flag" ] <- "Flag"
-  # Reduce the significant figures to 2
-  names_df <- names(theData)
-  #print(names_df)
-  the_numeric_names <- which(names_df %in% c("Estimate", "Lower 95%CI", "Upper 95%CI", "Population share %"))
-  #print(the_numeric_names)
-  for(i in names_df[the_numeric_names]){
-    #print(i)
-    theData[, i] <- 
-      round(theData[,i], 2)
-  }
+  #})
+  
+  #if(is.null(theData)) return()
+  #if(nrow(theData)==0)return(NULL)
+  
   theData
 }, options = list(dom = "ilftpr", pageLength = 10)  # see https://datatables.net/ for dataTable options
 )
