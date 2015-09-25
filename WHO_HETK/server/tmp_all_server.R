@@ -3,7 +3,7 @@ observe({
   if(is.null(input$dataSource)) return()
 
   if(input$dataSource == "HETK"){
-
+    
     .rdata[['maindata']]<<-readRDS("data/maindata.RDS")
     .rdata[['inequals']]<<-readRDS("data/inequals.RDS")
     .rdata[['nationaldata']]<<-readRDS("data/nationaldata.RDS")
@@ -12,23 +12,115 @@ observe({
     #print(head(.rdata[['countrynames']]))
   }
   
-  .rdata[['focus_countries']]<<-.rdata[['countrynames']]$country
+  .rdata[['all_countries']]<<-.rdata[['countrynames']]$country
   .rdata[['benchmark_countries']]<<-0
-  .rdata[['focus_country']]<<-"Afghanistan"
-  .rdata[['data_source']]<<-"All"
+  .rdata[['focus_data_source']]<<-"All"
   .rdata[['mostrecent']]<<-FALSE
   
   .rdata[['focus_country']]<<-"Afghanistan"
   .rdata[['focus_indicator']]<<-c("carep")
   .rdata[['focus_dimension']]<<-c("Place of residence")
-  .rdata[['focus_years']]<<-c(2010)
+  .rdata[['focus_year']]<<-c(2010)
+  
+  .rdata[['focus_summary_measure']]<-'sii'
+  
+  .rdata[['unrankable_dimensions']] <- c("Sex", "Geographical region")
+  .rdata[['rankable_dimensions']]<- c("Economic status", "Mother's education", "Place of residence")
+  
+  .rdata[['summary_measures_all']]<-sort( c("Range difference (RD)" = "rd",    
+                                            "Between-Group variance (BGV)" = "bgv", 
+                                            "Mean difference from best performing subgroup (MDB)" = "mdb",
+                                            "Mean difference from mean (MDM)" = "mdm", 
+                                            "Absolute concentration index (ACI)" = "aci",  
+                                            "Slope index of inequality (SII)" = "sii",
+                                            "Range Ratio (RR)" = "rr", 
+                                            "Index of disparity (IDis)" = "idis", 
+                                            "Relative concentration index (RCI)" = "rci", 
+                                            "Relative index of inequality (RII)" = "rii",
+                                            "Relative Index of Inequality (Kunst Mackenbach) (RIIKM)" = "riikm", 
+                                            "Theil Index (TI)" = "ti", 
+                                            "Population attributable risk (PAR)" = "par",
+                                            "Population attributable risk % (PAF)" = "paf", 
+                                            "Mean log deviation (MLD)" = "mld"))
+  
+  .rdata[['summary_measures_rank']]<- sort(c("Slope index of inequality (SII)" = "sii", 
+                                             "Absolute Concentration Index (ACI)" = "aci", 
+                                             "Relative concentration index (RCI)" = "rci",
+                                             "Relative index of inequality (RII)" = "rii",
+                                             "Relative Index of Inequality (Kunst Mackenbach) (RIIKM)" = "riikm"))
+  
+    
+    
+  .rdata[['summary_measures_unrank']]<-sort(c("Between-Group Variance (BGV)" = "bgv", 
+                                            "Index of disparity (IDis)" = "idis", 
+                                            "Mean difference from best performing subgroup (MDB)" = "mdb",
+                                            "Mean difference from mean (MDM)" = "mdm", 
+                                            "Population attributable risk % (PAF)" = "paf", 
+                                            "Population attributable risk (PAR)" = "par", 
+                                            "Range difference (RD)" = "rd",
+                                            "Relative index of inequality (RII)" = "rii", 
+                                            "Range Ratio (RR)" = "rr", 
+                                            "Theil Index (TI)" = "ti",
+                                            "Mean log deviation (MLD)" = "mld"))
+  
+
+  
   
   .rdata[['equity_dimensions']] <<- c("Economic status", "Geographic region", "Mother's education",
                                       "Place of residence","Sex")
-  .rdata[['core_indicators']]<<-c("anc1", "anc15", "anc4", "anc45", "bcgv", "carep", "cpmo", 
-                             "cpmt", "csection", "csection5", "dptv", "ebreast", "ebreast5", "fps", "fullv", 
-                             "itnch", "itnwm", "mslv", "ort", 
-                             "poliov", "sba", "sba5", "vita")
+  .rdata[['core_indicators']]<<-c("Antenatal care coverage - at least one visit (2/3 years) (%)" = "anc1",
+                                  "Antenatal care coverage - at least one visit (5 years) (%)" = "anc15",
+                                  "Antenatal care coverage - at least four visits (2/3 years) (%)" = "anc4",
+                                  "Antenatal care coverage - at least four visits (5 years) (%)" = "anc45",
+                                  #                     "Antibiotic treatment in children with ARI symptoms (%)" = "antip",
+                                  #                     "Adolescent fertility rate (per 1000 girls aged 15-19 years)" = "asfr1",
+                                  "BCG immunization coverage among 1-year-olds (%)" = "bcgv",
+                                  "Children (<5 years) with ARI symptoms taken to facility (%)" = "carep",
+                                  #                     "Co-coverage (less than 3 interventions)" = "cc31",
+                                  #                     "Co-coverage (less than 3 interventions)" = "cc34",
+                                  #                     "Co-coverage (6 or more interventions)" = "cc61",
+                                  #                     "Co-coverage (6 or more interventions)" = "cc64",
+                                  #                     "Composite coverage index" = "cci",
+                                  #                     "Child mortality rate (per 1000 live births)" = "cmr",
+                                  "Contraceptive prevalence - modern methods (%)" = "cpmo",
+                                  "Contraceptive prevalence - modern and traditional methods (%)" = "cpmt",
+                                  "Births by caesarean section (2/3 years) (%)" = "csection",
+                                  "Births by caesarean section (5 years) (%)" = "csection5",
+                                  "DTP3 immunization coverage among 1-year-olds (%)" = "dptv",
+                                  "Early initiation of breastfeeding (2/3 years) (%)" = "ebreast",
+                                  "Early initiation of breastfeeding (5 years) (%)" = "ebreast5",
+                                  "Family planning needs satisfied (%)" = "fps",
+                                  "Full immunization coverage among 1-year-olds (%)" = "fullv",
+                                  #                     "Hib immunization coverage among 1-year-olds (%)" = "hib3v",
+                                  #                     "Infant mortality rate (deaths per 1000 live births)" = "imr",
+                                  #                     "Intermittent preventive treatment for malaria during pregnancy (%)" = "iptp",
+                                  "Children (<5 years) sleeping under insecticide-treated nets (%)" = "itnch",
+                                  "Pregnant women sleeping under insecticide-treated nets (%)" = "itnwm",
+                                  "Measles immunization coverage among 1-year-olds (%)" = "mslv",
+                                  #                     "Neonatal mortality rate (deaths per 1000 live births)" = "nmr",
+                                  #                     "Prevalence of obesity in non-pregnant women (15-49 years) (%)" = "obesewm",
+                                  #                     "Children (<5 years) with diarrhoea receiving ORS (%)" = "ors",
+                                  "Children (<5 years) with diarrhoea receiving ORT and continued feeding (%)" = "ort",
+                                  #                     "Children (<3 years) overweight (%)" = "overwgt3",
+                                  #                     "Children (<5 years) overweight (%)" = "overwgt5",
+                                  #                     "Postnatal care for babies (%)" = "pncall",
+                                  #                     "Postnatal care for babies born outside a health facility (%)" = "pnchome",
+                                  #                     "Postnatal care for women (%)" = "pncwm",
+                                  #                     "Postnatal mortality rate (per 1000 live births)" = "pnmr",
+                                  "Polio immunization coverage among 1-year-olds (%)" = "poliov",
+                                  #                     "Population using improved sanitation facilities (%)" = "sanit",
+                                  "Births attended by skilled health personnel (2/3 years) (%)" = "sba",
+                                  "Births attended by skilled health personnel (5 years) (%)" = "sba5",
+                                  #                     "Children (<3 years) stunted (%)" = "stunt3",
+                                  #                     "Children (<5 years) stunted (%)" = "stunt5",
+                                  #                     "Total fertility rate (per woman)" = "tfr",
+                                  #                     "Under-five mortality rate (deaths per 1000 live births)" = "u5mr",
+                                  #                     "Children (<3 years) underweight (%)" = "uweight3",
+                                  #                     "Children (<5 years) underweight (%)" = "uweight5",
+                                  "Children (6-59 months) who received vitamin A supplementation (%)" = "vita")
+  #                     "Children (<3 years) wasted (%)" = "wast3",
+  #                     "Children (<5 years) wasted (%)" = "wast5",
+  #                     "Population using improved drinking water sources (%)" = "water")
   
   .rdata[['full_indicators']] <<-c("Antenatal care coverage - at least one visit (2/3 years) (%)" = "anc1",
     "Antenatal care coverage - at least one visit (5 years) (%)" = "anc15",
@@ -85,6 +177,60 @@ observe({
   #                     "Population using improved drinking water sources (%)" = "water")
   
   
+  .rdata[['health_indicator_abbr']] <- c("anc1" = "Antenatal care coverage - at least one visit (2/3 years) (%)",
+                                    "anc15" = "Antenatal care coverage - at least one visit (5 years) (%)",
+                                    "anc4" = "Antenatal care coverage - at least four visits (2/3 years) (%)",
+                                    "anc45" = "Antenatal care coverage - at least four visits (5 years) (%)",
+                                    #                                  "antip" = "Antibiotic treatment in children with ARI symptoms (%)",
+                                    #                                  "asfr1" = "Adolescent fertility rate (per 1000 girls aged 15-19 years)",
+                                    "bcgv" = "BCG immunization coverage among 1-year-olds (%)",
+                                    "carep" = "Children (<5 years) with ARI symptoms taken to facility (%)",
+                                    #                                   "cc31" = "Co-coverage (less than 3 interventions)",
+                                    #                                   "cc34" = "Co-coverage (less than 3 interventions)",
+                                    #                                   "cc61" = "Co-coverage (6 or more interventions)",
+                                    #                                   "cc64" = "Co-coverage (6 or more interventions)",
+                                    #                                   "cci" = "Composite coverage index",
+                                    #                                   "cmr" = "Child mortality rate (per 1000 live births)",
+                                    "cpmo" = "Contraceptive prevalence - modern methods (%)",
+                                    "cpmt" = "Contraceptive prevalence - modern and traditional methods (%)",
+                                    "csection" = "Births by caesarean section (2/3 years) (%)",
+                                    "csection5" = "Births by caesarean section (5 years) (%)",
+                                    "dptv" = "DTP3 immunization coverage among 1-year-olds (%)",
+                                    "ebreast" = "Early initiation of breastfeeding (2/3 years) (%)",
+                                    "ebreast5" = "Early initiation of breastfeeding (5 years) (%)",
+                                    "fps" = "Family planning needs satisfied (%)",
+                                    "fullv" = "Full immunization coverage among 1-year-olds (%)",
+                                    #                                   "hib3v" = "Hib immunization coverage among 1-year-olds (%)",
+                                    #                                   "imr" = "Infant mortality rate (deaths per 1000 live births)",
+                                    #                                   "iptp" = "Intermittent preventive treatment for malaria during pregnancy (%)",
+                                    "itnch" = "Children (<5 years) sleeping under insecticide-treated nets (%)",
+                                    "itnwm" = "Pregnant women sleeping under insecticide-treated nets (%)",
+                                    "mslv" = "Measles immunization coverage among 1-year-olds (%)",
+                                    #                                   "nmr" = "Neonatal mortality rate (deaths per 1000 live births)",
+                                    #                                   "obesewm" = "Prevalence of obesity in non-pregnant women (15-49 years) (%)",
+                                    #                                   "ors" = "Children (<5 years) with diarrhoea receiving ORS (%)",
+                                    "ort" = "Children (<5 years) with diarrhoea receiving ORT and continued feeding (%)",
+                                    #                                   "overwgt3" = "Children (<3 years) overweight (%)",
+                                    #                                   "overwgt5" = "Children (<5 years) overweight (%)",
+                                    #                                   "pncall" = "Postnatal care for babies (%)",
+                                    #                                   "pnchome" = "Postnatal care for babies born outside a health facility (%)",
+                                    #                                   "pncwm" = "Postnatal care for women (%)",
+                                    #                                   "pnmr" = "Postnatal mortality rate (per 1000 live births)",
+                                    "poliov" = "Polio immunization coverage among 1-year-olds (%)",
+                                    #                                   "sanit" = "Population using improved sanitation facilities (%)",
+                                    "sba" = "Births attended by skilled health personnel (2/3 years) (%)",
+                                    "sba5" = "Births attended by skilled health personnel (5 years) (%)",
+                                    #                                   "stunt3" = "Children (<3 years) stunted (%)",
+                                    #                                   "stunt5" = "Children (<5 years) stunted (%)",
+                                    #                                   "tfr" = "Total fertility rate (per woman)",
+                                    #                                   "u5mr" = "Under-five mortality rate (deaths per 1000 live births)",
+                                    #                                   "uweight3" = "Children (<3 years) underweight (%)",
+                                    #                                   "uweight5" = "Children (<5 years) underweight (%)",
+                                    "vita" = "Children (6-59 months) who received vitamin A supplementation (%)")
+  #                                   "wast3" = "Children (<3 years) wasted (%)",
+  #                                   "wast5" = "Children (<5 years) wasted (%)",
+  #                                   "water" = "Population using improved drinking water sources (%)")
+  
   
   })
 
@@ -118,26 +264,21 @@ reactive({
 })
 
 
+##############################################################
+# Reactives to keep selectors updated
+#############################################################
+
 reactive({
   
-  
+
   country<-input$focus_country_explore
-  country<-input$focus_country_compare
+
   
-  .rdata[['focus_country']]<<-country
+  update
   
 })
 
 
-reactive({
-  
-  
-  indicator<-input$focus_indicator_explore
-  indicator<-input$focus_indicator_compare
-  
-  .rdata[['focus_indicator']]<<-indicator
-  
-})
 
 
 ##############################################################
@@ -150,6 +291,33 @@ output$focus_country_explore <- renderUI({
   
 })
 
+
+
+output$focus_source_year_explore <- renderUI({
+  
+  selectYears <- getFilteredYear(country=input$focus_country_explore, datasource=input$data_source_explore)
+  .rdata[['focus_year']] <- selectYears[1]
+  
+  list(
+  radioButtons("focus_data_source_explore", h5("Select data sources"),
+               c("All", "DHS", "MICS"),
+               inline=T,
+               selected="All"),
+  
+  h5("Select years"),
+  checkboxInput('mostrecent_explore', 'Most recent year', FALSE),
+  
+  conditionalPanel( condition = "!input.mostrecent",  
+ 
+                    selectInput(inputId="focus_year_explore", 
+                                label='', 
+                                choices=selectYears, 
+                                multiple=T, 
+                                selected=.rdata[['focus_year']]),
+                    hr()
+                    )
+  )
+})
 
 
 ##############################################################
@@ -168,27 +336,25 @@ output$focus_indicator_explore_disag <- renderUI({
 
 # Return the requested dataset based on the UI selection (dataSource)
 datasetInput <- reactive({
-  
-  input$focus_country_explore
-  input$focus_country_compare
-  
-  input$focus_indicator_explore
-  input$focus_indicator_compare
+
   
   
-#   input$healthIndicator
-#   input$equityDimension
-#   input$focus_country
-#   input$years 
-#   input$mostrecent
-#   input$data_source
+.rdata[['focus_country']] <- input$focus_country_explore
+.rdata[['focus_indicator']] <- input$focus_indicator_explore
+.rdata[['focus_dimension']] <- input$focus_dimension_explore
+.rdata[['focus_year']] <- input$focus_year_explore
+.rdata[['mostrecent']] <- input$focus_mostrecent_explore
+.rdata[['data_source']] <- input$focus_data_source_explore
+
   
   getHETKdata(indicator=.rdata[['focus_indicator']], 
               stratifier=.rdata[['focus_dimension']],  # in hetkdb.R
-              countries=.rdata[['focus_countries']], 
-              years=.rdata[['focus_years']], 
+              countries=.rdata[['focus_country']], 
+              years=.rdata[['focus_year']], 
               mostrecent=.rdata[['mostrecent']],
               datasource=.rdata[['data_source']])
+  
+
 })
 
 
@@ -197,23 +363,9 @@ datasetInput <- reactive({
 # Generate a view of the Managed Data
 output$dataTable <- renderDataTable({
   
-  
-  
-  #input$getdata
-  
-  #isolate({ 
+
   
   theData <- datasetInput()
-  
-  #     getHETKdata(indicator=input$healthIndicator, 
-  #                          stratifier=input$equityDimension,  # in hetkdb.R
-  #                          countries=input$focus_country, 
-  #                          years=input$years, 
-  #                          mostrecent=input$mostrecent,
-  #                          datasource=input$data_source)
-  
-  
-  
   
   theData <- theData %>% 
     mutate(estimate = round(estimate, 2),
@@ -264,25 +416,21 @@ output$dataTable <- renderDataTable({
 
 
 # Year is filtered by the survey availability by country and the source (MICS/DHS of the survey)
-output$years <- renderUI({
-  
-  selectYears <- getFilteredYear(country=input$focus_country, datasource=input$data_source)
-  if(is.null(selectYears)){ selectYears <- c()}
-  selectInput(inputId="years", 
-              label='', 
-              choices=selectYears, 
-              multiple=T, 
-              selected=selectYears[1])
-})
+# output$years <- renderUI({
+#   
+#   selectYears <- getFilteredYear(country=input$focus_country, datasource=input$data_source)
+#   if(is.null(selectYears)){ selectYears <- c()}
+#   selectInput(inputId="years", 
+#               label='', 
+#               choices=selectYears, 
+#               multiple=T, 
+#               selected=selectYears[1])
+# })
 
 
 
 
-output$focus_indicator_explore_disag <- renderUI({
 
-  focusIndicator_selector("focus_indicator_explore", multiple=TRUE, core=FALSE)
-
-})
 
 
 #  Set up the selectInput for the selection of the equity dimensions
@@ -428,10 +576,10 @@ theDataPlot <- reactive({
     
     
     if(input$long_names1==T){
-      relevant_names <- which(names(healthIndicatorAbbreviations) %in% unique(plotData$indic))
+      relevant_names <- which(names(.rdata[['health_indicator_abbr']]) %in% unique(plotData$indic))
       plotData$indic <- factor(plotData$indic,
-                               levels = names(healthIndicatorAbbreviations)[relevant_names],
-                               labels = unname(healthIndicatorAbbreviations)[relevant_names]) 
+                               levels = names(.rdata[['health_indicator_abbr']])[relevant_names],
+                               labels = unname(.rdata[['health_indicator_abbr']])[relevant_names]) 
     }
     
     if(input$assessment_panel == 'dataplot' & input$ai_plot_type=='data_bar'){        
@@ -467,7 +615,7 @@ output$downloadAnyPlot <- downloadHandler(
 
 
 ##############################################################
-# required in explore inequality: summary table and plot ----
+# Explore inequality: summary table and plot ----
 #############################################################
 
 output$focus_indicator_explore_summary <- renderUI({
@@ -477,7 +625,7 @@ output$focus_indicator_explore_summary <- renderUI({
 })
 
 ##############################################################
-# required in explore inequality: summary table ----
+# Explore inequality:: summary table ----
 #############################################################
 
 
@@ -488,11 +636,11 @@ output$focus_indicator_explore_summary <- renderUI({
 
 output$sumtableSumMeasure <- renderUI({
   if(length(input$sumtableEquityDimension)>0){
-    if(input$sumtableEquityDimension %in% rankable){
-      selectionOptions <- allSummaryMeasures
+    if(input$sumtableEquityDimension %in% .rdata[['rankable_dimensions']]){
+      selectionOptions <- .rdata[['summary_measures_all']]
     }
-    if(!input$sumtableEquityDimension %in% rankable){
-      selectionOptions <- unrankSummaryMeasures
+    if(!input$sumtableEquityDimension %in% .rdata[['rankable_dimensions']]){
+      selectionOptions <- .rdata[['summary_measures_unrank']]
     }
   }
   else{
@@ -581,24 +729,24 @@ output$downloadSummtable <- renderUI({
 datasetInequal <- reactive({
   
 
-  if(input$dataSource=='HETK' & input$assessment_panel=='sumtable'){
+  if(.rdata[['data_source']]=='HETK' & input$assessment_panel=='sumtable'){
     #print('Getting equity data table a')
-    ineqDF <- getInequal(indicator=input$sumtableHealthIndicator, 
-                         stratifier=input$sumtableEquityDimension, 
-                         countries=input$focus_country, 
-                         years=input$sumtableYears,  
-                         inequal_types=input$sumtableSumMeasure)
+    ineqDF <- getInequal(indicator=.rdata[['focus_indicator']], 
+                         stratifier=.rdata[['focus_dimension']], 
+                         countries=.rdata[['focus_country']], 
+                         years=.rdata[['focus_year']],  
+                         inequal_types=.rdata[['focus_summary_measure']])
 
     
     return(ineqDF)
   }    
-  if(input$dataSource=='HETK' & input$assessment_panel=='sumplot'){
+  if(.rdata[['data_source']]=='HETK' & input$assessment_panel=='sumplot'){
     #print('Getting equity data plot')
-    ineqDF <- getInequal(indicator=input$sumtableHealthIndicator, 
-                         stratifier=input$sumtableEquityDimension, 
-                         countries=input$focus_country, 
-                         years=input$sumtableYears,  
-                         inequal_types=input$sumplotSumMeasures)
+    ineqDF <- getInequal(indicator=.rdata[['focus_indicator']], 
+                         stratifier=.rdata[['focus_dimension']], 
+                         countries=.rdata[['focus_country']], 
+                         years=.rdata[['focus_year']],  
+                         inequal_types=.rdata[['focus_summary_measure']])
     ineqDF$boot.se[ ineqDF$boot.se == 0] <- NA
     ineqDF$se[ ineqDF$se == 0] <- NA
     
@@ -749,11 +897,11 @@ output$focusCountry2 <- renderText({
 
 output$sumplotSumMeasures <- renderUI({
   if(length(input$sumplotEquityDimension)>0){
-    if(input$sumplotEquityDimension %in% rankable){
-      selectionOptions <- allSummaryMeasures
+    if(input$sumplotEquityDimension  %in% .rdata[['rankable_dimensions']]){
+      selectionOptions <- .rdata[['summary_measures_all']]
     }
-    if(!input$sumplotEquityDimension %in% rankable){
-      selectionOptions <- unrankSummaryMeasures
+    if(!input$sumplotEquityDimension  %in% .rdata[['rankable_dimensions']]){
+      selectionOptions <- .rdata[['summary_measures_unrank']]
     }
   }
   else{
@@ -871,10 +1019,10 @@ theSummaryPlot <- reactive({
         plotData <- plotData[relevant.rows, ]      
         
         if(input$long_names2==T){
-          relevant_names <- which(names(healthIndicatorAbbreviations) %in% unique(plotData$indic))
+          relevant_names <- which(names(.rdata[['health_indicator_abbr']]) %in% unique(plotData$indic))
           plotData$indic <- factor(plotData$indic,
-                                   levels = names(healthIndicatorAbbreviations)[relevant_names],
-                                   labels = unname(healthIndicatorAbbreviations)[relevant_names]) 
+                                   levels = names(.rdata[['health_indicator_abbr']])[relevant_names],
+                                   labels = unname(.rdata[['health_indicator_abbr']])[relevant_names]) 
         }
         
         
@@ -1066,11 +1214,11 @@ output$compplotDisagYears <- renderUI({
 
 output$compplotSumMeasure <- renderUI({
   if(length(input$compplotSumEquityDimension)>0){
-    if(input$compplotSumEquityDimension %in% rankable){
-      selectionOptions <- allSummaryMeasures
+    if(input$compplotSumEquityDimension %in% .rdata[['rankable_dimensions']]){
+      selectionOptions <- .rdata[['summary_measures_all']]
     }
-    if(!input$compplotSumEquityDimension %in% rankable){
-      selectionOptions <- unrankSummaryMeasures
+    if(!input$compplotSumEquityDimension %in% .rdata[['rankable_dimensions']]){
+      selectionOptions <- .rdata[['summary_measures_unrank']]
     }
   }
   else{
@@ -1277,10 +1425,10 @@ theComparisonPlot1 <- reactive({
     plotData <- plotData[, c('country', 'year', 'indic', 'subgroup', 'dimension', 'estimate', 'se')]
     
     if(input$long_names3==T){
-      relevant_names <- which(names(healthIndicatorAbbreviations) %in% unique(plotData$indic))
+      relevant_names <- which(names(.rdata[['health_indicator_abbr']]) %in% unique(plotData$indic))
       plotData$indic <- factor(plotData$indic,
-                               levels = names(healthIndicatorAbbreviations)[relevant_names],
-                               labels = unname(healthIndicatorAbbreviations)[relevant_names]) 
+                               levels = names(.rdata[['health_indicator_abbr']])[relevant_names],
+                               labels = unname(.rdata[['health_indicator_abbr']])[relevant_names]) 
     }
     
     

@@ -1,6 +1,7 @@
 getHETKdata <- function(indicator = NULL, stratifier = NULL, countries = NULL, years = NULL, mostrecent=FALSE, datasource='All'){
   
-  print("Getting data from getHETKdata")
+  #print("Getting data from getHETKdata")
+  #print(.rdata[['focus_country']])
   # TODO: need to deal with "most recent issue"
   # TODO: need to deal with datasource issue
   

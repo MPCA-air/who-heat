@@ -1,8 +1,13 @@
 
 focusCountry_selector <- function(id){
   
+  #print("in focus country")
+  #print(.rdata[['all_countries']])
+  
+    if(is.null(.rdata[['all_countries']])) return()
+  
 
-    countries <- .rdata[['focus_countries']]
+    countries <- .rdata[['all_countries']]
     #countries <- getFilteredCountries()
     if(is.null(countries)){ countries <- c()}
     

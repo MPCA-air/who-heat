@@ -5,23 +5,24 @@ output$explore_inequality_ui <- renderUI({
   sidebarLayout(
     sidebarPanel(
       uiOutput("focus_country_explore"), 
+      uiOutput('focus_source_year_explore'),
       
       conditionalPanel( condition = "(input.assessment_panel == 'datatable' || input.assessment_panel == 'dataplot')",   #### output.owndata gopt from server.R
 
                         #uiOutput("focus_indicator_explore_disag"), 
-                        radioButtons("data_source", h5("Select data sources"),
-                                     c("All", "DHS", "MICS"),
-                                     inline=T,
-                                     selected="All"),
+#                         radioButtons("data_source", h5("Select data sources"),
+#                                      c("All", "DHS", "MICS"),
+#                                      inline=T,
+#                                      selected="All"),
+#                         
+#                         h5("Select years"),
+#                         checkboxInput('mostrecent', 'Most recent year', FALSE),
+#                         
+#                         conditionalPanel( condition = "!input.mostrecent",                                           
+#                                           uiOutput("years"),
+#                                           hr()), 
                         
-                        h5("Select years"),
-                        checkboxInput('mostrecent', 'Most recent year', FALSE),
-                        
-                        conditionalPanel( condition = "!input.mostrecent",                                           
-                                          uiOutput("years"),
-                                          hr()), 
-                        
-                        
+                        #uiOutput('focus_source_year_explore'),
                         #conditionalPanel(condition = "1==1",
                         uiOutput("focus_indicator_explore_disag"),
                                          uiOutput("equityDimension"),
@@ -74,7 +75,7 @@ output$explore_inequality_ui <- renderUI({
                        uiOutput("sumtableSumMeasure"),                 
                        #uiOutput("sumtableHealthIndicator"),
                        uiOutput("sumtableEquityDimension"),
-                       uiOutput("sumtableYears"),
+                       #uiOutput("sumtableYears"),
                        h4('Summary measure options'),
                        checkboxInput('summultiplier1', 'MLD and TI x1000', TRUE),
                        checkboxInput('summultiplier2', 'RCI x100', TRUE),
@@ -95,7 +96,7 @@ output$explore_inequality_ui <- renderUI({
                        uiOutput("sumplotSumMeasures"),
                        #uiOutput("sumplotHealthIndicator"),
                        uiOutput("sumplotEquityDimension"),
-                       uiOutput("sumplotYears"),
+                       #uiOutput("sumplotYears"),
                        br(),
                        radioButtons("sumplot_type", h3("Plot options"),
                                     c("Bar Chart" = "data_bar",

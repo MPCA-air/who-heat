@@ -32,42 +32,42 @@
 # source('utils/inequal_functions/ti.R')  # Theil index
 
 
-unrankable <- c("Sex", "Geographical region")
-rankable <- c("Economic status", "Mother's education", "Place of residence")
-allSummaryMeasures <-sort( c("Range difference (RD)" = "rd",    
-                             "Between-Group variance (BGV)" = "bgv", 
-                             "Mean difference from best performing subgroup (MDB)" = "mdb",
-                             "Mean difference from mean (MDM)" = "mdm", 
-                             "Absolute concentration index (ACI)" = "aci",  
-                             "Slope index of inequality (SII)" = "sii",
-                             "Range Ratio (RR)" = "rr", 
-                             "Index of disparity (IDis)" = "idis", 
-                             "Relative concentration index (RCI)" = "rci", 
-                             "Relative index of inequality (RII)" = "rii",
-                             "Relative Index of Inequality (Kunst Mackenbach) (RIIKM)" = "riikm", 
-                             "Theil Index (TI)" = "ti", 
-                             "Population attributable risk (PAR)" = "par",
-                             "Population attributable risk % (PAF)" = "paf", 
-                             "Mean log deviation (MLD)" = "mld"))
-
-rankSummaryMeasures <- sort(c("Slope index of inequality (SII)" = "sii", 
-                              "Absolute Concentration Index (ACI)" = "aci", 
-                              "Relative concentration index (RCI)" = "rci",
-                              "Relative index of inequality (RII)" = "rii",
-                              "Relative Index of Inequality (Kunst Mackenbach) (RIIKM)" = "riikm"
-))
-
-unrankSummaryMeasures <- sort(c("Between-Group Variance (BGV)" = "bgv", 
-                                "Index of disparity (IDis)" = "idis", 
-                                "Mean difference from best performing subgroup (MDB)" = "mdb",
-                                "Mean difference from mean (MDM)" = "mdm", 
-                                "Population attributable risk % (PAF)" = "paf", 
-                                "Population attributable risk (PAR)" = "par", 
-                                "Range difference (RD)" = "rd",
-                                "Relative index of inequality (RII)" = "rii", 
-                                "Range Ratio (RR)" = "rr", 
-                                "Theil Index (TI)" = "ti",
-                                "Mean log deviation (MLD)" = "mld"))
+# unrankable <- c("Sex", "Geographical region")
+# rankable <- c("Economic status", "Mother's education", "Place of residence")
+# allSummaryMeasures <-sort( c("Range difference (RD)" = "rd",    
+#                              "Between-Group variance (BGV)" = "bgv", 
+#                              "Mean difference from best performing subgroup (MDB)" = "mdb",
+#                              "Mean difference from mean (MDM)" = "mdm", 
+#                              "Absolute concentration index (ACI)" = "aci",  
+#                              "Slope index of inequality (SII)" = "sii",
+#                              "Range Ratio (RR)" = "rr", 
+#                              "Index of disparity (IDis)" = "idis", 
+#                              "Relative concentration index (RCI)" = "rci", 
+#                              "Relative index of inequality (RII)" = "rii",
+#                              "Relative Index of Inequality (Kunst Mackenbach) (RIIKM)" = "riikm", 
+#                              "Theil Index (TI)" = "ti", 
+#                              "Population attributable risk (PAR)" = "par",
+#                              "Population attributable risk % (PAF)" = "paf", 
+#                              "Mean log deviation (MLD)" = "mld"))
+# 
+# rankSummaryMeasures <- sort(c("Slope index of inequality (SII)" = "sii", 
+#                               "Absolute Concentration Index (ACI)" = "aci", 
+#                               "Relative concentration index (RCI)" = "rci",
+#                               "Relative index of inequality (RII)" = "rii",
+#                               "Relative Index of Inequality (Kunst Mackenbach) (RIIKM)" = "riikm"
+# ))
+# 
+# unrankSummaryMeasures <- sort(c("Between-Group Variance (BGV)" = "bgv", 
+#                                 "Index of disparity (IDis)" = "idis", 
+#                                 "Mean difference from best performing subgroup (MDB)" = "mdb",
+#                                 "Mean difference from mean (MDM)" = "mdm", 
+#                                 "Population attributable risk % (PAF)" = "paf", 
+#                                 "Population attributable risk (PAR)" = "par", 
+#                                 "Range difference (RD)" = "rd",
+#                                 "Relative index of inequality (RII)" = "rii", 
+#                                 "Range Ratio (RR)" = "rr", 
+#                                 "Theil Index (TI)" = "ti",
+#                                 "Mean log deviation (MLD)" = "mld"))
 
 healthIndicatorAbbreviations <- c("anc1" = "Antenatal care coverage - at least one visit (2/3 years) (%)",
                                   "anc15" = "Antenatal care coverage - at least one visit (5 years) (%)",
