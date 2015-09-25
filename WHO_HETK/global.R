@@ -44,6 +44,27 @@ focusIndicator_selector <- function(id, multiple = FALSE, core=FALSE){
 
 
 
+focusDimension_selector <- function(id, multiple = FALSE){
+  
+  # TODO: need to unselect non-core if selected in diaggregated
+  # and in summary.
+  
+
+  selectionOptions <- .rdata[['equity_dimensions']]
+  
+  selectInput(inputId = id,
+              h5("Select inequality dimensions"),
+              choices = selectionOptions,
+              selected = .rdata[['focus_dimension']],
+              multiple=T)
+  
+  
+}
+
+
+
+
+
 
 
 textInputRow <-function (inputId, label, value = ""){

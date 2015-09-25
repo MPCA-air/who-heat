@@ -25,7 +25,7 @@ output$explore_inequality_ui <- renderUI({
                         #uiOutput('focus_source_year_explore'),
                         #conditionalPanel(condition = "1==1",
                         uiOutput("focus_indicator_explore_disag"),
-                                         uiOutput("equityDimension"),
+                                         uiOutput("focus_dimension_explore_disag"),
                                          hr(),
                                          actionButton("getdata", "Fetch Data",  class = "btn-success"),
                                         uiOutput('dataTableItems')

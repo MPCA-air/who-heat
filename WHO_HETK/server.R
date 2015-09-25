@@ -24,6 +24,7 @@ shinyServer(function(input, output, session){
   .rdata <<- list()
   #maindata<<-dbGetQuery(.connection, "SELECT * FROM maindata")
 
+  source("global.R", local=TRUE)
   source("helper.R", local=TRUE)
   source("utils/get_filtered.R", local=TRUE)
   source("utils/health_indicator_list.R", local=TRUE)

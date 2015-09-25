@@ -1,9 +1,8 @@
 getHETKdata <- function(indicator = NULL, stratifier = NULL, countries = NULL, years = NULL, mostrecent=FALSE, datasource='All'){
-  
+  print(is.null(datasource))
   #print("Getting data from getHETKdata")
   #print(.rdata[['focus_country']])
-  # TODO: need to deal with "most recent issue"
-  # TODO: need to deal with datasource issue
+
   
   # countries <- c("Afghanistan", "Armenia")
   
@@ -13,11 +12,15 @@ getHETKdata <- function(indicator = NULL, stratifier = NULL, countries = NULL, y
   filt_year <- TRUE
   filt_indicator <- TRUE
   filt_dimension <- TRUE
+  filt_datasource <- TRUE
+
   
   if(!is.null(countries)) filt_country <- quote(country %in% countries)
   if(!is.null(years) & !mostrecent) filt_year <- quote(year %in% years)
   if(!is.null(indicator)) filt_indicator <- quote(indic %in% indicator)
   if(!is.null(stratifier)) filt_dimension <- quote(dimension %in% stratifier)
+  if(!is.null(datasource) && datasource == 'All') filt_datasource <- TRUE
+  if(!is.null(datasource) && datasource != 'All') filt_datasource <- quote(source == datasource)
   
 #   print("In getHETKdata")
 #   print(filt_country)
@@ -26,7 +29,7 @@ getHETKdata <- function(indicator = NULL, stratifier = NULL, countries = NULL, y
 #   print(filt_dimension)
   
   
-  hetk.data <- filter(.rdata[['maindata']], filt_country, filt_year, filt_indicator, filt_dimension) %>% 
+  hetk.data <- filter(.rdata[['maindata']], filt_country, filt_year, filt_indicator, filt_dimension, filt_datasource) %>% 
     select(country, year, source, indic, dimension, subgroup, r, r_lower, r_upper, se, pop, iso3, 
            rankable, maxoptimum, popshare, flag, rankorder)
   

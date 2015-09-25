@@ -264,20 +264,6 @@ reactive({
 })
 
 
-##############################################################
-# Reactives to keep selectors updated
-#############################################################
-
-reactive({
-  
-
-  country<-input$focus_country_explore
-
-  
-  update
-  
-})
-
 
 
 
@@ -333,6 +319,13 @@ output$focus_indicator_explore_disag <- renderUI({
 })
 
 
+output$focus_dimension_explore_disag <- renderUI({
+  
+  focusDimension_selector("focus_dimension_explore_disag", multiple=TRUE)
+  
+})
+
+
 
 # Return the requested dataset based on the UI selection (dataSource)
 datasetInput <- reactive({
@@ -340,11 +333,13 @@ datasetInput <- reactive({
   
   
 .rdata[['focus_country']] <- input$focus_country_explore
-.rdata[['focus_indicator']] <- input$focus_indicator_explore
-.rdata[['focus_dimension']] <- input$focus_dimension_explore
+.rdata[['focus_data_source']] <- input$focus_data_source_explore
+.rdata[['mostrecent']] <- input$mostrecent_explore
 .rdata[['focus_year']] <- input$focus_year_explore
-.rdata[['mostrecent']] <- input$focus_mostrecent_explore
-.rdata[['data_source']] <- input$focus_data_source_explore
+
+.rdata[['focus_indicator']] <- input$focus_indicator_explore_disag
+.rdata[['focus_dimension']] <- input$focus_dimension_explore_disag
+
 
   
   getHETKdata(indicator=.rdata[['focus_indicator']], 
@@ -352,7 +347,7 @@ datasetInput <- reactive({
               countries=.rdata[['focus_country']], 
               years=.rdata[['focus_year']], 
               mostrecent=.rdata[['mostrecent']],
-              datasource=.rdata[['data_source']])
+              datasource=.rdata[['focus_data_source']])
   
 
 })
