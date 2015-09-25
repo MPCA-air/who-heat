@@ -12,19 +12,19 @@ library(stringr) # this was in the userful.R file, not sure how important
 library(shinythemes)
 
 
-
+#.rdata <<- list()
 
 
 shinyServer(function(input, output, session){  
 
-  
-  
+  .rdata <<- list()
+  #source("global.R", local=TRUE)
   #drv <- dbDriver("SQLite")
   #.connection<<-dbConnect(drv, "data/HEMTK.db")
-  .rdata <<- list()
+  
   #maindata<<-dbGetQuery(.connection, "SELECT * FROM maindata")
 
-  source("global.R", local=TRUE)
+
   source("helper.R", local=TRUE)
   source("utils/get_filtered.R", local=TRUE)
   source("utils/health_indicator_list.R", local=TRUE)

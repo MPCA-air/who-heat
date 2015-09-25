@@ -1,4 +1,6 @@
 
+
+
 focusCountry_selector <- function(id){
   
   #print("in focus country")
@@ -43,14 +45,39 @@ focusIndicator_selector <- function(id, multiple = FALSE, core=FALSE){
 }
 
 
+focusSummaryMeasure_selector <- function(id, dimension){
+  
+  if(length(dimension)>0){
+    if(dimension %in% .rdata[['rankable_dimensions']]){
+      selectionOptions <- .rdata[['summary_measures_all']]
+    }
+    if(!dimension %in% .rdata[['rankable_dimensions']]){
+      selectionOptions <- .rdata[['summary_measures_unrank']]
+    }
+  }
+  else{
+    selectionOptions <- NULL
+  }
+  print(selectionOptions)
+  selectInput(id, 
+              h5("Select summary measure"), 
+              choices=.rdata[['summary_measures_all']], 
+              selected=c("Range difference" = "rd"), 
+              multiple=TRUE)
+  
+  
+  
+}
+
 
 focusDimension_selector <- function(id, multiple = FALSE){
   
   # TODO: need to unselect non-core if selected in diaggregated
   # and in summary.
   
-
+  
   selectionOptions <- .rdata[['equity_dimensions']]
+  
   
   selectInput(inputId = id,
               h5("Select inequality dimensions"),
@@ -60,6 +87,12 @@ focusDimension_selector <- function(id, multiple = FALSE){
   
   
 }
+
+
+
+
+
+
 
 
 

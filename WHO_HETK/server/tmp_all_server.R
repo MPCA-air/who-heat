@@ -1,7 +1,9 @@
+
+
 observe({
   
   if(is.null(input$dataSource)) return()
-
+.rdata<<-list()
   if(input$dataSource == "HETK"){
     
     .rdata[['maindata']]<<-readRDS("data/maindata.RDS")
@@ -22,12 +24,12 @@ observe({
   .rdata[['focus_dimension']]<<-c("Place of residence")
   .rdata[['focus_year']]<<-c(2010)
   
-  .rdata[['focus_summary_measure']]<-'sii'
+  .rdata[['focus_summary_measure']]<<-'sii'
   
-  .rdata[['unrankable_dimensions']] <- c("Sex", "Geographical region")
-  .rdata[['rankable_dimensions']]<- c("Economic status", "Mother's education", "Place of residence")
+  .rdata[['unrankable_dimensions']] <<- c("Sex", "Geographical region")
+  .rdata[['rankable_dimensions']]<<- c("Economic status", "Mother's education", "Place of residence")
   
-  .rdata[['summary_measures_all']]<-sort( c("Range difference (RD)" = "rd",    
+  .rdata[['summary_measures_all']]<<-sort( c("Range difference (RD)" = "rd",    
                                             "Between-Group variance (BGV)" = "bgv", 
                                             "Mean difference from best performing subgroup (MDB)" = "mdb",
                                             "Mean difference from mean (MDM)" = "mdm", 
@@ -43,7 +45,7 @@ observe({
                                             "Population attributable risk % (PAF)" = "paf", 
                                             "Mean log deviation (MLD)" = "mld"))
   
-  .rdata[['summary_measures_rank']]<- sort(c("Slope index of inequality (SII)" = "sii", 
+  .rdata[['summary_measures_rank']]<<- sort(c("Slope index of inequality (SII)" = "sii", 
                                              "Absolute Concentration Index (ACI)" = "aci", 
                                              "Relative concentration index (RCI)" = "rci",
                                              "Relative index of inequality (RII)" = "rii",
@@ -51,7 +53,7 @@ observe({
   
     
     
-  .rdata[['summary_measures_unrank']]<-sort(c("Between-Group Variance (BGV)" = "bgv", 
+  .rdata[['summary_measures_unrank']]<<-sort(c("Between-Group Variance (BGV)" = "bgv", 
                                             "Index of disparity (IDis)" = "idis", 
                                             "Mean difference from best performing subgroup (MDB)" = "mdb",
                                             "Mean difference from mean (MDM)" = "mdm", 
@@ -177,7 +179,7 @@ observe({
   #                     "Population using improved drinking water sources (%)" = "water")
   
   
-  .rdata[['health_indicator_abbr']] <- c("anc1" = "Antenatal care coverage - at least one visit (2/3 years) (%)",
+  .rdata[['health_indicator_abbr']] <<- c("anc1" = "Antenatal care coverage - at least one visit (2/3 years) (%)",
                                     "anc15" = "Antenatal care coverage - at least one visit (5 years) (%)",
                                     "anc4" = "Antenatal care coverage - at least four visits (2/3 years) (%)",
                                     "anc45" = "Antenatal care coverage - at least four visits (5 years) (%)",
@@ -231,8 +233,14 @@ observe({
   #                                   "wast5" = "Children (<5 years) wasted (%)",
   #                                   "water" = "Population using improved drinking water sources (%)")
   
-  
+
   })
+
+
+
+
+
+
 
 reactive({
   
@@ -304,6 +312,7 @@ output$focus_source_year_explore <- renderUI({
                     )
   )
 })
+
 
 
 ##############################################################
@@ -428,17 +437,6 @@ output$dataTable <- renderDataTable({
 
 
 
-#  Set up the selectInput for the selection of the equity dimensions
-output$equityDimension <- renderUI({
-  #print("In equityDimension")
-  
-  selectionOptions <- .rdata[['equity_dimensions']]
-  selectInput(inputId = "equityDimension",
-              h5("Select inequality dimensions"),
-              choices = selectionOptions,
-              selected = selectionOptions[1],
-              multiple=T)
-})
 
 
 # Set up the selectInput for the display of data in the Disaggregated Data Table view
@@ -619,6 +617,18 @@ output$focus_indicator_explore_summary <- renderUI({
   
 })
 
+
+output$focus_dimension_explore_summary <- renderUI({
+  
+  focusDimension_selector("focus_dimension_explore_summary", multiple=TRUE)
+  
+})
+
+
+output$focus_summeasure_explore_summary <- renderUI({
+  focusSummaryMeasure_selector("focus_summeasure_explore_summary", input$focus_dimension_explore_summary)
+})
+
 ##############################################################
 # Explore inequality:: summary table ----
 #############################################################
@@ -629,25 +639,9 @@ output$focus_indicator_explore_summary <- renderUI({
 ### Creating reactive input for the Summary Tables
 ###
 
-output$sumtableSumMeasure <- renderUI({
-  if(length(input$sumtableEquityDimension)>0){
-    if(input$sumtableEquityDimension %in% .rdata[['rankable_dimensions']]){
-      selectionOptions <- .rdata[['summary_measures_all']]
-    }
-    if(!input$sumtableEquityDimension %in% .rdata[['rankable_dimensions']]){
-      selectionOptions <- .rdata[['summary_measures_unrank']]
-    }
-  }
-  else{
-    selectionOptions <- NULL
-  }
-  #print(selectionOptions)
-  selectInput("sumtableSumMeasure", 
-              h5("Select summary measure"), 
-              choices=selectionOptions, 
-              selected=c("Range difference" = "rd"), 
-              multiple=T)
-})
+# output$focus_summeasure_explore_summary <- renderUI({
+#   focusSummaryMeasure_selector("focus_summeasure_explore_summary")
+# })
 
 # output$sumtableHealthIndicator <- renderUI({    
 #   # Multiple select for the health indicator 
@@ -669,37 +663,37 @@ output$sumtableSumMeasure <- renderUI({
 
 
 
-output$sumtableEquityDimension <- renderUI({    
-  # Multiple select for the equity indicator 
-  if(is.null(input$equityDimension)){ 
-    selectionOptions <- c()
-  }
-  else{
-    selectionOptions <- sort(input$equityDimension)
-  }
-  selectInput("sumtableEquityDimension", 
-              h5("Select inequality dimensions"), 
-              choices=selectionOptions, 
-              selected=selectionOptions, 
-              multiple=T)
-})
+# output$sumtableEquityDimension <- renderUI({    
+#   # Multiple select for the equity indicator 
+#   if(is.null(input$equityDimension)){ 
+#     selectionOptions <- c()
+#   }
+#   else{
+#     selectionOptions <- sort(input$equityDimension)
+#   }
+#   selectInput("sumtableEquityDimension", 
+#               h5("Select inequality dimensions"), 
+#               choices=selectionOptions, 
+#               selected=selectionOptions, 
+#               multiple=T)
+# })
 
 
-output$sumtableYears <- renderUI({    
-  # Multiple select for the years of interest
-  yearsOfInterest <- sort(unique(datasetInput()$year))
-  if(is.null(yearsOfInterest)){ 
-    selectionOptions <- c()
-  }
-  else{
-    selectionOptions <- yearsOfInterest
-  }
-  selectInput("sumtableYears", 
-              h5("Select years"), 
-              choices=selectionOptions, 
-              selected=selectionOptions, 
-              multiple=T)
-})
+# output$sumtableYears <- renderUI({    
+#   # Multiple select for the years of interest
+#   yearsOfInterest <- sort(unique(datasetInput()$year))
+#   if(is.null(yearsOfInterest)){ 
+#     selectionOptions <- c()
+#   }
+#   else{
+#     selectionOptions <- yearsOfInterest
+#   }
+#   selectInput("sumtableYears", 
+#               h5("Select years"), 
+#               choices=selectionOptions, 
+#               selected=selectionOptions, 
+#               multiple=T)
+# })
 
 
 # Create a download button contingent on data in the table
@@ -723,8 +717,15 @@ output$downloadSummtable <- renderUI({
 
 datasetInequal <- reactive({
   
-
-  if(.rdata[['data_source']]=='HETK' & input$assessment_panel=='sumtable'){
+  .rdata[['focus_country']] <- input$focus_country_explore
+  .rdata[['focus_data_source']] <- input$focus_data_source_explore
+  .rdata[['mostrecent']] <- input$mostrecent_explore
+  .rdata[['focus_year']] <- input$focus_year_explore
+  
+  .rdata[['focus_indicator']] <- input$focus_indicator_explore_summary
+  .rdata[['focus_dimension']] <- input$focus_dimension_explore_summary
+  
+  if(input$dataSource=='HETK' & input$assessment_panel=='sumtable'){
     #print('Getting equity data table a')
     ineqDF <- getInequal(indicator=.rdata[['focus_indicator']], 
                          stratifier=.rdata[['focus_dimension']], 
@@ -735,7 +736,7 @@ datasetInequal <- reactive({
     
     return(ineqDF)
   }    
-  if(.rdata[['data_source']]=='HETK' & input$assessment_panel=='sumplot'){
+  if(input$dataSource=='HETK' & input$assessment_panel=='sumplot'){
     #print('Getting equity data plot')
     ineqDF <- getInequal(indicator=.rdata[['focus_indicator']], 
                          stratifier=.rdata[['focus_dimension']], 
@@ -890,24 +891,24 @@ output$focusCountry2 <- renderText({
 ### Creating reactive input for the Summary Plots
 ###
 
-output$sumplotSumMeasures <- renderUI({
-  if(length(input$sumplotEquityDimension)>0){
-    if(input$sumplotEquityDimension  %in% .rdata[['rankable_dimensions']]){
-      selectionOptions <- .rdata[['summary_measures_all']]
-    }
-    if(!input$sumplotEquityDimension  %in% .rdata[['rankable_dimensions']]){
-      selectionOptions <- .rdata[['summary_measures_unrank']]
-    }
-  }
-  else{
-    selectionOptions <- NULL
-  }
-  selectInput("sumplotSumMeasures", 
-              h5("Select summary measure"), 
-              choices=selectionOptions, 
-              selected=c("Range difference" = "rd"), 
-              multiple=F)
-})
+# output$sumplotSumMeasures <- renderUI({
+#   if(length(input$sumplotEquityDimension)>0){
+#     if(input$sumplotEquityDimension  %in% .rdata[['rankable_dimensions']]){
+#       selectionOptions <- .rdata[['summary_measures_all']]
+#     }
+#     if(!input$sumplotEquityDimension  %in% .rdata[['rankable_dimensions']]){
+#       selectionOptions <- .rdata[['summary_measures_unrank']]
+#     }
+#   }
+#   else{
+#     selectionOptions <- NULL
+#   }
+#   selectInput("sumplotSumMeasures", 
+#               h5("Select summary measure"), 
+#               choices=selectionOptions, 
+#               selected=c("Range difference" = "rd"), 
+#               multiple=F)
+# })
 
 
 output$sumplotHealthIndicator <- renderUI({    
@@ -1207,25 +1208,25 @@ output$compplotDisagYears <- renderUI({
 
 
 
-output$compplotSumMeasure <- renderUI({
-  if(length(input$compplotSumEquityDimension)>0){
-    if(input$compplotSumEquityDimension %in% .rdata[['rankable_dimensions']]){
-      selectionOptions <- .rdata[['summary_measures_all']]
-    }
-    if(!input$compplotSumEquityDimension %in% .rdata[['rankable_dimensions']]){
-      selectionOptions <- .rdata[['summary_measures_unrank']]
-    }
-  }
-  else{
-    selectionOptions <- NULL
-  }
-  
-  selectInput("compplotSumMeasure", 
-              h5("Select summary measure"), 
-              choices=selectionOptions,
-              selected=c("Range difference" = "rd"), 
-              multiple=F)
-})
+# output$compplotSumMeasure <- renderUI({
+#   if(length(input$compplotSumEquityDimension)>0){
+#     if(input$compplotSumEquityDimension %in% .rdata[['rankable_dimensions']]){
+#       selectionOptions <- .rdata[['summary_measures_all']]
+#     }
+#     if(!input$compplotSumEquityDimension %in% .rdata[['rankable_dimensions']]){
+#       selectionOptions <- .rdata[['summary_measures_unrank']]
+#     }
+#   }
+#   else{
+#     selectionOptions <- NULL
+#   }
+#   
+#   selectInput("compplotSumMeasure", 
+#               h5("Select summary measure"), 
+#               choices=selectionOptions,
+#               selected=c("Range difference" = "rd"), 
+#               multiple=F)
+# })
 
 
 

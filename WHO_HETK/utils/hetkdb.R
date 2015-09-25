@@ -1,5 +1,5 @@
 getHETKdata <- function(indicator = NULL, stratifier = NULL, countries = NULL, years = NULL, mostrecent=FALSE, datasource='All'){
-  print(mostrecent)
+  #print(mostrecent)
   #print("Getting data from getHETKdata")
   #print(.rdata[['focus_country']])
 

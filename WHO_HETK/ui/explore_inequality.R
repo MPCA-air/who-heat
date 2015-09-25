@@ -7,6 +7,7 @@ output$explore_inequality_ui <- renderUI({
       uiOutput("focus_country_explore"), 
       uiOutput('focus_source_year_explore'),
       
+      
       conditionalPanel( condition = "(input.assessment_panel == 'datatable' || input.assessment_panel == 'dataplot')",   #### output.owndata gopt from server.R
 
                         #uiOutput("focus_indicator_explore_disag"), 
@@ -64,7 +65,9 @@ output$explore_inequality_ui <- renderUI({
       ),
       
       conditionalPanel(condition = "input.assessment_panel == 'sumtable' | input.assessment_panel == 'sumplot'",
-                       uiOutput("focus_indicator_explore_summary")
+                       uiOutput("focus_indicator_explore_summary"),
+                       uiOutput("focus_dimension_explore_summary"),
+                       uiOutput("focus_summeasure_explore_summary")
                        
       ),
       
@@ -72,9 +75,9 @@ output$explore_inequality_ui <- renderUI({
       conditionalPanel(condition = "input.assessment_panel == 'sumtable'",
                        
            
-                       uiOutput("sumtableSumMeasure"),                 
+                       #uiOutput("focus_summeasure_explore_summary"),                 
                        #uiOutput("sumtableHealthIndicator"),
-                       uiOutput("sumtableEquityDimension"),
+                       #uiOutput("sumtableEquityDimension"),
                        #uiOutput("sumtableYears"),
                        h4('Summary measure options'),
                        checkboxInput('summultiplier1', 'MLD and TI x1000', TRUE),
@@ -93,9 +96,9 @@ output$explore_inequality_ui <- renderUI({
       conditionalPanel(condition = "input.assessment_panel == 'sumplot'",
                        
          
-                       uiOutput("sumplotSumMeasures"),
+                       #uiOutput("sumplotSumMeasures"),
                        #uiOutput("sumplotHealthIndicator"),
-                       uiOutput("sumplotEquityDimension"),
+                       #uiOutput("sumplotEquityDimension"),
                        #uiOutput("sumplotYears"),
                        br(),
                        radioButtons("sumplot_type", h3("Plot options"),
