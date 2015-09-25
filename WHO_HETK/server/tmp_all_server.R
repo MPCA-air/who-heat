@@ -291,9 +291,9 @@ output$focus_source_year_explore <- renderUI({
                selected="All"),
   
   h5("Select years"),
-  checkboxInput('mostrecent_explore', 'Most recent year', FALSE),
+  checkboxInput('mostrecent_explore', 'Most recent year', .rdata[['mostrecent']]),
   
-  conditionalPanel( condition = "!input.mostrecent",  
+  conditionalPanel( condition = "!input.mostrecent_explore",  
  
                     selectInput(inputId="focus_year_explore", 
                                 label='', 

@@ -1,12 +1,12 @@
 getHETKdata <- function(indicator = NULL, stratifier = NULL, countries = NULL, years = NULL, mostrecent=FALSE, datasource='All'){
-  print(is.null(datasource))
+  print(mostrecent)
   #print("Getting data from getHETKdata")
   #print(.rdata[['focus_country']])
 
   
   # countries <- c("Afghanistan", "Armenia")
   
-  mostrecent<- .rdata[['mostrecent']]
+  #mostrecent<- .rdata[['mostrecent']]
   
   filt_country <- TRUE
   filt_year <- TRUE
@@ -16,11 +16,12 @@ getHETKdata <- function(indicator = NULL, stratifier = NULL, countries = NULL, y
 
   
   if(!is.null(countries)) filt_country <- quote(country %in% countries)
-  if(!is.null(years) & !mostrecent) filt_year <- quote(year %in% years)
+  if(!is.null(years) && !is.null(mostrecent) && !mostrecent) filt_year <- quote(year %in% years)
   if(!is.null(indicator)) filt_indicator <- quote(indic %in% indicator)
   if(!is.null(stratifier)) filt_dimension <- quote(dimension %in% stratifier)
   if(!is.null(datasource) && datasource == 'All') filt_datasource <- TRUE
   if(!is.null(datasource) && datasource != 'All') filt_datasource <- quote(source == datasource)
+  
   
 #   print("In getHETKdata")
 #   print(filt_country)
@@ -57,7 +58,7 @@ getHETKdata <- function(indicator = NULL, stratifier = NULL, countries = NULL, y
   #names(hetk.data)[which(names(hetk.data)=='r_lower')] <- 'lower_95ci'
   #names(hetk.data)[which(names(hetk.data)=='r_upper')] <- 'upper_95ci'
   
-  if(mostrecent) {
+  if(!is.null(mostrecent) && mostrecent) {
     print("in most recent")
     hetk.data <- filter(hetk.data, year == max(hetk.data$year))
   }
