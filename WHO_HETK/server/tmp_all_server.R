@@ -18,6 +18,11 @@ observe({
   .rdata[['data_source']]<<-"All"
   .rdata[['mostrecent']]<<-FALSE
   
+  .rdata[['focus_country']]<<-"Afghanistan"
+  .rdata[['focus_indicator']]<<-c("carep")
+  .rdata[['focus_dimension']]<<-c("Place of residence")
+  .rdata[['focus_years']]<<-c(2010)
+  
   .rdata[['equity_dimensions']] <<- c("Economic status", "Geographic region", "Mother's education",
                                       "Place of residence","Sex")
   .rdata[['core_indicators']]<<-c("anc1", "anc15", "anc4", "anc45", "bcgv", "carep", "cpmo", 
@@ -124,22 +129,138 @@ reactive({
 })
 
 
+reactive({
+  
+  
+  indicator<-input$focus_indicator_explore
+  indicator<-input$focus_indicator_compare
+  
+  .rdata[['focus_indicator']]<<-indicator
+  
+})
+
 
 ##############################################################
-# required in explore inequality: table -----
+# Explore inequality: all tabs
 #############################################################
 
-print(a)
-#print(a)
-
-### Creating reactive input for the Data Table and Data Plot tabs
-###
-# Countries can be filtered by input$WHOregion and input$wbGroup, but currently 'No Filter' is the default
 output$focus_country_explore <- renderUI({
   
   focusCountry_selector("focus_country_explore")
-
+  
 })
+
+
+
+##############################################################
+# Explore inequality: disggregated table and plot-----
+#############################################################
+
+
+
+output$focus_indicator_explore_disag <- renderUI({
+  
+  focusIndicator_selector("focus_indicator_explore_disag", multiple=TRUE, core=FALSE)
+  
+})
+
+
+
+# Return the requested dataset based on the UI selection (dataSource)
+datasetInput <- reactive({
+  
+  input$focus_country_explore
+  input$focus_country_compare
+  
+  input$focus_indicator_explore
+  input$focus_indicator_compare
+  
+  
+#   input$healthIndicator
+#   input$equityDimension
+#   input$focus_country
+#   input$years 
+#   input$mostrecent
+#   input$data_source
+  
+  getHETKdata(indicator=.rdata[['focus_indicator']], 
+              stratifier=.rdata[['focus_dimension']],  # in hetkdb.R
+              countries=.rdata[['focus_countries']], 
+              years=.rdata[['focus_years']], 
+              mostrecent=.rdata[['mostrecent']],
+              datasource=.rdata[['data_source']])
+})
+
+
+
+
+# Generate a view of the Managed Data
+output$dataTable <- renderDataTable({
+  
+  
+  
+  #input$getdata
+  
+  #isolate({ 
+  
+  theData <- datasetInput()
+  
+  #     getHETKdata(indicator=input$healthIndicator, 
+  #                          stratifier=input$equityDimension,  # in hetkdb.R
+  #                          countries=input$focus_country, 
+  #                          years=input$years, 
+  #                          mostrecent=input$mostrecent,
+  #                          datasource=input$data_source)
+  
+  
+  
+  
+  theData <- theData %>% 
+    mutate(estimate = round(estimate, 2),
+           lower_95ci = round(lower_95ci,2),
+           upper_95ci = round(upper_95ci,2),
+           popshare = round(popshare, 2))
+  
+  theData<-theData %>% 
+    rename(
+      Country                = country,
+      Year                   = year,
+      `Data source`          = source,
+      `Health indicator`     = indic,
+      `Inequality dimension` = dimension,
+      Subgroup               = subgroup,
+      Estimate               = estimate,
+      `Lower 95%CI`          = lower_95ci,
+      `Upper 95%CI`          = upper_95ci,
+      `Population share %`   = popshare,
+      Flag                   = flag
+    ) 
+  
+  if(theData[["Data source"]][1] %in% c('DHS', 'MICS')){
+    theData <- theData[, input$dataTableItems]
+    
+  }
+  else{
+    theData <- theData[, c('Country', 'Year', 'Data source', 'Health indicator', 
+                           'Inequality dimension', 'Subgroup', 'Estimate')]
+  }
+  #})
+  
+  #if(is.null(theData)) return()
+  #if(nrow(theData)==0)return()
+  
+  theData
+}, options = list(dom = "ilftpr", pageLength = 10)  # see https://datatables.net/ for dataTable options
+)
+
+
+
+
+##############################################################
+# Explore inequality: disaggregated table ----
+#############################################################
+
+
 
 
 # Year is filtered by the survey availability by country and the source (MICS/DHS of the survey)
@@ -156,17 +277,11 @@ output$years <- renderUI({
 
 
 
-#  Set up the selectInput for the selection of health indicator
-output$healthIndicator <- renderUI({
-  #print("In healthIndicator")
-  
-  selectionOptions <- .rdata[['full_indicators']]      
-  if(is.null(selectionOptions)){ selectionOptions <- c()}
-  selectInput("healthIndicator", 
-              h5("Select health indicators"), 
-              choices = selectionOptions, 
-              selected = selectionOptions[1],
-              multiple=T)
+
+output$focus_indicator_explore_disag <- renderUI({
+
+  focusIndicator_selector("focus_indicator_explore", multiple=TRUE, core=FALSE)
+
 })
 
 
@@ -252,89 +367,10 @@ output$downloadAnyData <- downloadHandler(
 
 
 
-##############################################################
-# required in explore inequality: disaggregated table and plot-----
-#############################################################
-
-
-
-# Return the requested dataset based on the UI selection (dataSource)
-datasetInput <- reactive({
-
-  getHETKdata(indicator=input$healthIndicator, 
-              stratifier=input$equityDimension,  # in hetkdb.R
-              countries=input$focus_country, 
-              years=input$years, 
-              mostrecent=input$mostrecent,
-              datasource=input$data_source)
-})
-
-
-
-
-# Generate a view of the Managed Data
-output$dataTable <- renderDataTable({
-  
-
-  
-  #input$getdata
-  
-  #isolate({ 
-  
-  theData <- datasetInput()
-    
-#     getHETKdata(indicator=input$healthIndicator, 
-#                          stratifier=input$equityDimension,  # in hetkdb.R
-#                          countries=input$focus_country, 
-#                          years=input$years, 
-#                          mostrecent=input$mostrecent,
-#                          datasource=input$data_source)
-  
-  
-  
-  
-  theData <- theData %>% 
-    mutate(estimate = round(estimate, 2),
-           lower_95ci = round(lower_95ci,2),
-           upper_95ci = round(upper_95ci,2),
-           popshare = round(popshare, 2))
-  
-  theData<-theData %>% 
-    rename(
-      Country                = country,
-      Year                   = year,
-      `Data source`          = source,
-      `Health indicator`     = indic,
-      `Inequality dimension` = dimension,
-      Subgroup               = subgroup,
-      Estimate               = estimate,
-      `Lower 95%CI`          = lower_95ci,
-      `Upper 95%CI`          = upper_95ci,
-      `Population share %`   = popshare,
-      Flag                   = flag
-    ) 
-  
-  if(theData[["Data source"]][1] %in% c('DHS', 'MICS')){
-    theData <- theData[, input$dataTableItems]
-    
-  }
-  else{
-    theData <- theData[, c('Country', 'Year', 'Data source', 'Health indicator', 
-                           'Inequality dimension', 'Subgroup', 'Estimate')]
-  }
-  #})
-  
-  #if(is.null(theData)) return()
-  #if(nrow(theData)==0)return()
-  
-  theData
-}, options = list(dom = "ilftpr", pageLength = 10)  # see https://datatables.net/ for dataTable options
-)
-
 
 
 ##############################################################
-# required in explore inequality: disaggregated plot----
+# Explore inequality: disaggregated plot ----
 #############################################################
 
 
@@ -428,9 +464,24 @@ output$downloadAnyPlot <- downloadHandler(
 )   
 
 
+
+
+##############################################################
+# required in explore inequality: summary table and plot ----
+#############################################################
+
+output$focus_indicator_explore_summary <- renderUI({
+  
+  focusIndicator_selector("focus_indicator_explore_summary", multiple=TRUE, core=TRUE)
+  
+})
+
 ##############################################################
 # required in explore inequality: summary table ----
 #############################################################
+
+
+
 
 ### Creating reactive input for the Summary Tables
 ###
@@ -455,22 +506,22 @@ output$sumtableSumMeasure <- renderUI({
               multiple=T)
 })
 
-output$sumtableHealthIndicator <- renderUI({    
-  # Multiple select for the health indicator 
-  if(is.null(input$healthIndicator)){ 
-    selectionOptions <- c()
-  }
-  else{
-    selectionOptions <- sort(input$healthIndicator)
-    #print(input$healthIndicator)
-    selectionOptions <- healthIndicatorList(option='full')[which(healthIndicatorList(option='core') %in% selectionOptions)]
-  }
-  selectInput("sumtableHealthIndicator", 
-              h5("Select health indicators"), 
-              choices=selectionOptions, 
-              selected=selectionOptions, 
-              multiple=T)
-})
+# output$sumtableHealthIndicator <- renderUI({    
+#   # Multiple select for the health indicator 
+#   if(is.null(input$healthIndicator)){ 
+#     selectionOptions <- c()
+#   }
+#   else{
+#     selectionOptions <- sort(input$healthIndicator)
+#     #print(input$healthIndicator)
+#     selectionOptions <- healthIndicatorList(option='full')[which(healthIndicatorList(option='core') %in% selectionOptions)]
+#   }
+#   selectInput("sumtableHealthIndicator", 
+#               h5("Select health indicators"), 
+#               choices=selectionOptions, 
+#               selected=selectionOptions, 
+#               multiple=T)
+# })
 
 
 
@@ -878,6 +929,11 @@ output$focus_country_compare <- renderUI({
   
 })
 
+output$health_indicator_compare <- renderUI({
+  
+  focusIndicator_selector("focus_indicator_compare")
+  
+})
 
 
 output$compplotBenchHealthIndicator <- renderUI({    
