@@ -5,12 +5,11 @@ output$compare_inequality_ui <- renderUI({
   sidebarLayout(
     sidebarPanel(
       
-      h4(
-        #textOutput('focusCountry4')
-        ),
+      uiOutput("focus_country_compare"),
       hr(),
       conditionalPanel(condition = "input.comparison_panel == 'inequalbenchmark'",
                        
+                       #uiOutput("focus_country"),
                        uiOutput("compplotBenchHealthIndicator"),
                        uiOutput("compplotBenchEquityDimension"),
                        uiOutput("compplotBenchYears"),
@@ -49,6 +48,8 @@ output$compare_inequality_ui <- renderUI({
                        
       ),
       conditionalPanel(condition = "input.comparison_panel == 'inequaldisag'",
+                       
+                       #uiOutput("focus_country"),
                        uiOutput("compplotDisagHealthIndicator"),
                        uiOutput("compplotDisagEquityDimension"),
                        uiOutput("compplotDisagYears"),
@@ -75,6 +76,8 @@ output$compare_inequality_ui <- renderUI({
       ),
       conditionalPanel(condition = "input.comparison_panel == 'inequalsum'",
                        
+                       
+                       #uiOutput("focus_country"),
                        uiOutput("compplotSumMeasure"),
                        uiOutput("compplotSumHealthIndicator"),
                        uiOutput("compplotSumEquityDimension"),

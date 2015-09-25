@@ -1,8 +1,22 @@
-# library(RSQLite)
-# drv <- dbDriver("SQLite")
-# .connection<<-dbConnect(drv, "X:/projects/who_heat/web/who-heat/WHO_HETK/data/HEMTK.db")
 
-#maindata<<-dbGetQuery(.connection, "SELECT * FROM maindata")
+focusCountry_selector <- function(id, helptext = NA){
+  
+
+    countries <- .rdata[['focus_countries']]
+    #countries <- getFilteredCountries()
+    if(is.null(countries)){ countries <- c()}
+    
+    selectInput(id, 
+                h5("Country:"), 
+                choices  = countries, 
+                multiple = FALSE, 
+                selected = .rdata[['focus_country']])
+  
+  
+}
+
+
+
 
 
 textInputRow <-function (inputId, label, value = ""){

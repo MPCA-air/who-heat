@@ -12,6 +12,12 @@ observe({
     #print(head(.rdata[['countrynames']]))
   }
   
+  .rdata[['focus_countries']]<<-.rdata[['countrynames']]$country
+  .rdata[['benchmark_countries']]<<-0
+  .rdata[['focus_country']]<<-"Afghanistan"
+  .rdata[['data_source']]<<-"All"
+  .rdata[['mostrecent']]<<-FALSE
+  
   .rdata[['equity_dimensions']] <<- c("Economic status", "Geographic region", "Mother's education",
                                       "Place of residence","Sex")
   .rdata[['core_indicators']]<<-c("anc1", "anc15", "anc4", "anc45", "bcgv", "carep", "cpmo", 
@@ -77,6 +83,46 @@ observe({
   
   })
 
+reactive({
+  
+  
+  WBgroup      <- input$benchmarkWBgroup
+  WHOregion    <- input$benchmarkWHOregion
+  focusCountry <- .rdata[['focus_country']]
+  
+  filt_WBgroup   <- TRUE
+  filt_WHOregion <- TRUE
+  
+  
+  if(!is.null(WBgroup) & all(WBgroup != "")) 
+    filt_WBgroup <- quote(wbincome2014_4cat %in% WBgroup)
+  
+  if(!is.null(WHOregion) & all(WHOregion != "")) 
+    filt_WHOregion <- quote(wbincome2014_4cat %in% WHOregion)
+  
+  
+  countries <- filter(.rdata[['countrynames']], filt_WBgroup, filt_WHOregion) %>% 
+    select(country) %>% .$country
+  
+  .rdata[['benchmark_countries']] <<-countries
+  
+  
+  #return(countries)
+  
+  
+})
+
+
+reactive({
+  
+  
+  country<-input$focus_country_explore
+  country<-input$focus_country_compare
+  
+  .rdata[['focus_country']]<<-country
+  
+})
+
 
 
 ##############################################################
@@ -89,22 +135,17 @@ print(a)
 ### Creating reactive input for the Data Table and Data Plot tabs
 ###
 # Countries can be filtered by input$WHOregion and input$wbGroup, but currently 'No Filter' is the default
-output$equityCountry <- renderUI({
+output$focus_country_explore <- renderUI({
+  
+  focusCountry_selector("focus_country_explore")
 
-  countries <- getFilteredCountries()
-  if(is.null(countries)){ countries <- c()}
-  selectInput("equityCountry", 
-              h5("Country:"), 
-              countries, 
-              multiple=F, 
-              selected=NULL)
 })
 
 
 # Year is filtered by the survey availability by country and the source (MICS/DHS of the survey)
 output$years <- renderUI({
   
-  selectYears <- getFilteredYear(country=input$equityCountry, datasource=input$data_source)
+  selectYears <- getFilteredYear(country=input$focus_country, datasource=input$data_source)
   if(is.null(selectYears)){ selectYears <- c()}
   selectInput(inputId="years", 
               label='', 
@@ -149,7 +190,8 @@ output$dataTableItems <- renderUI({
   # TODO: there is a test for whether the user's selected data has rows
   # but this requires another call to the data creation so for now I'm 
   # turning off
-
+  if(is.null(input$assessment_panel)) return()
+  
   if(input$assessment_panel == "datatable"){ 
     selectOptions <- c("Country" = 'Country', 
                        "Year" = "Year", 
@@ -197,7 +239,7 @@ output$downloadDatatable <- renderUI({
 #Handler for downloading the data selected in the modal download table
 output$downloadAnyData <- downloadHandler(
   filename = function() {
-    paste(input$equityCountry, Sys.Date(), '.csv', sep='')
+    paste(input$focus_country, Sys.Date(), '.csv', sep='')
   },
   content = function(file) {
     sep <- switch(input$filetype1, "csv" = ",", "tsv" = "\t")
@@ -221,7 +263,7 @@ datasetInput <- reactive({
 
   getHETKdata(indicator=input$healthIndicator, 
               stratifier=input$equityDimension,  # in hetkdb.R
-              countries=input$equityCountry, 
+              countries=input$focus_country, 
               years=input$years, 
               mostrecent=input$mostrecent,
               datasource=input$data_source)
@@ -243,7 +285,7 @@ output$dataTable <- renderDataTable({
     
 #     getHETKdata(indicator=input$healthIndicator, 
 #                          stratifier=input$equityDimension,  # in hetkdb.R
-#                          countries=input$equityCountry, 
+#                          countries=input$focus_country, 
 #                          years=input$years, 
 #                          mostrecent=input$mostrecent,
 #                          datasource=input$data_source)
@@ -376,7 +418,7 @@ theDataPlot <- reactive({
 # Handler for downloading the data selected in the modal download table
 output$downloadAnyPlot <- downloadHandler(
   filename = function() { 
-    paste(input$equityCountry, '_disag_', Sys.Date(), '.pdf', sep='')
+    paste(input$focus_country, '_disag_', Sys.Date(), '.pdf', sep='')
   },
   content = function(file) {
     pdf(file, width=(as.numeric(input$plot1_width)/2.54), height=(as.numeric(input$plot1_height)/2.45), paper=input$papersize1)
@@ -492,7 +534,7 @@ datasetInequal <- reactive({
     #print('Getting equity data table a')
     ineqDF <- getInequal(indicator=input$sumtableHealthIndicator, 
                          stratifier=input$sumtableEquityDimension, 
-                         countries=input$equityCountry, 
+                         countries=input$focus_country, 
                          years=input$sumtableYears,  
                          inequal_types=input$sumtableSumMeasure)
 
@@ -503,7 +545,7 @@ datasetInequal <- reactive({
     #print('Getting equity data plot')
     ineqDF <- getInequal(indicator=input$sumtableHealthIndicator, 
                          stratifier=input$sumtableEquityDimension, 
-                         countries=input$equityCountry, 
+                         countries=input$focus_country, 
                          years=input$sumtableYears,  
                          inequal_types=input$sumplotSumMeasures)
     ineqDF$boot.se[ ineqDF$boot.se == 0] <- NA
@@ -623,7 +665,7 @@ output$dataTableInequal <- renderDataTable({
 # Handler for downloading the data selected in the modal download table
 output$downloadAnySumm <- downloadHandler(
   filename = function() {
-    paste(input$equityCountry, Sys.Date(), '.csv', sep='')
+    paste(input$focus_country, Sys.Date(), '.csv', sep='')
   },
   content = function(file) {
     sep <- switch(input$filetype2, "csv" = ",", "tsv" = "\t")
@@ -639,8 +681,8 @@ output$downloadAnySumm <- downloadHandler(
 
 
 output$focusCountry2 <- renderText({ 
-  if(length(input$equityCountry) > 0){
-    return(input$equityCountry)
+  if(length(input$focus_country) > 0){
+    return(input$focus_country)
   }
 })
 
@@ -808,7 +850,7 @@ theSummaryPlot <- reactive({
 # Handler for downloading the data selected in the modal download table
 output$downloadSummPlot <- downloadHandler(
   filename = function() { 
-    paste(input$equityCountry, '_summ_', Sys.Date(), '.pdf', sep='')
+    paste(input$focus_country, '_summ_', Sys.Date(), '.pdf', sep='')
   },
   content = function(file) {
     pdf(file, width=(as.numeric(input$plot2_width)/2.54), height=(as.numeric(input$plot2_height)/2.45), paper=input$papersize2)
@@ -827,9 +869,14 @@ output$downloadSummPlot <- downloadHandler(
 
 
 ##############################################################
-# Comparison Benchmark SIDEPANEL
+# Compare inquality: sidepanel
 #############################################################
 
+output$focus_country_compare <- renderUI({
+  
+  focusCountry_selector("focus_country_compare")
+  
+})
 
 
 
@@ -869,7 +916,7 @@ output$compplotBenchYears <- renderUI({
   # Multiple select for the years of interest
   years<-getHETKdata(indicator=input$healthIndicator, 
               stratifier=input$equityDimension,  # in hetkdb.R
-              countries=input$equityCountry, 
+              countries=input$focus_country, 
               years=input$years, 
               mostrecent=input$mostrecent,
               datasource=input$data_source)
@@ -1050,7 +1097,7 @@ output$dataTableBenchmark <- renderDataTable({
     
     anchordata <-   getHETKdata(indicator=input$compplotBenchHealthIndicator, 
                                 stratifier=input$compplotBenchEquityDimension,  # in hetkdb.R
-                                countries=input$equityCountry, 
+                                countries=input$focus_country, 
                                 years=input$compplotBenchYears)
 
 #     relevant.rows <- which(anchordata$year %in% input$compplotBenchYears &   # Select only the right years ...
@@ -1321,8 +1368,8 @@ theComparisonPlot2 <- reactive({
 #A *Reactive* to fetch benchmark country summary data
 getData5 <- reactive({
   # This *reactive* fetches benchmark country summary data
-  if(length(input$equityCountry) > 0){
-    thecountries <- unique(c(input$equityCountry, input$benchmarkCountries))
+  if(length(input$focus_country) > 0){
+    thecountries <- unique(c(input$focus_country, input$benchmarkCountries))
   
     thedata <- getComparisonSummaries(summeasure=input$compplotSumMeasure, 
                                       indicator=input$compplotSumHealthIndicator, 
@@ -1331,7 +1378,7 @@ getData5 <- reactive({
                                       years=input$compplotSumYears, 
                                       elasticity=input$benchmarkYears, matchyears=T)
     thedata$anchor <- 0
-    thedata$anchor[thedata$country==input$equityCountry] <- 1
+    thedata$anchor[thedata$country==input$focus_country] <- 1
     
   } else {
     thedata <- NULL
@@ -1360,8 +1407,8 @@ output$theComparisonPlot2_web <- renderPlot({
 # 
 # # Focus country
 # output$focusCountry1 <- renderText({ 
-#   if(length(input$equityCountry) > 0){
-#     return(input$equityCountry)
+#   if(length(input$focus_country) > 0){
+#     return(input$focus_country)
 #   }
 # })
 # 
@@ -1369,22 +1416,22 @@ output$theComparisonPlot2_web <- renderPlot({
 
 # 
 # output$focusCountry3 <- renderText({ 
-#   if(length(input$equityCountry) > 0){
-#     return(input$equityCountry)
+#   if(length(input$focus_country) > 0){
+#     return(input$focus_country)
 #   }
 # })
 # 
 # 
 # output$focusCountry4 <- renderText({ 
-#   if(length(input$equityCountry) > 0){
-#     return(input$equityCountry)
+#   if(length(input$focus_country) > 0){
+#     return(input$focus_country)
 #   }
 # })
 # 
 # 
 # output$focusCountry5 <- renderText({ 
-#   if(length(input$equityCountry) > 0){
-#     return(input$equityCountry)
+#   if(length(input$focus_country) > 0){
+#     return(input$focus_country)
 #   }
 # })
 # 
@@ -1476,7 +1523,7 @@ output$theComparisonPlot2_web <- renderPlot({
 #   isolate({
 #     if(input$dataSource == 'GHO'){
 #       gho.url <- setupGHOdata(indicator=input$gho_equityIndic, stratifier=input$equityStrata, 
-#                               countries=input$equityCountry, years=input$years)
+#                               countries=input$focus_country, years=input$years)
 #       print(gho.url)
 #       return(gho.url)
 #     }
@@ -1667,7 +1714,7 @@ output$theComparisonPlot2_web <- renderPlot({
 # # Handler for downloading the data selected in the modal download plot
 # output$downloadCompPlot1 <- downloadHandler(
 #   filename = function() { 
-#     paste(input$equityCountry, '_comp_', Sys.Date(), '.pdf', sep='')
+#     paste(input$focus_country, '_comp_', Sys.Date(), '.pdf', sep='')
 #   },
 #   content = function(file) {
 #     pdf(file, width=(as.numeric(input$plot1_width)/2.54), height=(as.numeric(input$plot1_height)/2.45), paper=input$papersize1)
@@ -1682,7 +1729,7 @@ output$theComparisonPlot2_web <- renderPlot({
 # # Handler for downloading the data selected in the modal download plot
 # output$downloadCompPlot2 <- downloadHandler(
 #   filename = function() { 
-#     paste(input$equityCountry, '_comp_', Sys.Date(), '.pdf', sep='')
+#     paste(input$focus_country, '_comp_', Sys.Date(), '.pdf', sep='')
 #   },
 #   content = function(file) {
 #     pdf(file, width=(as.numeric(input$plot1_width)/2.54), height=(as.numeric(input$plot1_height)/2.45), paper=input$papersize1)

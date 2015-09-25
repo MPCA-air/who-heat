@@ -6,7 +6,7 @@ getHETKdata <- function(indicator = NULL, stratifier = NULL, countries = NULL, y
   
   # countries <- c("Afghanistan", "Armenia")
   
- 
+  mostrecent<- .rdata[['mostrecent']]
   
   filt_country <- TRUE
   filt_year <- TRUE
@@ -14,7 +14,7 @@ getHETKdata <- function(indicator = NULL, stratifier = NULL, countries = NULL, y
   filt_dimension <- TRUE
   
   if(!is.null(countries)) filt_country <- quote(country %in% countries)
-  if(!is.null(years) & !input$mostrecent) filt_year <- quote(year %in% years)
+  if(!is.null(years) & !mostrecent) filt_year <- quote(year %in% years)
   if(!is.null(indicator)) filt_indicator <- quote(indic %in% indicator)
   if(!is.null(stratifier)) filt_dimension <- quote(dimension %in% stratifier)
   

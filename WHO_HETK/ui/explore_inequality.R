@@ -4,10 +4,10 @@ output$explore_inequality_ui <- renderUI({
   #includeScript(file %>% .path(r_path,"base/www/js/returnTextAreaBinding.js")),
   sidebarLayout(
     sidebarPanel(
-      
+      uiOutput("focus_country_explore"), 
       conditionalPanel( condition = "(input.assessment_panel == 'datatable' || input.assessment_panel == 'dataplot')",   #### output.owndata gopt from server.R
                         
-                        uiOutput("equityCountry"), #),
+                        
                         
                         radioButtons("data_source", h5("Select data sources"),
                                      c("All", "DHS", "MICS"),
@@ -63,9 +63,7 @@ output$explore_inequality_ui <- renderUI({
       ),
       conditionalPanel(condition = "input.assessment_panel == 'sumtable'",
                        
-                       h4(textOutput('focusCountry2')),
-                       hr(),
-                       
+           
                        uiOutput("sumtableSumMeasure"),                 
                        uiOutput("sumtableHealthIndicator"),
                        uiOutput("sumtableEquityDimension"),
@@ -85,9 +83,8 @@ output$explore_inequality_ui <- renderUI({
                                     inline = FALSE)
       ),
       conditionalPanel(condition = "input.assessment_panel == 'sumplot'",
-                       #h4(textOutput('focusCountry3')),
-                       hr(),
                        
+         
                        uiOutput("sumplotSumMeasures"),
                        uiOutput("sumplotHealthIndicator"),
                        uiOutput("sumplotEquityDimension"),
