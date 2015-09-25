@@ -9,7 +9,7 @@ library(dplyr)
 #dbGetQuery(con, "DROP TABLE maindata_years")
 
 
-
+# 
 # maindata<-dbGetQuery(con, "SELECT * FROM maindata")
 # inequals<-dbGetQuery(con, "SELECT * FROM inequals")
 # nationaldata<-dbGetQuery(con, "SELECT * FROM nationaldata")
