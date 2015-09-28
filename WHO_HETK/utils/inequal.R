@@ -4,22 +4,13 @@
 
 
 
-getInequal <- function(indicator = NULL, stratifier = NULL, countries = NULL, years = NULL,  inequal_types='all'){
+getInequal <- function(indicator = NULL, stratifier = NULL, countries = NULL, years = NULL,
+                       mostrecent=NULL, datasource=NULL,  inequal_types='all'){
   #print("In getInequal function a")
   #print(paste0(indicator, stratifier, countries, years))
   # Fetch the inequalities data from the inbuilt database  
   
-  # Return NULL if any of the function-parameters are missing
-  if(is.null(indicator)) return()
-  if(length(indicator)==0) return()
-  if(is.null(stratifier)) return()
-  if(length(stratifier)==0) return()
-  if(is.null(countries)) return()
-  if(length(countries)==0)  return()
-  if(is.null(years)) return()
-  if(length(years)==0) return()
-  if(is.null(inequal_types)) return()
-
+  
   
   inequal.types <- inequal_types
   if(inequal_types=='all'){
@@ -34,18 +25,30 @@ getInequal <- function(indicator = NULL, stratifier = NULL, countries = NULL, ye
   filt_dimension <- TRUE
   
   if(!is.null(countries)) filt_country <- quote(country %in% countries)
-  if(!is.null(years) && !is.null(input$mostrecent) && !input$mostrecent) filt_year <- quote(year %in% years)
+  if(!is.null(years) && !is.null(mostrecent) && !mostrecent) filt_year <- quote(year %in% years)
+  if(!is.null(years) && is.null(mostrecent)) filt_year <- quote(year %in% years)
   if(!is.null(indicator)) filt_indicator <- quote(indic %in% indicator)
   if(!is.null(stratifier)) filt_dimension <- quote(dimension %in% stratifier)
   
+  #print(years)
+  #print(filt_year)
+  #print(mostrecent)
+  print(paste0('filt_country:', filt_country))
+  print(paste0('filt_year:', filt_country))
+  print(paste0('filt_indicator:', filt_country))
+  print(paste0('filt_dimension:', filt_country))
   
+  print(paste0('country:', countries))
+  print(paste0('years:', years))
+  print(paste0('indicator:', indicator))
+  print(paste0('dimension:', stratifier))
 
   ineqDF <- filter(.rdata[['inequals']], filt_country, filt_year, filt_indicator, filt_dimension) %>% 
     select(country, year, indic, dimension, measure, inequal, boot.se, se)
   
-  if(is.null(ineqDF)){
-    return()
-  }
+#   if(is.null(ineqDF)){
+#     return()
+#   }
   
   ineqDF$year <- as.integer(ineqDF$year)
   ineqDF$boot.se <- as.numeric(ineqDF$boot.se)
@@ -66,6 +69,8 @@ getInequal <- function(indicator = NULL, stratifier = NULL, countries = NULL, ye
   
   ineqDF$combo.se[is.na(ineqDF$combo.se)] <- ineqDF$boot.se[is.na(ineqDF$combo.se)]  #  Make an se that is analytic if it exists, otherwise a boostrap
   #print("In getInequal function b")
+  
+  print(head(ineqDF))
   return(ineqDF)
 }
 

@@ -24,9 +24,12 @@ library(dplyr)
 # saveRDS(years, "X:/projects/who_heat/web/who-heat/WHO_HETK/data/years.RDS")
 
 
-# .rdata<-list()
-# .rdata[['maindata']]<-readRDS("X:/projects/who_heat/web/who-heat/WHO_HETK/data/maindata.RDS")
-# .rdata[['inequals']]<-readRDS("X:/projects/who_heat/web/who-heat/WHO_HETK/data/inequals.RDS")
-# .rdata[['nationaldata']]<-readRDS("X:/projects/who_heat/web/who-heat/WHO_HETK/data/nationaldata.RDS")
-# .rdata[['countrynames']]<-readRDS("X:/projects/who_heat/web/who-heat/WHO_HETK/data/countrynames.RDS")
-# .rdata[['years']]<-readRDS("X:/projects/who_heat/web/who-heat/WHO_HETK/data/years.RDS")
+.rdata<-list()
+.rdata[['maindata']]<-readRDS("X:/projects/who_heat/web/who-heat/WHO_HETK/data/maindata.RDS")
+.rdata[['inequals']]<-readRDS("X:/projects/who_heat/web/who-heat/WHO_HETK/data/inequals.RDS")
+.rdata[['nationaldata']]<-readRDS("X:/projects/who_heat/web/who-heat/WHO_HETK/data/nationaldata.RDS")
+.rdata[['countrynames']]<-readRDS("X:/projects/who_heat/web/who-heat/WHO_HETK/data/countrynames.RDS")
+.rdata[['years']]<-readRDS("X:/projects/who_heat/web/who-heat/WHO_HETK/data/years.RDS")
+
+library(dplyr)
+xx<-filter(.rdata[['inequals']], country=="Armenia", year==2010, indic=="carep")

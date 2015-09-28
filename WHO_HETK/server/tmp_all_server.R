@@ -19,9 +19,9 @@ observe({
   .rdata[['focus_data_source']]<<-"All"
   .rdata[['mostrecent']]<<-FALSE
   
-  .rdata[['focus_country']]<<-"Afghanistan"
+  .rdata[['focus_country']]<<-"Armenia"
   .rdata[['focus_indicator']]<<-c("carep")
-  .rdata[['focus_dimension']]<<-c("Place of residence")
+  .rdata[['focus_dimension']]<<-c("Sex")
   .rdata[['focus_year']]<<-c(2010)
   
   .rdata[['focus_summary_measure']]<<-'sii'
@@ -295,7 +295,7 @@ output$focus_source_year_explore <- renderUI({
   list(
   radioButtons("focus_data_source_explore", h5("Select data sources"),
                c("All", "DHS", "MICS"),
-               inline=T,
+               inline=TRUE,
                selected="All"),
   
   h5("Select years"),
@@ -717,6 +717,7 @@ output$downloadSummtable <- renderUI({
 
 datasetInequal <- reactive({
   
+
   .rdata[['focus_country']] <- input$focus_country_explore
   .rdata[['focus_data_source']] <- input$focus_data_source_explore
   .rdata[['mostrecent']] <- input$mostrecent_explore
@@ -727,13 +728,16 @@ datasetInequal <- reactive({
   
   if(input$dataSource=='HETK' & input$assessment_panel=='sumtable'){
     #print('Getting equity data table a')
+    #print(.rdata[['focus_year']])
     ineqDF <- getInequal(indicator=.rdata[['focus_indicator']], 
                          stratifier=.rdata[['focus_dimension']], 
                          countries=.rdata[['focus_country']], 
-                         years=.rdata[['focus_year']],  
+                         years=.rdata[['focus_year']], 
+                         mostrecent=.rdata[['mostrecent']],
+                         datasource=.rdata[['focus_data_source']],  
                          inequal_types=.rdata[['focus_summary_measure']])
 
-    
+    #print(head(ineqDF))
     return(ineqDF)
   }    
   if(input$dataSource=='HETK' & input$assessment_panel=='sumplot'){
@@ -844,9 +848,9 @@ output$dataTableInequal <- renderDataTable({
     
     #print(theData)
   }
-  if(is.null(theData) || nrow(theData)==0){
-    return()
-  }
+#   if(is.null(theData) || nrow(theData)==0){
+#     return()
+#   }
 #   if(nrow(theData)==0){
 #     return()
 #   }

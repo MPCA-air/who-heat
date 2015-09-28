@@ -58,7 +58,7 @@ focusSummaryMeasure_selector <- function(id, dimension){
   else{
     selectionOptions <- NULL
   }
-  print(selectionOptions)
+  #print(selectionOptions)
   selectInput(id, 
               h5("Select summary measure"), 
               choices=.rdata[['summary_measures_all']], 

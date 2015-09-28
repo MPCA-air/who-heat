@@ -1,4 +1,4 @@
-getHETKdata <- function(indicator = NULL, stratifier = NULL, countries = NULL, years = NULL, mostrecent=FALSE, datasource='All'){
+getHETKdata <- function(indicator = NULL, stratifier = NULL, countries = NULL, years = NULL, mostrecent=FALSE, datasource=NULL){
   #print(mostrecent)
   #print("Getting data from getHETKdata")
   #print(.rdata[['focus_country']])
@@ -13,10 +13,13 @@ getHETKdata <- function(indicator = NULL, stratifier = NULL, countries = NULL, y
   filt_indicator <- TRUE
   filt_dimension <- TRUE
   filt_datasource <- TRUE
+  
+  
 
   
   if(!is.null(countries)) filt_country <- quote(country %in% countries)
   if(!is.null(years) && !is.null(mostrecent) && !mostrecent) filt_year <- quote(year %in% years)
+  if(!is.null(years) && is.null(mostrecent)) filt_year <- quote(year %in% years)
   if(!is.null(indicator)) filt_indicator <- quote(indic %in% indicator)
   if(!is.null(stratifier)) filt_dimension <- quote(dimension %in% stratifier)
   if(!is.null(datasource) && datasource == 'All') filt_datasource <- TRUE
