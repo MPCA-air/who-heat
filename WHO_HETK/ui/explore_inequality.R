@@ -6,6 +6,8 @@ output$explore_inequality_ui <- renderUI({
     sidebarPanel(
       uiOutput("focus_country_explore"), 
       uiOutput('focus_source_year_explore'),
+      uiOutput("focus_indicator_explore"),
+      uiOutput("focus_dimension_explore"),
       
       
       conditionalPanel( condition = "(input.assessment_panel == 'datatable' || input.assessment_panel == 'dataplot')",   #### output.owndata gopt from server.R
@@ -25,8 +27,8 @@ output$explore_inequality_ui <- renderUI({
                         
                         #uiOutput('focus_source_year_explore'),
                         #conditionalPanel(condition = "1==1",
-                        uiOutput("focus_indicator_explore_disag"),
-                                         uiOutput("focus_dimension_explore_disag"),
+                        #uiOutput("focus_indicator_explore_disag"),
+                                         #uiOutput("focus_dimension_explore_disag"),
                                          hr(),
                                          actionButton("getdata", "Fetch Data",  class = "btn-success"),
                                         uiOutput('dataTableItems')
@@ -65,8 +67,8 @@ output$explore_inequality_ui <- renderUI({
       ),
       
       conditionalPanel(condition = "input.assessment_panel == 'sumtable' | input.assessment_panel == 'sumplot'",
-                       uiOutput("focus_indicator_explore_summary"),
-                       uiOutput("focus_dimension_explore_summary"),
+                       #uiOutput("focus_indicator_explore_summary"),
+                       #uiOutput("focus_dimension_explore_summary"),
                        uiOutput("focus_summeasure_explore_summary")
                        
       ),

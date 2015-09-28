@@ -45,19 +45,19 @@ focusIndicator_selector <- function(id, multiple = FALSE, core=FALSE){
 }
 
 
-focusSummaryMeasure_selector <- function(id, dimension){
+focusInequalType_selector <- function(id, dimension){
   
-  if(length(dimension)>0){
-    if(dimension %in% .rdata[['rankable_dimensions']]){
-      selectionOptions <- .rdata[['summary_measures_all']]
-    }
-    if(!dimension %in% .rdata[['rankable_dimensions']]){
-      selectionOptions <- .rdata[['summary_measures_unrank']]
-    }
-  }
-  else{
-    selectionOptions <- NULL
-  }
+#   if(length(dimension)>0){
+#     if(dimension %in% .rdata[['rankable_dimensions']]){
+#       selectionOptions <- .rdata[['summary_measures_all']]
+#     }
+#     if(!dimension %in% .rdata[['rankable_dimensions']]){
+#       selectionOptions <- .rdata[['summary_measures_unrank']]
+#     }
+#   }
+#   else{
+#     selectionOptions <- NULL
+#   }
   #print(selectionOptions)
   selectInput(id, 
               h5("Select summary measure"), 

@@ -24,7 +24,8 @@ observe({
   .rdata[['focus_dimension']]<<-c("Sex")
   .rdata[['focus_year']]<<-c(2010)
   
-  .rdata[['focus_summary_measure']]<<-'sii'
+  .rdata[['focus_inequal_type']]<<-'rd'
+  
   
   .rdata[['unrankable_dimensions']] <<- c("Sex", "Geographical region")
   .rdata[['rankable_dimensions']]<<- c("Economic status", "Mother's education", "Place of residence")
@@ -293,10 +294,12 @@ output$focus_source_year_explore <- renderUI({
   .rdata[['focus_year']] <- selectYears[1]
   
   list(
+  conditionalPanel(condition = "input.assessment_panel == 'datatable' | input.assessment_panel == 'dataplot'",
   radioButtons("focus_data_source_explore", h5("Select data sources"),
                c("All", "DHS", "MICS"),
                inline=TRUE,
-               selected="All"),
+               selected="All")
+  ),
   
   h5("Select years"),
   checkboxInput('mostrecent_explore', 'Most recent year', .rdata[['mostrecent']]),
@@ -321,16 +324,16 @@ output$focus_source_year_explore <- renderUI({
 
 
 
-output$focus_indicator_explore_disag <- renderUI({
+output$focus_indicator_explore <- renderUI({
   
-  focusIndicator_selector("focus_indicator_explore_disag", multiple=TRUE, core=FALSE)
+  focusIndicator_selector("focus_indicator_explore", multiple=TRUE, core=FALSE)
   
 })
 
 
-output$focus_dimension_explore_disag <- renderUI({
+output$focus_dimension_explore <- renderUI({
   
-  focusDimension_selector("focus_dimension_explore_disag", multiple=TRUE)
+  focusDimension_selector("focus_dimension_explore", multiple=TRUE)
   
 })
 
@@ -346,8 +349,8 @@ datasetInput <- reactive({
 .rdata[['mostrecent']] <- input$mostrecent_explore
 .rdata[['focus_year']] <- input$focus_year_explore
 
-.rdata[['focus_indicator']] <- input$focus_indicator_explore_disag
-.rdata[['focus_dimension']] <- input$focus_dimension_explore_disag
+.rdata[['focus_indicator']] <- input$focus_indicator_explore
+.rdata[['focus_dimension']] <- input$focus_dimension_explore
 
 
   
@@ -611,22 +614,22 @@ output$downloadAnyPlot <- downloadHandler(
 # Explore inequality: summary table and plot ----
 #############################################################
 
-output$focus_indicator_explore_summary <- renderUI({
-  
-  focusIndicator_selector("focus_indicator_explore_summary", multiple=TRUE, core=TRUE)
-  
-})
-
-
-output$focus_dimension_explore_summary <- renderUI({
-  
-  focusDimension_selector("focus_dimension_explore_summary", multiple=TRUE)
-  
-})
+# output$focus_indicator_explore_summary <- renderUI({
+#   
+#   focusIndicator_selector("focus_indicator_explore_summary", multiple=TRUE, core=TRUE)
+#   
+# })
+# 
+# 
+# output$focus_dimension_explore_summary <- renderUI({
+#   
+#   focusDimension_selector("focus_dimension_explore_summary", multiple=TRUE)
+#   
+# })
 
 
 output$focus_summeasure_explore_summary <- renderUI({
-  focusSummaryMeasure_selector("focus_summeasure_explore_summary", input$focus_dimension_explore_summary)
+  focusInequalType_selector("focus_inequal_type", input$focus_dimension_explore)
 })
 
 ##############################################################
@@ -722,9 +725,10 @@ datasetInequal <- reactive({
   .rdata[['focus_data_source']] <- input$focus_data_source_explore
   .rdata[['mostrecent']] <- input$mostrecent_explore
   .rdata[['focus_year']] <- input$focus_year_explore
+  .rdata[['focus_indicator']] <- input$focus_indicator_explore
+  .rdata[['focus_dimension']] <- input$focus_dimension_explore
   
-  .rdata[['focus_indicator']] <- input$focus_indicator_explore_summary
-  .rdata[['focus_dimension']] <- input$focus_dimension_explore_summary
+  .rdata[['focus_inequal_type']] <- input$focus_inequal_type
   
   if(input$dataSource=='HETK' & input$assessment_panel=='sumtable'){
     #print('Getting equity data table a')
@@ -735,7 +739,7 @@ datasetInequal <- reactive({
                          years=.rdata[['focus_year']], 
                          mostrecent=.rdata[['mostrecent']],
                          datasource=.rdata[['focus_data_source']],  
-                         inequal_types=.rdata[['focus_summary_measure']])
+                         inequal_types=.rdata[['focus_inequal_type']])
 
     #print(head(ineqDF))
     return(ineqDF)
