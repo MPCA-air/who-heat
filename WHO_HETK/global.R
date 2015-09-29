@@ -1,31 +1,4 @@
 
-
-
-focusCountry_selector <- function(id){
-  
-  #print("in focus country")
-  #print(.rdata[['all_countries']])
-  
-    if(is.null(.rdata[['all_countries']])) return()
-  
-
-    countries <- .rdata[['all_countries']]
-    #countries <- getFilteredCountries()
-    if(is.null(countries)){ countries <- c()}
-    
-    
-    selectInput(id, 
-                h5("Country:"), 
-                choices  = countries, 
-                multiple = FALSE, 
-                selected = .rdata[['focus_country']])
-  
-  
-}
-
-
-
-
 focusIndicator_selector <- function(id, multiple = FALSE, core=FALSE){
   
   # TODO: need to unselect non-core if selected in diaggregated
@@ -49,19 +22,20 @@ focusIndicator_selector <- function(id, multiple = FALSE, core=FALSE){
 }
 
 
+
 focusInequalType_selector <- function(id, dimension){
   
-#   if(length(dimension)>0){
-#     if(dimension %in% .rdata[['rankable_dimensions']]){
-#       selectionOptions <- .rdata[['summary_measures_all']]
-#     }
-#     if(!dimension %in% .rdata[['rankable_dimensions']]){
-#       selectionOptions <- .rdata[['summary_measures_unrank']]
-#     }
-#   }
-#   else{
-#     selectionOptions <- NULL
-#   }
+  #   if(length(dimension)>0){
+  #     if(dimension %in% .rdata[['rankable_dimensions']]){
+  #       selectionOptions <- .rdata[['summary_measures_all']]
+  #     }
+  #     if(!dimension %in% .rdata[['rankable_dimensions']]){
+  #       selectionOptions <- .rdata[['summary_measures_unrank']]
+  #     }
+  #   }
+  #   else{
+  #     selectionOptions <- NULL
+  #   }
   #print(selectionOptions)
   selectInput(id, 
               h5("Select summary measure"), 
@@ -90,6 +64,7 @@ focusDimension_selector <- function(id, multiple = FALSE){
   
   
 }
+
 
 
 

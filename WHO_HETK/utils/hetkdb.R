@@ -3,7 +3,7 @@ getHETKdata <- function(indicator = NULL, stratifier = NULL, countries = NULL, y
   #print("Getting data from getHETKdata")
   #print(.rdata[['focus_country']])
 
-  
+  #if(is.null(countries))return()
   # countries <- c("Afghanistan", "Armenia")
   
   #mostrecent<- .rdata[['mostrecent']]
