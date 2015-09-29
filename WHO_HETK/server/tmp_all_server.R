@@ -1,10 +1,10 @@
 
 
-observe({
+#observe({
   
-  if(is.null(input$dataSource)) return()
+  #if(is.null(input$dataSource)) return()
 .rdata<<-list()
-  if(input$dataSource == "HETK"){
+  #if(input$dataSource == "HETK"){
     
     .rdata[['maindata']]<<-readRDS("data/maindata.RDS")
     .rdata[['inequals']]<<-readRDS("data/inequals.RDS")
@@ -12,7 +12,7 @@ observe({
     .rdata[['countrynames']]<<-readRDS("data/countrynames.RDS")
     .rdata[['years']]<<-readRDS("data/years.RDS")
     #print(head(.rdata[['countrynames']]))
-  }
+#  }
   
   .rdata[['all_countries']]<<-.rdata[['countrynames']]$country
   .rdata[['benchmark_countries']]<<-0
@@ -235,7 +235,7 @@ observe({
   #                                   "water" = "Population using improved drinking water sources (%)")
   
 
-  })
+  #})
 
 
 
@@ -772,44 +772,7 @@ output$dataTableInequal <- renderDataTable({
     # this is somewhat confusing because theData may not have most of these
     # this could be much cleaner
     
-    if(input$summultiplier1==T){
-      #print("In dataTableInequal a")
-      theData$inequal[theData$measure=='ti'] <- theData$inequal[theData$measure=='ti'] *1000
-      theData$inequal[theData$measure=='mld'] <- theData$inequal[theData$measure=='mld'] *1000
-      theData$se[theData$measure=='ti'] <- theData$se[theData$measure=='ti'] *1000
-      theData$se[theData$measure=='mld'] <- theData$se[theData$measure=='mld'] *1000
-      theData$se.lowerci[theData$measure=='ti'] <- theData$se.lowerci[theData$measure=='ti'] *1000
-      theData$se.lowerci[theData$measure=='mld'] <- theData$se.lowerci[theData$measure=='mld'] *1000
-      theData$se.upperci[theData$measure=='ti'] <- theData$se.upperci[theData$measure=='ti'] *1000
-      theData$se.upperci[theData$measure=='mld'] <- theData$se.upperci[theData$measure=='mld'] *1000
-      theData$boot.se[theData$measure=='ti'] <- theData$boot.se[theData$measure=='ti'] *1000
-      theData$boot.se[theData$measure=='mld'] <- theData$boot.se[theData$measure=='mld'] *1000
-      theData$boot.lowerci[theData$measure=='ti'] <- theData$boot.lowerci[theData$measure=='ti'] *1000
-      theData$boot.lowerci[theData$measure=='mld'] <- theData$boot.lowerci[theData$measure=='mld'] *1000
-      theData$boot.upperci[theData$measure=='ti'] <- theData$boot.upperci[theData$measure=='ti'] *1000
-      theData$boot.upperci[theData$measure=='mld'] <- theData$boot.upperci[theData$measure=='mld'] *1000
-      theData$combo.se[theData$measure=='ti'] <- theData$combo.se[theData$measure=='ti'] *1000
-      theData$combo.se[theData$measure=='mld'] <- theData$combo.se[theData$measure=='mld'] *1000
-      theData$combo.lowerci[theData$measure=='ti'] <- theData$combo.lowerci[theData$measure=='ti'] *1000
-      theData$combo.upperci[theData$measure=='mld'] <- theData$combo.upperci[theData$measure=='mld'] *1000
-      theData$combo.lowerci[theData$measure=='ti'] <- theData$combo.lowerci[theData$measure=='ti'] *1000
-      theData$combo.upperci[theData$measure=='mld'] <- theData$combo.upperci[theData$measure=='mld'] *1000
-      
-    }
-    
-    if(input$summultiplier2==T){
-      #print("In dataTableInequal b")
-      theData$inequal[theData$measure=='rci'] <- theData$inequal[theData$measure=='rci'] *100
-      theData$se[theData$measure=='rci'] <- theData$se[theData$measure=='rci'] *100
-      theData$se.lowerci[theData$measure=='rci'] <- theData$se.lowerci[theData$measure=='rci'] *100
-      theData$se.upperci[theData$measure=='rci'] <- theData$se.upperci[theData$measure=='rci'] *100
-      theData$boot.se[theData$measure=='rci'] <- theData$boot.se[theData$measure=='rci'] *100
-      theData$boot.lowerci[theData$measure=='rci'] <- theData$boot.lowerci[theData$measure=='rci'] *100
-      theData$boot.upperci[theData$measure=='rci'] <- theData$boot.upperci[theData$measure=='rci'] *100
-      theData$combo.se[theData$measure=='rci'] <- theData$combo.se[theData$measure=='rci'] *100
-      theData$combo.lowerci[theData$measure=='rci'] <- theData$combo.lowerci[theData$measure=='rci'] *100
-      theData$combo.upperci[theData$measure=='rci'] <- theData$combo.upperci[theData$measure=='rci'] *100
-    }
+
     
     #print("In dataTableInequal c")
     var_names <- names(theData)

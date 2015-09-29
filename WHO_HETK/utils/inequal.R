@@ -69,6 +69,54 @@ getInequal <- function(indicator = NULL, stratifier = NULL, countries = NULL, ye
   ineqDF$combo.se[is.na(ineqDF$combo.se)] <- ineqDF$boot.se[is.na(ineqDF$combo.se)]  #  Make an se that is analytic if it exists, otherwise a boostrap
   #print("In getInequal function b")
   
+  
+  if(input$summultiplier1==T){
+    #print("In dataTableInequal a")
+    ineqDF$inequal[ineqDF$measure=='ti'] <- ineqDF$inequal[ineqDF$measure=='ti'] *1000
+    ineqDF$inequal[ineqDF$measure=='mld'] <- ineqDF$inequal[ineqDF$measure=='mld'] *1000
+    ineqDF$se[ineqDF$measure=='ti'] <- ineqDF$se[ineqDF$measure=='ti'] *1000
+    ineqDF$se[ineqDF$measure=='mld'] <- ineqDF$se[ineqDF$measure=='mld'] *1000
+    ineqDF$se.lowerci[ineqDF$measure=='ti'] <- ineqDF$se.lowerci[ineqDF$measure=='ti'] *1000
+    ineqDF$se.lowerci[ineqDF$measure=='mld'] <- ineqDF$se.lowerci[ineqDF$measure=='mld'] *1000
+    ineqDF$se.upperci[ineqDF$measure=='ti'] <- ineqDF$se.upperci[ineqDF$measure=='ti'] *1000
+    ineqDF$se.upperci[ineqDF$measure=='mld'] <- ineqDF$se.upperci[ineqDF$measure=='mld'] *1000
+    ineqDF$boot.se[ineqDF$measure=='ti'] <- ineqDF$boot.se[ineqDF$measure=='ti'] *1000
+    ineqDF$boot.se[ineqDF$measure=='mld'] <- ineqDF$boot.se[ineqDF$measure=='mld'] *1000
+    ineqDF$boot.lowerci[ineqDF$measure=='ti'] <- ineqDF$boot.lowerci[ineqDF$measure=='ti'] *1000
+    ineqDF$boot.lowerci[ineqDF$measure=='mld'] <- ineqDF$boot.lowerci[ineqDF$measure=='mld'] *1000
+    ineqDF$boot.upperci[ineqDF$measure=='ti'] <- ineqDF$boot.upperci[ineqDF$measure=='ti'] *1000
+    ineqDF$boot.upperci[ineqDF$measure=='mld'] <- ineqDF$boot.upperci[ineqDF$measure=='mld'] *1000
+    ineqDF$combo.se[ineqDF$measure=='ti'] <- ineqDF$combo.se[ineqDF$measure=='ti'] *1000
+    ineqDF$combo.se[ineqDF$measure=='mld'] <- ineqDF$combo.se[ineqDF$measure=='mld'] *1000
+    ineqDF$combo.lowerci[ineqDF$measure=='ti'] <- ineqDF$combo.lowerci[ineqDF$measure=='ti'] *1000
+    ineqDF$combo.upperci[ineqDF$measure=='mld'] <- ineqDF$combo.upperci[ineqDF$measure=='mld'] *1000
+    ineqDF$combo.lowerci[ineqDF$measure=='ti'] <- ineqDF$combo.lowerci[ineqDF$measure=='ti'] *1000
+    ineqDF$combo.upperci[ineqDF$measure=='mld'] <- ineqDF$combo.upperci[ineqDF$measure=='mld'] *1000
+    
+  }
+  
+  if(input$summultiplier2==T){
+    #print("In dataTableInequal b")
+    ineqDF$inequal[ineqDF$measure=='rci'] <- ineqDF$inequal[ineqDF$measure=='rci'] *100
+    ineqDF$se[ineqDF$measure=='rci'] <- ineqDF$se[ineqDF$measure=='rci'] *100
+    ineqDF$se.lowerci[ineqDF$measure=='rci'] <- ineqDF$se.lowerci[ineqDF$measure=='rci'] *100
+    ineqDF$se.upperci[ineqDF$measure=='rci'] <- ineqDF$se.upperci[ineqDF$measure=='rci'] *100
+    ineqDF$boot.se[ineqDF$measure=='rci'] <- ineqDF$boot.se[ineqDF$measure=='rci'] *100
+    ineqDF$boot.lowerci[ineqDF$measure=='rci'] <- ineqDF$boot.lowerci[ineqDF$measure=='rci'] *100
+    ineqDF$boot.upperci[ineqDF$measure=='rci'] <- ineqDF$boot.upperci[ineqDF$measure=='rci'] *100
+    ineqDF$combo.se[ineqDF$measure=='rci'] <- ineqDF$combo.se[ineqDF$measure=='rci'] *100
+    ineqDF$combo.lowerci[ineqDF$measure=='rci'] <- ineqDF$combo.lowerci[ineqDF$measure=='rci'] *100
+    ineqDF$combo.upperci[ineqDF$measure=='rci'] <- ineqDF$combo.upperci[ineqDF$measure=='rci'] *100
+  }
+  
+  
+  
+  
+  if(!is.null(mostrecent) && mostrecent) {
+    #print("in most recent")
+    ineqDF <- filter(ineqDF, year == max(ineqDF$year))
+  }
+  
   #print(head(ineqDF))
   return(ineqDF)
 }

@@ -33,3 +33,4 @@ library(dplyr)
 
 library(dplyr)
 xx<-filter(.rdata[['inequals']], country=="Armenia", year==2010, indic=="carep")
+xx<-filter(.rdata[['inequals']], measure %in% c("rci", "mld"))
