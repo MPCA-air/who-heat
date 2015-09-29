@@ -11,13 +11,12 @@ library(digest)
 library(stringr) # this was in the userful.R file, not sure how important
 library(shinythemes)
 
-
+source("init.R", local=TRUE)
 #.rdata <<- list()
 
 
 shinyServer(function(input, output, session){  
 
-  .rdata <<- list()
   #source("global.R", local=TRUE)
   #drv <- dbDriver("SQLite")
   #.connection<<-dbConnect(drv, "data/HEMTK.db")

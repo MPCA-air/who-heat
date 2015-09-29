@@ -62,7 +62,6 @@ getHETKdata <- function(indicator = NULL, stratifier = NULL, countries = NULL, y
   #names(hetk.data)[which(names(hetk.data)=='r_upper')] <- 'upper_95ci'
   
   if(!is.null(mostrecent) && mostrecent) {
-    print("in most recent")
     hetk.data <- filter(hetk.data, year == max(hetk.data$year))
   }
   
