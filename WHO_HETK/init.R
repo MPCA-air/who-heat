@@ -22,6 +22,7 @@
 .rdata[['focus_indicator']]<<-c("carep")
 .rdata[['focus_dimension']]<<-c("Sex")
 .rdata[['focus_year']]<<-c(2010)
+.rdata[['all_years']]<<-c(2000, 2005, 2010)
 
 .rdata[['focus_inequal_type']]<<-'rd'
 

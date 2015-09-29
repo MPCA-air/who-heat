@@ -15,7 +15,7 @@ getFilteredCountries <- function(WBgroup=NULL, WHOregion=NULL)
   if(!is.null(WHOregion) & all(WHOregion != "")) 
     filt_WHOregion <- quote(wbincome2014_4cat %in% WBgroup)
   
-  print("getFilteredCountries")
+  #print("getFilteredCountries")
   countries <- filter(.rdata[['countrynames']], filt_WBgroup, filt_WHOregion) %>% 
     select(country) %>% .$country
   

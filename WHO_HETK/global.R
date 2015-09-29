@@ -96,13 +96,6 @@ focusDimension_selector <- function(id, multiple = FALSE){
 
 
 
-
-
-
-
-
-
-
 textInputRow <-function (inputId, label, value = ""){
   # A function to handle the creation of side-by-side numeric input boxes
   div(style="display: inline-block;",

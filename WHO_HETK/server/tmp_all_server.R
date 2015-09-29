@@ -1,7 +1,110 @@
 
+#*****************************************************************************
+#  Observe -- interactions between explore and compare ----
+#*****************************************************************************
+
+
+observe({
+  if(is.null(input$focus_year_explore)) return()
+  .rdata[['focus_country']] <<- input$focus_country_explore
+})
+
+observe({
+  if(is.null(input$focus_year_compare)) return()
+  .rdata[['focus_country']] <<- input$focus_country_compare
+})
+
+
+observe({
+  if(is.null(input$focus_year_explore)) return()
+  if(input$focus_country_explore != isolate(input$focus_country_compare)){
+    updateSelectInput(session, "focus_country_compare", .rdata[['focus_country']])
+  }
+  
+})
+
+
+observe({
+  if(is.null(input$focus_year_compare)) return()
+  if(isolate(input$focus_country_explore) != input$focus_country_compare){
+    updateSelectInput(session, "focus_country_explore", .rdata[['focus_country']])
+  }
+  
+})
+
+# 
+# observe({
+#   
+# 
+#   
+#   
+#   selectYears <- getFilteredYear(country=input$focus_country_explore, input$focus_data_source_explore)
+#   
+#   .rdata[['all_years']] <<-selectYears
+#   
+#   .rdata[['focus_year']] <<- input$focus_year_explore
+# 
+#   
+#   updateSelectInput(session, "focus_country_compare", selected = .rdata[['focus_country']])
+#   updateSelectInput(session, "focus_year_compare", selected = .rdata[['focus_year']][1])
+# })
+# 
+# 
+# 
+# observe({
+#   if(is.null(input$focus_year_explore)) return()
+# 
+#   .rdata[['focus_country']] <<- input$focus_country_compare
+#   
+#   selectYears <- getFilteredYear(country=input$focus_country_compare, 'All')
+#   
+#   .rdata[['all_years']] <<- selectYears
+#   .rdata[['focus_year']] <<- input$focus_year_compare
+# 
+#   
+#   updateSelectInput(session, "focus_country_explore", selected = .rdata[['focus_country']])
+#   updateSelectInput(session, "focus_year_explore", selected = .rdata[['focus_year']])
+# })
+# 
+# 
+# 
+# 
+# 
+# observe({
+#   
+#   if(is.null(input$focus_year_explore)) return()
+#   .rdata[['focus_indicator']]  <<-  input$focus_indicator_compare
+#   input$focus_year_compare
+#   .rdata[['focus_dimension']]  <<-  input$focus_dimension_compare
+#   #.rdata[['benchmark_countries']]  <<- input$benchmark_countries
+#   
+#   
+#   updateSelectInput(session, "focus_year_explore", selected = .rdata[['focus_year']])
+#   updateSelectInput(session, "focus_indicator_explore", selected = .rdata[['focus_indicator']])
+#   updateSelectInput(session, "focus_dimension_explore", selected = .rdata[['focus_dimension']])
+#   
+# })
+# 
+# 
+# observe({
+#   if(is.null(input$focus_year_explore)) return()
+# 
+#   .rdata[['focus_indicator']]  <<-  input$focus_indicator_explore
+# input$focus_year_explore
+#   .rdata[['focus_dimension']]  <<-  input$focus_dimension_explore
+#   
+#   updateSelectInput(session, "focus_country_compare", selected = .rdata[['focus_country']])
+#   updateSelectInput(session, "focus_year_compare", selected = .rdata[['focus_year']])
+#   updateSelectInput(session, "focus_indicator_compare", selected = .rdata[['focus_indicator']])
+#   updateSelectInput(session, "focus_dimension_compare", selected = .rdata[['focus_dimension']])
+#   
+# })
 
 
 
+#*****************************************************************************
+# Explore inequality: all tabs -----
+#*****************************************************************************
 
 reactive({
   
@@ -49,12 +152,7 @@ output$focus_country_explore <- renderUI({
 
 
 output$focus_source_year_explore <- renderUI({
-  
-  #ifelse(is.null(input$data_source_explore), datasource <- "All", datasource <- input$data_source_explore)
-  selectYears <- getFilteredYear(country=input$focus_country_explore, datasource=input$data_source_expore)
-  
-  .rdata[['focus_year']] <<- selectYears[1]
-  
+
   list(
   conditionalPanel(condition = "input.assessment_panel == 'datatable' | input.assessment_panel == 'dataplot'",
   radioButtons("focus_data_source_explore", h5("Select data sources"),
@@ -70,7 +168,7 @@ output$focus_source_year_explore <- renderUI({
  
                     selectInput(inputId="focus_year_explore", 
                                 label='', 
-                                choices=selectYears, 
+                                choices=.rdata[['all_years']], 
                                 multiple=T, 
                                 selected=.rdata[['focus_year']])
                     )
@@ -102,31 +200,26 @@ output$focus_dimension_explore <- renderUI({
 
 
 
-
-
-
-
 # Return the requested dataset based on the UI selection (dataSource)
 datasetInput <- reactive({
 
   
   
-.rdata[['focus_country']] <<- input$focus_country_explore
-.rdata[['focus_data_source']] <<- input$focus_data_source_explore
-.rdata[['mostrecent']] <<- input$mostrecent_explore
-.rdata[['focus_year']] <<- input$focus_year_explore
-
-.rdata[['focus_indicator']] <<- input$focus_indicator_explore
-.rdata[['focus_dimension']] <<- input$focus_dimension_explore
-
-
+  input$focus_country_explore
+  input$focus_data_source_explore
+  input$mostrecent_explore
+  input$focus_year_explore
+  input$focus_indicator_explore
+  input$focus_dimension_explore
   
-  getHETKdata(indicator=.rdata[['focus_indicator']], 
-              stratifier=.rdata[['focus_dimension']],  # in hetkdb.R
-              countries=.rdata[['focus_country']], 
-              years=.rdata[['focus_year']], 
-              mostrecent=.rdata[['mostrecent']],
-              datasource=.rdata[['focus_data_source']])
+  
+  
+  theData<-getHETKdata(indicator=.rdata[['focus_indicator']], 
+                       stratifier=.rdata[['focus_dimension']],  # in hetkdb.R
+                       countries=.rdata[['focus_country']], 
+                       years=.rdata[['focus_year']], 
+                       mostrecent=.rdata[['mostrecent']],
+                       datasource=.rdata[['focus_data_source']])
   
 
 })
@@ -139,7 +232,10 @@ output$dataTable <- renderDataTable({
   
 
   
-  theData <- datasetInput()
+theData <- datasetInput()
+  
+  
+  #theData <- datasetInput()
   
   theData <- theData %>% 
     mutate(estimate = round(estimate, 2),
@@ -456,14 +552,14 @@ output$downloadSummtable <- renderUI({
 datasetInequal <- reactive({
   
 
-  .rdata[['focus_country']]  <<- input$focus_country_explore
-  .rdata[['focus_data_source']] <- input$focus_data_source_explore
-  .rdata[['mostrecent']]  <<- input$mostrecent_explore
-  .rdata[['focus_year']]  <<- input$focus_year_explore
-  .rdata[['focus_indicator']]  <<- input$focus_indicator_explore
-  .rdata[['focus_dimension']]  <<- input$focus_dimension_explore
+  input$focus_country_explore
+  input$focus_data_source_explore
+   input$mostrecent_explore
+  input$focus_year_explore
+  input$focus_indicator_explore
+  input$focus_dimension_explore
   
-  .rdata[['focus_inequal_type']]  <<- input$focus_inequal_type
+  input$focus_inequal_type
   
   #if(input$dataSource=='HETK' & input$assessment_panel=='sumtable'){
     #print('Getting equity data table a')
@@ -793,9 +889,7 @@ output$focus_indicator_compare <- renderUI({
 
 output$focus_year_compare <- renderUI({
   
-  selectYears <- getFilteredYear(country=input$focus_country_compare, 'All')
-  .rdata[['focus_year']] <- selectYears[1]
-  
+
   list(
 
     h5("Select years"),
@@ -805,7 +899,7 @@ output$focus_year_compare <- renderUI({
                       
                       selectInput(inputId="focus_year_compare", 
                                   label='', 
-                                  choices=selectYears, 
+                                  choices=.rdata[['all_years']], 
                                   multiple=FALSE, 
                                   selected=.rdata[['focus_year']][1])
     )
@@ -829,7 +923,7 @@ output$benchmark_countries <- renderUI({
   countries <- getFilteredCountries(input$benchmarkWBgroup, input$benchmarkWHOregion) 
   focus_country <- .rdata[['focus_country']]
   countries <- countries[!countries%in%focus_country]
-  print(.rdata[['benchmark_countries']])
+
   
   selectInput("benchmark_countries", 
               h5("Select countries"), 
@@ -1057,11 +1151,11 @@ output$dataTableBenchmark <- renderDataTable({
   
   
   
-  .rdata[['focus_country']] <- input$focus_country_compare
-  .rdata[['focus_indicator']] <- input$focus_indicator_compare
-  .rdata[['focus_year']] <- input$focus_year_compare
-  .rdata[['focus_dimension']] <- input$focus_dimension_compare
-  .rdata[['benchmark_countries']] <- input$benchmark_countries
+#   .rdata[['focus_country']] <- input$focus_country_compare
+#   .rdata[['focus_indicator']] <- input$focus_indicator_compare
+#   .rdata[['focus_year']] <- input$focus_year_compare
+#   .rdata[['focus_dimension']] <- input$focus_dimension_compare
+#   .rdata[['benchmark_countries']] <- input$benchmark_countries
   
   isolate({
     
