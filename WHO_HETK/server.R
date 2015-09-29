@@ -12,7 +12,7 @@ library(stringr) # this was in the userful.R file, not sure how important
 library(shinythemes)
 
 
-#.rdata <<- list()
+
 
 
 shinyServer(function(input, output, session){  

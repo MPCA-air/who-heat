@@ -37,6 +37,8 @@ getHETKdata <- function(indicator = NULL, stratifier = NULL, countries = NULL, y
     select(country, year, source, indic, dimension, subgroup, r, r_lower, r_upper, se, pop, iso3, 
            rankable, maxoptimum, popshare, flag, rankorder)
   
+
+  
   #national.data <- dbGetQuery(con, selectNationalStr)
   
   # in original function getHETK there was a query and filter of national data but 

@@ -1,4 +1,5 @@
 
+
 #*****************************************************************************
 #  Observe -- interactions between explore and compare ----
 #*****************************************************************************
@@ -57,133 +58,73 @@ observe({
 
 
 
-# observe({
-#   if(is.null(input$focus_year_compare)) return()
-#   .rdata[['focus_country']] <<- input$focus_country_compare
-# })
-# 
-# 
-# observe({
-#   if(is.null(input$focus_year_explore)) return()
-#   if(input$focus_country_explore != isolate(input$focus_country_compare)){
-#     updateSelectInput(session, "focus_country_compare", .rdata[['focus_country']])
-#   }
-#   
-# })
-# 
-# 
-# observe({
-#   if(is.null(input$focus_year_compare)) return()
-#   if(isolate(input$focus_country_explore) != input$focus_country_compare){
-#     updateSelectInput(session, "focus_country_explore", .rdata[['focus_country']])
-#   }
-#   
-# })
 
-# 
-# observe({
-#   
-# 
-#   
-#   
-#   selectYears <- getFilteredYear(country=input$focus_country_explore, input$focus_data_source_explore)
-#   
-#   .rdata[['all_years']] <<-selectYears
-#   
-#   .rdata[['focus_year']] <<- input$focus_year_explore
-# 
-#   
-#   updateSelectInput(session, "focus_country_compare", selected = .rdata[['focus_country']])
-#   updateSelectInput(session, "focus_year_compare", selected = .rdata[['focus_year']][1])
-# })
-# 
-# 
-# 
-# observe({
-#   if(is.null(input$focus_year_explore)) return()
-# 
-#   .rdata[['focus_country']] <<- input$focus_country_compare
-#   
-#   selectYears <- getFilteredYear(country=input$focus_country_compare, 'All')
-#   
-#   .rdata[['all_years']] <<- selectYears
-#   .rdata[['focus_year']] <<- input$focus_year_compare
-# 
-#   
-#   updateSelectInput(session, "focus_country_explore", selected = .rdata[['focus_country']])
-#   updateSelectInput(session, "focus_year_explore", selected = .rdata[['focus_year']])
-# })
-# 
-# 
-# 
-# 
-# 
-# observe({
-#   
-#   if(is.null(input$focus_year_explore)) return()
-#   .rdata[['focus_indicator']]  <<-  input$focus_indicator_compare
-#   input$focus_year_compare
-#   .rdata[['focus_dimension']]  <<-  input$focus_dimension_compare
-#   #.rdata[['benchmark_countries']]  <<- input$benchmark_countries
-#   
-#   
-#   updateSelectInput(session, "focus_year_explore", selected = .rdata[['focus_year']])
-#   updateSelectInput(session, "focus_indicator_explore", selected = .rdata[['focus_indicator']])
-#   updateSelectInput(session, "focus_dimension_explore", selected = .rdata[['focus_dimension']])
-#   
-# })
-# 
-# 
-# observe({
-#   if(is.null(input$focus_year_explore)) return()
-# 
-#   .rdata[['focus_indicator']]  <<-  input$focus_indicator_explore
-# input$focus_year_explore
-#   .rdata[['focus_dimension']]  <<-  input$focus_dimension_explore
-#   
-#   updateSelectInput(session, "focus_country_compare", selected = .rdata[['focus_country']])
-#   updateSelectInput(session, "focus_year_compare", selected = .rdata[['focus_year']])
-#   updateSelectInput(session, "focus_indicator_compare", selected = .rdata[['focus_indicator']])
-#   updateSelectInput(session, "focus_dimension_compare", selected = .rdata[['focus_dimension']])
-#   
-# })
+
+observe({
+  if(is.null(input$focus_indicator_explore)) return()
+  .rdata[['focus_indicator']] <<- input$focus_indicator_explore
+  
+ 
+  indicator <- isolate(input$focus_indicator_compare)
+  
+  if(is.null(indicator) || indicator!=.rdata[['focus_indicator']]){
+    
+    updateSelectInput(session, 'focus_indicator_compare', selected = .rdata[['focus_indicator']])
+  }
+  
+})
 
 
 
-# grabFocusYear_explore <- reactive({
-#   if(!is.null(input$focus_year_explore)) .rdata[['focus_year']] <<- input$focus_year_explore
-#   return(.rdata[['focus_year']])
-# })
-# 
-# 
-# grabFocusYear_compare <- reactive({
-#   if(!is.null(input$focus_year_compare)) .rdata[['focus_year']] <<- input$focus_year_compare
-#   return(.rdata[['focus_year']])
-# })
-# 
-# 
-# grabYears_explore <- reactive({
-#   if(!is.null(input$focus_country_explore)){
-#   .rdata[['focus_country']] <<- input$focus_country_explore
-#   .rdata[['all_years']] <- getFilteredYear(country=input$focus_country_explore, input$focus_data_source_explore)
-#   
-#   }
-#   return(.rdata[['all_years']])
-# })
-# 
-# 
-# grabYears_compare<- reactive({
-#   if(!is.null(input$focus_country_compare)){
-#     .rdata[['focus_country']] <<- input$focus_country_compare
-#     .rdata[['all_years']] <<- getFilteredYear(country=input$focus_country_explore, input$focus_data_source_explore)
-#   }
-#   return(.rdata[['all_years']])
-# })
-# 
-# 
-# 
-# 
-# 
+observe({
+  if(is.null(input$focus_indicator_compare)) return()
+  .rdata[['focus_indicator']] <<- input$focus_indicator_compare
+  
+  
+  indicator <- isolate(input$focus_indicator_explore)
+  
+  if(is.null(indicator) || indicator!=.rdata[['focus_indicator']]){
+    
+    updateSelectInput(session, 'focus_indicator_explore', selected = .rdata[['focus_indicator']])
+  }
+  
+})
+
+
+
+
+observe({
+  if(is.null(input$focus_dimension_explore)) return()
+  .rdata[['focus_dimension']] <<- input$focus_dimension_explore
+  
+  
+  dimension <- isolate(input$focus_dimension_compare)
+  
+  if(is.null(dimension) || dimension!=.rdata[['focus_dimension']]){
+    
+    updateSelectInput(session, 'focus_dimension_compare', selected = .rdata[['focus_dimension']])
+  }
+  
+})
+
+
+
+observe({
+  if(is.null(input$focus_dimension_compare)) return()
+  .rdata[['focus_dimension']] <<- input$focus_dimension_compare
+  
+  
+  dimension <- isolate(input$focus_dimension_explore)
+  
+  if(is.null(dimension) || dimension!=.rdata[['focus_dimension']]){
+    
+    updateSelectInput(session, 'focus_dimension_explore', selected = .rdata[['focus_dimension']])
+  }
+  
+})
+
+
+
 
 
 
@@ -1237,7 +1178,7 @@ output$dataTableBenchmark <- renderDataTable({
                        mostrecent=input$mostrecent_compare,
                        datasource=input$focus_data_source_compare)
 
-  print(head(anchordata))
+  #print(head(anchordata))
     
   benchmarkdata <- getComparisonCountries(indicator = input$focus_indicator_compare, 
                                           stratifier = input$focus_dimension_compare, 
