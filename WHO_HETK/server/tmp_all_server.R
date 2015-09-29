@@ -13,8 +13,9 @@ observe({
   
   country <- isolate(input$focus_country_compare)
   
-  if(is.null(country) || country!=.rdata[['focus_country']]){
-    
+  
+  
+  if(!is.null(country) && country!=.rdata[['focus_country']]){
     updateSelectInput(session, 'focus_country_compare', selected = .rdata[['focus_country']])
   }
   
@@ -67,7 +68,7 @@ observe({
  
   indicator <- isolate(input$focus_indicator_compare)
   
-  if(is.null(indicator) || indicator!=.rdata[['focus_indicator']]){
+  if(!is.null(indicator) && indicator!=.rdata[['focus_indicator']]){
     
     updateSelectInput(session, 'focus_indicator_compare', selected = .rdata[['focus_indicator']])
   }
@@ -212,6 +213,7 @@ output$focus_source_year_explore <- renderUI({
 output$focus_indicator_explore <- renderUI({
   
   focusIndicator_selector("focus_indicator_explore", multiple=TRUE, core=FALSE)
+
   
 })
 

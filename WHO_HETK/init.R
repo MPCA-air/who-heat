@@ -1,4 +1,5 @@
 
+
 #observe({
 
 #if(is.null(input$dataSource)) return()
@@ -29,7 +30,7 @@
 .rdata[['benchmark_countries']]<<-c("Afghanistan", "Belize", "Liberia")
 
 
-.rdata[['all_table_variables']] <- c("Country" = 'Country', 
+.rdata[['all_table_variables']] <<- c("Country" = 'Country', 
                                      "Year" = "Year", 
                                      "Data source" = "Data source", 
                                      "Health indicator" = "Health indicator", 
@@ -90,7 +91,7 @@
 
 .rdata[['equity_dimensions']] <<- c("Economic status", "Geographic region", "Mother's education",
                                     "Place of residence","Sex")
-.rdata[['core_indicators']]<<-c("Antenatal care coverage - at least one visit (2/3 years) (%)" = "anc1",
+.rdata[['core_indicators']] <<- c("Antenatal care coverage - at least one visit (2/3 years) (%)" = "anc1",
                                 "Antenatal care coverage - at least one visit (5 years) (%)" = "anc15",
                                 "Antenatal care coverage - at least four visits (2/3 years) (%)" = "anc4",
                                 "Antenatal care coverage - at least four visits (5 years) (%)" = "anc45",
@@ -262,11 +263,11 @@ focusCountry_selector <- function(id){
   #print(.rdata[['all_countries']])
   
   if(is.null(.rdata[['all_countries']])) return()
-  print(.rdata[['focus_country']])
+  #print(.rdata[['focus_country']])
   
   countries <- .rdata[['all_countries']]
   #countries <- getFilteredCountries()
-  if(is.null(countries)){ countries <- c()}
+  #if(is.null(countries)){ countries <- c()}
   
   
   selectInput(id, 
