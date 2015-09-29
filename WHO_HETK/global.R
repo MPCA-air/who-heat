@@ -13,14 +13,14 @@ focusIndicator_selector <- function(id, multiple = FALSE, core=FALSE){
   
   ifelse(multiple, focus_indic <- .rdata[['focus_indicator']], focus_indic <- .rdata[['focus_indicator']][1])
   
-  print(.rdata[['focus_indicator']])
-  print(indicators)
+  #print(.rdata[['focus_indicator']])
+  #print(indicators)
   
   selectInput(id, 
               h5("Select health indicators"), 
-              choices  = .rdata[['full_indicators']], 
+              choices  = .rdata[['core_indicators']], 
               multiple = multiple, 
-              selected = focus_indic)
+              selected = .rdata[['core_indicators']][1])
   
   
 }
