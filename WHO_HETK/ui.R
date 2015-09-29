@@ -1,10 +1,10 @@
 
-shinyUI(navbarPage("WHO HEAT", id= "who_heat", inverse=TRUE, collapsible = TRUE,
+shinyUI(navbarPage("Health Equity Assessment Toolkit", id= "who_heat", inverse=TRUE, collapsible = TRUE,
                    #   fluidPage(  theme = shinytheme("readable"), 
                    #               img(src='WHO-EN-B-H.jpg', align = "right", height = 72, width = 232),
                    
                    
-                   tabPanel("Select Database", uiOutput("data_management_ui")),
+                   tabPanel("Home", uiOutput("home_ui")),
                    tabPanel("Explore Inequality", uiOutput('explore_inequality_ui')),
                    tabPanel("Compare Inequality", uiOutput('compare_inequality_ui')),
                    tabPanel("Information", uiOutput("information_ui"))

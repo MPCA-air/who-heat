@@ -13,6 +13,7 @@ focusCountry_selector <- function(id){
     #countries <- getFilteredCountries()
     if(is.null(countries)){ countries <- c()}
     
+    
     selectInput(id, 
                 h5("Country:"), 
                 choices  = countries, 
@@ -35,11 +36,14 @@ focusIndicator_selector <- function(id, multiple = FALSE, core=FALSE){
   #countries <- getFilteredCountries()
   if(is.null(indicators)){ indicators <- c()}
   
+  
+  ifelse(multiple, focus_indic <- .rdata[['focus_indicator']], focus_indic <- .rdata[['focus_indicator']][1])
+  
   selectInput(id, 
               h5("Select health indicators"), 
               choices  = indicators, 
               multiple = multiple, 
-              selected = .rdata[['focus_indicator']])
+              selected = focus_indic)
   
   
 }
@@ -76,14 +80,13 @@ focusDimension_selector <- function(id, multiple = FALSE){
   # and in summary.
   
   
-  selectionOptions <- .rdata[['equity_dimensions']]
-  
+  ifelse(multiple, focus_dimen <- .rdata[['focus_dimension']], focus_dimen <- .rdata[['focus_dimension']][1])
   
   selectInput(inputId = id,
               h5("Select inequality dimensions"),
-              choices = selectionOptions,
-              selected = .rdata[['focus_dimension']],
-              multiple=T)
+              choices = .rdata[['equity_dimensions']],
+              selected = focus_dimen,
+              multiple=TRUE)
   
   
 }

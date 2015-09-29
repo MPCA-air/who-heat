@@ -30,12 +30,13 @@ output$explore_inequality_ui <- renderUI({
                         #uiOutput("focus_indicator_explore_disag"),
                                          #uiOutput("focus_dimension_explore_disag"),
                                          hr(),
-                                         actionButton("getdata", "Fetch Data",  class = "btn-success"),
+                                        #actionButton("getdata", "Fetch Data",  class = "btn-success"),
                                         uiOutput('dataTableItems')
                         #) # End conditional panel
       ),
       conditionalPanel(condition = "input.assessment_panel == 'dataplot'",
                        tags$p(),
+                       h4("Select chart type"),
                        radioButtons("ai_plot_type", h3("Plot options"),
                                     c("Bar Chart" = "data_bar",
                                       "Line Chart" = "data_line"),
@@ -43,7 +44,7 @@ output$explore_inequality_ui <- renderUI({
                                     selected="data_line"), 
                        br(),
                        
-                       h4('Plot dimensions'),
+                       h4('Select plot dimensions'),
                        
                        sliderInput('plot_height1', h5('Height'), min=200, max=1500, value=400, step = 50,
                                    round = T,
@@ -54,7 +55,7 @@ output$explore_inequality_ui <- renderUI({
                                    ticks = TRUE, animate = FALSE),
                        
                        br(),
-                       h4('Plot names'),
+                       h4('Select plot names'),
                        
                        checkboxInput(inputId='long_names1', label='Long health indicator names', value = FALSE),
                        
@@ -103,6 +104,7 @@ output$explore_inequality_ui <- renderUI({
                        #uiOutput("sumplotEquityDimension"),
                        #uiOutput("sumplotYears"),
                        br(),
+                       h4("Select chart type"),
                        radioButtons("sumplot_type", h3("Plot options"),
                                     c("Bar Chart" = "data_bar",
                                       "Line Chart" = "data_line"),
@@ -111,7 +113,7 @@ output$explore_inequality_ui <- renderUI({
                        
                        #uiOutput('downloadSummplot'),
                        
-                       h4('Plot dimensions'),
+                       h4('Select plot dimensions'),
                        
                        sliderInput('plot_height_sum', h5('Height'), min=200, max=1500, value=400, step = 50,
                                    round = T,

@@ -6,13 +6,18 @@ output$compare_inequality_ui <- renderUI({
     sidebarPanel(
       
       uiOutput("focus_country_compare"),
+      uiOutput("focus_year_compare"),
+      uiOutput("focus_indicator_compare"),
+      uiOutput("focus_dimension_compare"),
+      uiOutput("benchmark_countries"),
+
       hr(),
       conditionalPanel(condition = "input.comparison_panel == 'inequalbenchmark'",
                        
                        #uiOutput("focus_country"),
-                       uiOutput("compplotBenchHealthIndicator"),
-                       uiOutput("compplotBenchEquityDimension"),
-                       uiOutput("compplotBenchYears"),
+                       #uiOutput("compplotBenchHealthIndicator"),
+                       #uiOutput("compplotBenchEquityDimension"),
+                       #uiOutput("compplotBenchYears"),
                        
                        h4("Benchmark countries"),
                        
@@ -37,7 +42,7 @@ output$compare_inequality_ui <- renderUI({
                        
                        
                        # On the fly drop down menu to select countries of interest
-                       uiOutput("benchmarkCountries"),
+                       
                        
                        sliderInput('benchmarkYears', h5('Select years'), min=0, max=5, value=2, step = 1,
                                    round = T, ticks = TRUE, animate = FALSE),
@@ -50,12 +55,12 @@ output$compare_inequality_ui <- renderUI({
       conditionalPanel(condition = "input.comparison_panel == 'inequaldisag'",
                        
                        #uiOutput("focus_country"),
-                       uiOutput("compplotDisagHealthIndicator"),
-                       uiOutput("compplotDisagEquityDimension"),
-                       uiOutput("compplotDisagYears"),
+                       #uiOutput("compplotDisagHealthIndicator"),
+                       #uiOutput("compplotDisagEquityDimension"),
+                       #uiOutput("compplotDisagYears"),
                        hr(),
                        h3('Plot options'),
-                       h4('Plot dimensions'),
+                       h4('Select plot dimensions'),
                        
                        sliderInput('plot_height2', h5('Height'), min=200, max=1500, value=400, step = 50,
                                    round = T, 
@@ -79,14 +84,14 @@ output$compare_inequality_ui <- renderUI({
                        
                        #uiOutput("focus_country"),
                        uiOutput("compplotSumMeasure"),
-                       uiOutput("compplotSumHealthIndicator"),
-                       uiOutput("compplotSumEquityDimension"),
-                       uiOutput("compplotSumYears"),
+                       #uiOutput("compplotSumHealthIndicator"),
+                       #uiOutput("compplotSumEquityDimension"),
+                       #uiOutput("compplotSumYears"),
                        p(),
                        hr(),
                        p(),
                        h3('Plot options'),
-                       h4('Plot dimensions'),
+                       h4('Select plot dimensions'),
                        
                        sliderInput('plot_height3', h5('Height'), min=200, max=800, value=400, step = 50,
                                    round = T, 

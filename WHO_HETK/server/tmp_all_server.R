@@ -15,7 +15,7 @@
 #  }
   
   .rdata[['all_countries']]<<-.rdata[['countrynames']]$country
-  .rdata[['benchmark_countries']]<<-0
+  
   .rdata[['focus_data_source']]<<-"All"
   .rdata[['mostrecent']]<<-FALSE
   
@@ -26,6 +26,25 @@
   
   .rdata[['focus_inequal_type']]<<-'rd'
   
+  .rdata[['benchmark_countries']]<<-c("Afghanistan", "Belize", "Liberia")
+  
+  
+  .rdata[['all_table_variables']] <- c("Country" = 'Country', 
+                  "Year" = "Year", 
+                  "Data source" = "Data source", 
+                  "Health indicator" = "Health indicator", 
+                  "Inequality dimension" = "Inequality dimension",
+                  "Subgroup" = "Subgroup",
+                  "Estimate" = "Estimate",
+                  "Lower 95%CI"  = "Lower 95%CI",
+                  "Upper 95%CI"  = "Upper 95%CI",
+                  "Population share %"   = "Population share %",
+                  "National estimate"    = "National estimate",
+                  "Flag" = "flag")
+  
+  .rdata[['focus_table_variables']]<-c("Country", "Year", "Source", "Health indicator", "Inequality dimension", 
+                                     "Subgroup", "Estimate", "Population share %", "Lower 95%CI", "Upper 95%CI")
+
   
   .rdata[['unrankable_dimensions']] <<- c("Sex", "Geographical region")
   .rdata[['rankable_dimensions']]<<- c("Economic status", "Mother's education", "Place of residence")
@@ -310,8 +329,7 @@ output$focus_source_year_explore <- renderUI({
                                 label='', 
                                 choices=selectYears, 
                                 multiple=T, 
-                                selected=.rdata[['focus_year']]),
-                    hr()
+                                selected=.rdata[['focus_year']])
                     )
   )
 })
@@ -378,7 +396,8 @@ output$dataTable <- renderDataTable({
     mutate(estimate = round(estimate, 2),
            lower_95ci = round(lower_95ci,2),
            upper_95ci = round(upper_95ci,2),
-           popshare = round(popshare, 2))
+           popshare = round(popshare, 2),
+           national = round(national, 2))
   
   theData<-theData %>% 
     rename(
@@ -392,21 +411,20 @@ output$dataTable <- renderDataTable({
       `Lower 95%CI`          = lower_95ci,
       `Upper 95%CI`          = upper_95ci,
       `Population share %`   = popshare,
+      `National estimate`    = national,
       Flag                   = flag
     ) 
   
-  if(theData[["Data source"]][1] %in% c('DHS', 'MICS')){
+  #if(theData[["Data source"]][1] %in% c('DHS', 'MICS')){
+  #print(head(theData))
     theData <- theData[, input$dataTableItems]
     
-  }
-  else{
-    theData <- theData[, c('Country', 'Year', 'Data source', 'Health indicator', 
-                           'Inequality dimension', 'Subgroup', 'Estimate')]
-  }
-  #})
-  
-  #if(is.null(theData)) return()
-  #if(nrow(theData)==0)return()
+#   }
+#   else{
+#     theData <- theData[, c('Country', 'Year', 'Data source', 'Health indicator', 
+#                            'Inequality dimension', 'Subgroup', 'Estimate')]
+#   }
+
   
   theData
 }, options = list(dom = "ilftpr", pageLength = 10)  # see https://datatables.net/ for dataTable options
@@ -422,57 +440,25 @@ output$dataTable <- renderDataTable({
 
 
 
-# Year is filtered by the survey availability by country and the source (MICS/DHS of the survey)
-# output$years <- renderUI({
-#   
-#   selectYears <- getFilteredYear(country=input$focus_country, datasource=input$data_source)
-#   if(is.null(selectYears)){ selectYears <- c()}
-#   selectInput(inputId="years", 
-#               label='', 
-#               choices=selectYears, 
-#               multiple=T, 
-#               selected=selectYears[1])
-# })
-
-
-
-
-
 
 
 
 
 # Set up the selectInput for the display of data in the Disaggregated Data Table view
 output$dataTableItems <- renderUI({
-  #print("In dataTableItems")
+
   
-  # TODO: there is a test for whether the user's selected data has rows
-  # but this requires another call to the data creation so for now I'm 
-  # turning off
-  if(is.null(input$assessment_panel)) return()
-  
-  if(input$assessment_panel == "datatable"){ 
-    selectOptions <- c("Country" = 'Country', 
-                       "Year" = "Year", 
-                       "Data source" = "Data source", 
-                       "Health indicator" = "Health indicator", 
-                       "Inequality dimension" = "Inequality dimension",
-                       "Subgroup" = "Subgroup",
-                       "Estimate" = "Estimate",
-                       "Lower 95%CI"  = "Lower 95%CI",
-                       "Upper 95%CI"  = "Upper 95%CI",
-                       "Population share %"   = "Population share %",
-                       "Flag" = "flag")
-    selectedOptions <- c("Country", "Year", "Source", "Health indicator", "Inequality dimension", 
-                         "Subgroup", "Estimate", "Population share %", "Lower 95%CI", "Upper 95%CI")
+  if(!is.null(input$dataTableItems)) .rdata[['focus_table_variables']] <- input$dataTableItems
+    
+    list(
+      h4("Table options"),
     selectInput(inputId = "dataTableItems",
-                h4("Select table content"),
-                choices = selectOptions,
-                selected = selectedOptions,
-                multiple=T)
-  } else {
-    return()
-  }
+                h5("Select table content"),
+                choices = .rdata[['all_table_variables']],
+                selected = .rdata[['focus_table_variables']],
+                multiple=TRUE)
+    )
+
 })
 
 
@@ -486,7 +472,7 @@ output$downloadDatatable <- renderUI({
     return()
   } else {
      list(br(),
-          actionButton("downloadDatatable", "Download", class = "btn-primary"))
+          actionButton("downloadDatatable", "Download table", class = "btn-primary"))
    }  
 })
 
@@ -710,7 +696,7 @@ output$downloadSummtable <- renderUI({
     return()
   } else {
     list(br(),
-         actionButton("downloadSummtable", "Download", class = "btn-primary"))
+         actionButton("downloadSummtable", "Download table", class = "btn-primary"))
   }  
 })
 
@@ -730,7 +716,7 @@ datasetInequal <- reactive({
   
   .rdata[['focus_inequal_type']] <- input$focus_inequal_type
   
-  if(input$dataSource=='HETK' & input$assessment_panel=='sumtable'){
+  #if(input$dataSource=='HETK' & input$assessment_panel=='sumtable'){
     #print('Getting equity data table a')
     #print(.rdata[['focus_year']])
     ineqDF <- getInequal(indicator=.rdata[['focus_indicator']], 
@@ -742,20 +728,22 @@ datasetInequal <- reactive({
                          inequal_types=.rdata[['focus_inequal_type']])
 
     #print(head(ineqDF))
-    return(ineqDF)
-  }    
-  if(input$dataSource=='HETK' & input$assessment_panel=='sumplot'){
+    #return(ineqDF)
+  #}    
+  if(input$assessment_panel=='sumplot'){
     #print('Getting equity data plot')
-    ineqDF <- getInequal(indicator=.rdata[['focus_indicator']], 
-                         stratifier=.rdata[['focus_dimension']], 
-                         countries=.rdata[['focus_country']], 
-                         years=.rdata[['focus_year']],  
-                         inequal_types=.rdata[['focus_summary_measure']])
+#     ineqDF <- getInequal(indicator=.rdata[['focus_indicator']], 
+#                          stratifier=.rdata[['focus_dimension']], 
+#                          countries=.rdata[['focus_country']], 
+#                          years=.rdata[['focus_year']],  
+#                          inequal_types=.rdata[['focus_summary_measure']])
     ineqDF$boot.se[ ineqDF$boot.se == 0] <- NA
     ineqDF$se[ ineqDF$se == 0] <- NA
     
     return(ineqDF)
-  }     
+  }  
+    
+    return(ineqDF)
 })
 
 
@@ -955,6 +943,7 @@ theSummaryPlot <- reactive({
   
   
   plotData <- datasetInequal()
+  #print(head(plotData))
   
   
   #print(class(plotData))
@@ -962,7 +951,7 @@ theSummaryPlot <- reactive({
   if(is.null(plotData)) return()
 
     #plotData <- datasetInequal()
-    if(class(plotData)=="data.frame" && nrow(plotData)>0 ){
+    #if(class(plotData)=="data.frame" && nrow(plotData)>0 ){
       
       chartopt <- list()
       chartopt <- lappend(chartopt, 'axmax' = as.integer(input$axis_limitsmax2))
@@ -978,18 +967,18 @@ theSummaryPlot <- reactive({
         chartopt <- lappend(chartopt, 'yaxis_title' = input$yaxis_title2)
       }
       
-      relevant.rows <- which(plotData$year %in% input$sumplotYears & plotData$indic %in% input$sumplotHealthIndicator & 
-                               plotData$dimension %in% input$sumplotEquityDimension & plotData$measure %in% input$sumplotSumMeasures)
-      
-      if(length(relevant.rows)>0){  # This will generally fail because the Health Indicator has not *yet* been selected
+#       relevant.rows <- which(plotData$year %in% input$sumplotYears & plotData$indic %in% input$sumplotHealthIndicator & 
+#                                plotData$dimension %in% input$sumplotEquityDimension & plotData$measure %in% input$sumplotSumMeasures)
+#       
+      #if(length(relevant.rows)>0){  # This will generally fail because the Health Indicator has not *yet* been selected
         
-        plotData <- plotData[relevant.rows, ]      
+        #plotData <- plotData[relevant.rows, ]      
         
         if(input$long_names2==T){
-          relevant_names <- which(names(.rdata[['health_indicator_abbr']]) %in% unique(plotData$indic))
+          #relevant_names <- which(names(.rdata[['health_indicator_abbr']]) %in% unique(plotData$indic))
           plotData$indic <- factor(plotData$indic,
-                                   levels = names(.rdata[['health_indicator_abbr']])[relevant_names],
-                                   labels = unname(.rdata[['health_indicator_abbr']])[relevant_names]) 
+                                   levels = names(.rdata[['health_indicator_abbr']]),
+                                   labels = unname(.rdata[['health_indicator_abbr']])) 
         }
         
         
@@ -1001,11 +990,13 @@ theSummaryPlot <- reactive({
           p <- plotFigure4(plotData, chartoptions=chartopt)
           return(p)
         }    
-      }
-    }
-    else{
-      return()
-    }
+      
+      
+      #}
+    #}
+#     else{
+#       return()
+#     }
   
 })  
 
@@ -1044,11 +1035,62 @@ output$focus_country_compare <- renderUI({
   
 })
 
-output$health_indicator_compare <- renderUI({
+output$focus_indicator_compare <- renderUI({
   
-  focusIndicator_selector("focus_indicator_compare")
+  focusIndicator_selector("focus_indicator_compare", multiple=FALSE)
   
 })
+
+
+output$focus_year_compare <- renderUI({
+  
+  selectYears <- getFilteredYear(country=input$focus_country_compare)
+  .rdata[['focus_year']] <- selectYears[1]
+  
+  list(
+
+    h5("Select years"),
+    checkboxInput('mostrecent_compare', 'Most recent year', .rdata[['mostrecent']]),
+    
+    conditionalPanel( condition = "!input.mostrecent_compare",  
+                      
+                      selectInput(inputId="focus_year_compare", 
+                                  label='', 
+                                  choices=selectYears, 
+                                  multiple=FALSE, 
+                                  selected=.rdata[['focus_year']][1])
+    )
+  )
+})
+
+
+
+
+output$focus_dimension_compare <- renderUI({
+  
+  focusDimension_selector("focus_dimension_compare", multiple=FALSE)
+  
+})
+
+
+
+output$benchmark_countries <- renderUI({
+  
+  if(is.null(.rdata[['benchmark_countries']])) return()
+  countries <- getFilteredCountries(input$benchmarkWBgroup, input$benchmarkWHOregion) 
+  focus_country <- .rdata[['focus_country']]
+  countries <- countries[!countries%in%focus_country]
+  print(.rdata[['benchmark_countries']])
+  
+  selectInput("benchmark_countries", 
+              h5("Select countries"), 
+              choices=countries, 
+              selected=.rdata[['benchmark_countries']],
+              multiple=TRUE)
+})
+
+
+
 
 
 output$compplotBenchHealthIndicator <- renderUI({    
@@ -1264,25 +1306,37 @@ output$dataTableBenchmark <- renderDataTable({
   input$getcomparisondata1
 
   
+  
+  
+  .rdata[['focus_country']] <- input$focus_country_compare
+  .rdata[['focus_indicator']] <- input$focus_indicator_compare
+  .rdata[['focus_year']] <- input$focus_year_compare
+  .rdata[['focus_dimension']] <- input$focus_dimension_compare
+  .rdata[['benchmark_countries']] <- input$benchmark_countries
+  
   isolate({
     
-    anchordata <-   getHETKdata(indicator=input$compplotBenchHealthIndicator, 
-                                stratifier=input$compplotBenchEquityDimension,  # in hetkdb.R
-                                countries=input$focus_country, 
-                                years=input$compplotBenchYears)
+    anchordata <- getHETKdata(indicator=.rdata[['focus_indicator']], 
+                stratifier=.rdata[['focus_dimension']],  # in hetkdb.R
+                countries=.rdata[['focus_country']], 
+                years=.rdata[['focus_year']], 
+                mostrecent=.rdata[['mostrecent']],
+                datasource=.rdata[['focus_data_source']])
 
-#     relevant.rows <- which(anchordata$year %in% input$compplotBenchYears &   # Select only the right years ...
-#                              anchordata$indic == input$compplotBenchHealthIndicator &  # health indicator, and ... 
-#                              anchordata$dimension == input$compplotBenchEquityDimension)  # equity dimension 
+
+    benchmarkdata <- getHETKdata(indicator=.rdata[['focus_indicator']], 
+                              stratifier=.rdata[['focus_dimension']],  # in hetkdb.R
+                              countries=.rdata[['benchmark_countries']], 
+                              years=.rdata[['focus_year']], 
+                              mostrecent=.rdata[['mostrecent']],
+                              datasource=.rdata[['focus_data_source']])
     
-    #anchordata <- anchordata[ relevant.rows , ]
     
-  
-    benchmarkdata <- getComparisonCountries(indicator = input$compplotBenchHealthIndicator, 
-                                            stratifier = input$compplotBenchEquityDimension, 
-                                            countries = input$benchmarkCountries, 
-                                            years =  unique(anchordata$year), 
-                                            elasticity = input$benchmarkYears, matchyears=F)
+#     benchmarkdata <- getComparisonCountries(indicator = input$compplotBenchHealthIndicator, 
+#                                             stratifier = input$compplotBenchEquityDimension, 
+#                                             countries = input$benchmarkCountries, 
+#                                             years =  unique(anchordata$year), 
+#                                             elasticity = input$benchmarkYears, matchyears=F)
   
     
     theData <- rbind(anchordata, benchmarkdata)  # Merge the relevant initial data with benchmarkdata

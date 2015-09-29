@@ -381,6 +381,8 @@ plotFigure4 <- function(plotData, chartoptions=NULL){
   
   p <- p + guides(col=guide_legend(ncol=1))
   
+  p <- p + facet_grid(dimension~.)
+  
   return(p)
 }
 
