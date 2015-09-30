@@ -59,7 +59,7 @@ focusDimension_selector <- function(id, multiple = FALSE){
   # TODO: need to unselect non-core if selected in diaggregated
   # and in summary.
   
-
+  
   ifelse(multiple, focus_dimen <- .rdata[['focus_dimension']], focus_dimen <- .rdata[['focus_dimension']][1])
   
   selectInput(inputId = id,
@@ -206,10 +206,7 @@ nearest <- function(anchor, lizt, limit=1, all=F){
     
     anchor <- as.integer(anchor)
     diff <- abs(anchor - lizt)  # The absolute difference between the anchor and the lizt
-    print(paste0("anchor:", anchor))
-    print(paste0("lizt:", lizt))
-    print(paste0("diff:", diff))
-    print(paste0("limit:", limit))
+
     if(min(diff, na.rm=T) > limit){  # If no number in lizt is nearer to anchor than limit ... fail (FALSE)
       return (FALSE)
     }

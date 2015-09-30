@@ -70,7 +70,7 @@ getInequal <- function(indicator = NULL, stratifier = NULL, countries = NULL, ye
   #print("In getInequal function b")
   
   
-  if(multiplier){
+  if(!is.null(multiplier1) && multiplier1){
     #print("In dataTableInequal a")
     ineqDF$inequal[ineqDF$measure=='ti'] <- ineqDF$inequal[ineqDF$measure=='ti'] *1000
     ineqDF$inequal[ineqDF$measure=='mld'] <- ineqDF$inequal[ineqDF$measure=='mld'] *1000
@@ -95,7 +95,7 @@ getInequal <- function(indicator = NULL, stratifier = NULL, countries = NULL, ye
     
   }
   
-  if(multiplier2){
+  if(!is.null(multiplier2) && multiplier2){
     #print("In dataTableInequal b")
     ineqDF$inequal[ineqDF$measure=='rci'] <- ineqDF$inequal[ineqDF$measure=='rci'] *100
     ineqDF$se[ineqDF$measure=='rci'] <- ineqDF$se[ineqDF$measure=='rci'] *100

@@ -10,11 +10,12 @@ output$explore_inequality_ui <- renderUI({
       uiOutput("focus_dimension_explore"),
       
       
-      conditionalPanel( condition = "(input.assessment_panel == 'datatable')",   #### output.owndata gopt from server.R
+      conditionalPanel(condition = "input.assessment_panel == 'datatable'",   #### output.owndata gopt from server.R
 
                                          hr(),
+                        uiOutput('dataTableItems')
 
-                                        uiOutput('dataTableItems')
+                                        
 
       ),
       conditionalPanel(condition = "input.assessment_panel == 'dataplot'",

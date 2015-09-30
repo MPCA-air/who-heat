@@ -93,8 +93,9 @@ output$focus_indicator_explore <- renderUI({
 
 
 output$focus_dimension_explore <- renderUI({
-  
+  print(paste0("inputdatatable:", input$assessment_panel))
   focusDimension_selector("focus_dimension_explore", multiple=TRUE)
+  
   
 })
 
