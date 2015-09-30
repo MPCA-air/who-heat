@@ -1082,7 +1082,7 @@ getBenchmarkData <- reactive({
   input$benchmarkWHOregion
   input$getcomparisondata1
   
-  
+  if(is.null(input$benchmarkYears)) return()
 
   
   anchordata<-getHETKdata(indicator=input$focus_indicator_compare, 
