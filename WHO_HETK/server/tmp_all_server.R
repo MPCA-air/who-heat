@@ -461,7 +461,9 @@ datasetInequal <- reactive({
                          years=.rdata[['focus_year']], 
                          mostrecent=.rdata[['mostrecent']],
                          datasource=.rdata[['focus_data_source']],  
-                         inequal_types=.rdata[['focus_inequal_type']])
+                         inequal_types=.rdata[['focus_inequal_type']],
+                         multiplier1 = input$summultiplier1,
+                         multiplier2 = input$summultiplier2)
 
     #print(head(ineqDF))
     #return(ineqDF)
@@ -854,7 +856,12 @@ output$benchmarkWHOregion <- renderUI({
 })
 
 
-
+output$benchmarkYears <- renderUI({
+  
+  sliderInput('benchmarkYears', h5('Select years'), min=0, max=5, value=2, step = 1,
+              round = T, ticks = TRUE, animate = FALSE)
+  
+})
 
 
 
@@ -1867,7 +1874,7 @@ observe({
 
 observe({
   if(is.null(input$focus_indicator_explore)){
-    print("in here")
+    #print("in here")
     .rdata[['focus_indicator']] <<- NULL
     updateSelectInput(session, 'focus_indicator_compare', selected = NULL)
     return()

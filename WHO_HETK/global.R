@@ -197,6 +197,7 @@ my.which.min <- function(lizt, na.rm=F){
 
 
 nearest <- function(anchor, lizt, limit=1, all=F){
+
   # anchor: the number against which nearness is tested
   # lizt: the vector of candidate numbers
   # limit: the limit on how far away the number can be
@@ -205,6 +206,10 @@ nearest <- function(anchor, lizt, limit=1, all=F){
     
     anchor <- as.integer(anchor)
     diff <- abs(anchor - lizt)  # The absolute difference between the anchor and the lizt
+    print(paste0("anchor:", anchor))
+    print(paste0("lizt:", lizt))
+    print(paste0("diff:", diff))
+    print(paste0("limit:", limit))
     if(min(diff, na.rm=T) > limit){  # If no number in lizt is nearer to anchor than limit ... fail (FALSE)
       return (FALSE)
     }

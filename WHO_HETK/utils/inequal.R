@@ -5,7 +5,7 @@
 
 
 getInequal <- function(indicator = NULL, stratifier = NULL, countries = NULL, years = NULL,
-                       mostrecent=NULL, datasource=NULL,  inequal_types=NULL){
+                       mostrecent=NULL, datasource=NULL,  inequal_types=NULL, multiplier1=TRUE,multiplier2=TRUE){
   #print("In getInequal function a")
   #print(paste0(indicator, stratifier, countries, years))
   # Fetch the inequalities data from the inbuilt database  
@@ -70,7 +70,7 @@ getInequal <- function(indicator = NULL, stratifier = NULL, countries = NULL, ye
   #print("In getInequal function b")
   
   
-  if(input$summultiplier1==T){
+  if(multiplier){
     #print("In dataTableInequal a")
     ineqDF$inequal[ineqDF$measure=='ti'] <- ineqDF$inequal[ineqDF$measure=='ti'] *1000
     ineqDF$inequal[ineqDF$measure=='mld'] <- ineqDF$inequal[ineqDF$measure=='mld'] *1000
@@ -95,7 +95,7 @@ getInequal <- function(indicator = NULL, stratifier = NULL, countries = NULL, ye
     
   }
   
-  if(input$summultiplier2==T){
+  if(multiplier2){
     #print("In dataTableInequal b")
     ineqDF$inequal[ineqDF$measure=='rci'] <- ineqDF$inequal[ineqDF$measure=='rci'] *100
     ineqDF$se[ineqDF$measure=='rci'] <- ineqDF$se[ineqDF$measure=='rci'] *100

@@ -29,9 +29,8 @@ output$compare_inequality_ui <- renderUI({
                        
                        # On the fly drop down menu to select countries of interest
                        
+                       uiOutput('benchmarkYears'),
                        
-                       sliderInput('benchmarkYears', h5('Select years'), min=0, max=5, value=2, step = 1,
-                                   round = T, ticks = TRUE, animate = FALSE),
                        helpText(HTML("By how many years can the benchmark countries' data vary from the focus country's data?"),
                                 style="color:black; font-size: 85%"),
                        

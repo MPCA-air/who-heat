@@ -45,3 +45,5 @@ library(dplyr)
 # xx<-filter(.rdata[['maindata']], country=="Armenia", indic == "carep", dimension == 'Sex')
 
 filter(.rdata[['countrynames']], TRUE, whoreg6_name=="Africa")
+
+

@@ -10,29 +10,12 @@ output$explore_inequality_ui <- renderUI({
       uiOutput("focus_dimension_explore"),
       
       
-      conditionalPanel( condition = "(input.assessment_panel == 'datatable' || input.assessment_panel == 'dataplot')",   #### output.owndata gopt from server.R
+      conditionalPanel( condition = "(input.assessment_panel == 'datatable')",   #### output.owndata gopt from server.R
 
-                        #uiOutput("focus_indicator_explore_disag"), 
-#                         radioButtons("data_source", h5("Select data sources"),
-#                                      c("All", "DHS", "MICS"),
-#                                      inline=T,
-#                                      selected="All"),
-#                         
-#                         h5("Select years"),
-#                         checkboxInput('mostrecent', 'Most recent year', FALSE),
-#                         
-#                         conditionalPanel( condition = "!input.mostrecent",                                           
-#                                           uiOutput("years"),
-#                                           hr()), 
-                        
-                        #uiOutput('focus_source_year_explore'),
-                        #conditionalPanel(condition = "1==1",
-                        #uiOutput("focus_indicator_explore_disag"),
-                                         #uiOutput("focus_dimension_explore_disag"),
                                          hr(),
-                                        #actionButton("getdata", "Fetch Data",  class = "btn-success"),
+
                                         uiOutput('dataTableItems')
-                        #) # End conditional panel
+
       ),
       conditionalPanel(condition = "input.assessment_panel == 'dataplot'",
                        tags$p(),
