@@ -352,8 +352,10 @@ output$downloadAnyPlot <- downloadHandler(
 
 
 output$focus_summeasure_explore_summary <- renderUI({
-  focusInequalType_selector("focus_inequal_type", .rdata[['focus_dimension']])
+  focusInequalType_selector("focus_inequal_type_explore", .rdata[['focus_dimension']])
 })
+
+
 
 ##############################################################
 # Explore inequality:: summary table ----
@@ -451,7 +453,7 @@ datasetInequal <- reactive({
   input$focus_indicator_explore
   input$focus_dimension_explore
   
-  input$focus_inequal_type
+  input$focus_inequal_type_explore
   
   #if(input$dataSource=='HETK' & input$assessment_panel=='sumtable'){
     #print('Getting equity data table a')
@@ -801,6 +803,9 @@ output$focus_year_compare <- renderUI({
 })
 
 
+output$focus_summeasure_compare_summary <- renderUI({
+  focusInequalType_selector("focus_inequal_type_compare", .rdata[['focus_dimension']])
+})
 
 
 output$focus_dimension_compare <- renderUI({
@@ -1078,6 +1083,8 @@ getBenchmarkData <- reactive({
   input$getcomparisondata1
   
   
+
+  
   anchordata<-getHETKdata(indicator=input$focus_indicator_compare, 
                           stratifier=input$focus_dimension_compare,  # in hetkdb.R
                           countries=input$focus_country_compare, 
@@ -1132,7 +1139,7 @@ getBenchmarkDataSum <- reactive({
                                           years =  unique(input$focus_year_compare), 
                                           elasticity = input$benchmarkYears, 
                                           matchyears=F,
-                                          summeasure = input$focus_inequal_type)
+                                          summeasure = input$focus_inequal_type_compare)
   
   #print(head(anchordata))
   if(!is.null(anchordata)) anchordata$anchor <- 1
@@ -1143,7 +1150,7 @@ getBenchmarkDataSum <- reactive({
                                           years =  unique(input$focus_year_compare), 
                                           elasticity = input$benchmarkYears, 
                                           matchyears=F,
-                                          summeasure = input$focus_inequal_type)
+                                          summeasure = input$focus_inequal_type_compare)
   
 #       thedata <- getComparisonSummaries(summeasure=input$compplotSumMeasure, 
 #                                         indicator=input$compplotSumHealthIndicator, 
