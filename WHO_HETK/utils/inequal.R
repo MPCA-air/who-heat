@@ -43,7 +43,7 @@ getInequal <- function(indicator = NULL, stratifier = NULL, countries = NULL, ye
   #     print(paste0('dimension:', stratifier))
 
   ineqDF <- filter(.rdata[['inequals']], filt_country, filt_year, filt_indicator, filt_dimension, filt_inequaltype) %>% 
-    select(country, year, indic, dimension, measure, inequal, boot.se, se)
+    select(country, year, indic, dimension, measure, inequal, boot.se, se, ccode)
   
 #   if(is.null(ineqDF)){
 #     return()

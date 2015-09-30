@@ -69,7 +69,7 @@ output$compare_inequality_ui <- renderUI({
                        
                        
                        #uiOutput("focus_country"),
-                       uiOutput("compplotSumMeasure"),
+                       uiOutput("focus_summeasure_explore_summary"),
                        #uiOutput("compplotSumHealthIndicator"),
                        #uiOutput("compplotSumEquityDimension"),
                        #uiOutput("compplotSumYears"),

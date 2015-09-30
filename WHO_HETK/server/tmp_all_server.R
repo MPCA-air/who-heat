@@ -351,7 +351,7 @@ output$downloadAnyPlot <- downloadHandler(
 
 
 output$focus_summeasure_explore_summary <- renderUI({
-  focusInequalType_selector("focus_inequal_type", input$focus_dimension_explore)
+  focusInequalType_selector("focus_inequal_type", .rdata[['focus_dimension']])
 })
 
 ##############################################################
@@ -1062,27 +1062,24 @@ output$compplotSumYears <- renderUI({
 #############################################################
 
 
-
-# Generate a TEMPORARY view of the Comparison Summary Data
-output$dataTableBenchmark <- renderDataTable({
+getBenchmarkData <- reactive({
+  
   
   input$benchmarkWBgroup
   input$benchmarkWHOregion
   input$getcomparisondata1
-
-  print(input$benchmark_countries)
   
-
-    
+  
   anchordata<-getHETKdata(indicator=input$focus_indicator_compare, 
-                       stratifier=input$focus_dimension_compare,  # in hetkdb.R
-                       countries=input$focus_country_compare, 
-                       years=input$focus_year_compare, 
-                       mostrecent=input$mostrecent_compare,
-                       datasource=input$focus_data_source_compare)
-
+                          stratifier=input$focus_dimension_compare,  # in hetkdb.R
+                          countries=input$focus_country_compare, 
+                          years=input$focus_year_compare, 
+                          mostrecent=input$mostrecent_compare,
+                          datasource=input$focus_data_source_compare)
+  
   #print(head(anchordata))
-    
+  if(!is.null(anchordata)) anchordata$anchor <- 1
+  
   benchmarkdata <- getComparisonCountries(indicator = input$focus_indicator_compare, 
                                           stratifier = input$focus_dimension_compare, 
                                           countries = input$benchmark_countries, 
@@ -1090,14 +1087,95 @@ output$dataTableBenchmark <- renderDataTable({
                                           elasticity = input$benchmarkYears, 
                                           matchyears=F)
   
-#     benchmarkdata <- getComparisonCountries(indicator = input$compplotBenchHealthIndicator, 
-#                                             stratifier = input$compplotBenchEquityDimension, 
-#                                             countries = input$benchmarkCountries, 
-#                                             years =  unique(anchordata$year), 
-#                                             elasticity = input$benchmarkYears, matchyears=F)
   
-    
-    theData <- rbind(anchordata, benchmarkdata)  # Merge the relevant initial data with benchmarkdata
+  if(!is.null(benchmarkdata)) benchmarkdata$anchor <- 0
+  
+  #     benchmarkdata <- getComparisonCountries(indicator = input$compplotBenchHealthIndicator, 
+  #                                             stratifier = input$compplotBenchEquityDimension, 
+  #                                             countries = input$benchmarkCountries, 
+  #                                             years =  unique(anchordata$year), 
+  #                                             elasticity = input$benchmarkYears, matchyears=F)
+  
+ 
+  
+  
+#   if(!is.null(anchordata) && !is.null(benchmarkdata) && ncol(anchordata)==ncol(benchmarkdata))  
+ theData <- rbind(anchordata, benchmarkdata) 
+  
+ # Merge the relevant initial data with benchmarkdata
+  
+  return(theData)
+})
+
+
+
+
+getBenchmarkDataSum <- reactive({
+  
+  
+  input$benchmarkWBgroup
+  input$benchmarkWHOregion
+  input$getcomparisondata1
+  
+  
+  anchordata <- getComparisonSummaries(indicator = input$focus_indicator_compare, 
+                                          stratifier = input$focus_dimension_compare, 
+                                          countries = input$focus_country_compare, 
+                                          years =  unique(input$focus_year_compare), 
+                                          elasticity = input$benchmarkYears, 
+                                          matchyears=F,
+                                          summeasure = input$focus_inequal_type)
+  
+  #print(head(anchordata))
+  if(!is.null(anchordata)) anchordata$anchor <- 1
+  
+  benchmarkdata <- getComparisonSummaries(indicator = input$focus_indicator_compare, 
+                                          stratifier = input$focus_dimension_compare, 
+                                          countries = input$benchmark_countries, 
+                                          years =  unique(input$focus_year_compare), 
+                                          elasticity = input$benchmarkYears, 
+                                          matchyears=F,
+                                          summeasure = input$focus_inequal_type)
+  
+#       thedata <- getComparisonSummaries(summeasure=input$compplotSumMeasure, 
+#                                         indicator=input$compplotSumHealthIndicator, 
+#                                         stratifier=input$compplotSumEquityDimension, 
+#                                         countries=thecountries, 
+#                                         years=input$compplotSumYears, 
+#                                         elasticity=input$benchmarkYears, matchyears=T)
+  
+  if(!is.null(benchmarkdata)) benchmarkdata$anchor <- 0
+  
+  #     benchmarkdata <- getComparisonCountries(indicator = input$compplotBenchHealthIndicator, 
+  #                                             stratifier = input$compplotBenchEquityDimension, 
+  #                                             countries = input$benchmarkCountries, 
+  #                                             years =  unique(anchordata$year), 
+  #                                             elasticity = input$benchmarkYears, matchyears=F)
+  
+  
+  
+  
+  #   if(!is.null(anchordata) && !is.null(benchmarkdata) && ncol(anchordata)==ncol(benchmarkdata))  
+  theData <- rbind(anchordata, benchmarkdata) 
+  
+  # Merge the relevant initial data with benchmarkdata
+  
+  return(theData)
+})
+
+
+
+
+
+
+
+
+# Generate a TEMPORARY view of the Comparison Summary Data
+output$dataTableBenchmark <- renderDataTable({
+  
+
+  
+  theData <- getBenchmarkData()
 
     if(is.null(theData)) return()
     #if(nrow(theData)==0) return()
@@ -1195,9 +1273,9 @@ output$theComparisonPlot1_web <- renderPlot({
 theComparisonPlot1 <- reactive({ 
 
   
-  plotData <- getData4a()
+  plotData <- getBenchmarkData()
 
-  if(is.null(plotData)){
+  if(is.null(plotData) || nrow(plotData)==0){
     return()
   }
   else{
@@ -1235,44 +1313,44 @@ theComparisonPlot1 <- reactive({
 
 
 # A *Reactive* to fetch benchmark country FOR the Disaggregated Comparison Plot
-getData4a <- reactive({
-  # This *reactive* fetches benchmark country data for the PLOT
-  #print("Reactive: getData4a")
-  if(input$comparison_panel != 'inequaldisag'){
-    return()
-  }
-  if(length(input$compplotDisagYears)==0 | length(input$compplotDisagHealthIndicator)==0 | length(input$compplotDisagEquityDimension)==0){
-    return()
-  }
-  #print(paste(input$compplotBenchYears, input$compplotDisagYears, input$compplotBenchHealthIndicator, input$compplotDisagHealthIndicator, input$compplotBenchEquityDimension, input$compplotDisagEquityDimension, sep=' >> '))
-  if(input$compplotBenchYears == input$compplotDisagYears & input$compplotBenchHealthIndicator == input$compplotDisagHealthIndicator & input$compplotBenchEquityDimension == input$compplotDisagEquityDimension){
-    return( getData4() )
-  } else {
-    
-    anchordata <- datasetInput()
-    
-    relevant.rows <- which(anchordata$year %in% input$compplotDisagYears &   # Select only the right years ...
-                             anchordata$indic == input$compplotDisagHealthIndicator &  # health indicator, and ... 
-                             anchordata$dimension == input$compplotDisagEquityDimension)  # equity dimension 
-    
-    anchordata <- anchordata[ relevant.rows , ]
-    
-    benchmarkdata <- getComparisonCountries(indicator = input$compplotDisagHealthIndicator, 
-                                            stratifier = input$compplotDisagEquityDimension, 
-                                            countries = input$benchmarkCountries, 
-                                            years =  unique(anchordata$year), 
-                                            elasticity = input$benchmarkYears, matchyears=F)
-    
-    thedata <- rbind(anchordata, benchmarkdata)  # Merge the relevant initial data with benchmarkdata
-    if(is.null(thedata) | nrow(thedata)==0){
-      return()
-    }
-    else{
-      return(thedata)
-    }
-  }
-})
-
+# getData4a <- reactive({
+#   # This *reactive* fetches benchmark country data for the PLOT
+#   #print("Reactive: getData4a")
+#   if(input$comparison_panel != 'inequaldisag'){
+#     return()
+#   }
+#   if(length(input$compplotDisagYears)==0 | length(input$compplotDisagHealthIndicator)==0 | length(input$compplotDisagEquityDimension)==0){
+#     return()
+#   }
+#   #print(paste(input$compplotBenchYears, input$compplotDisagYears, input$compplotBenchHealthIndicator, input$compplotDisagHealthIndicator, input$compplotBenchEquityDimension, input$compplotDisagEquityDimension, sep=' >> '))
+#   if(input$compplotBenchYears == input$compplotDisagYears & input$compplotBenchHealthIndicator == input$compplotDisagHealthIndicator & input$compplotBenchEquityDimension == input$compplotDisagEquityDimension){
+#     return( getData4() )
+#   } else {
+#     
+#     anchordata <- datasetInput()
+#     
+#     relevant.rows <- which(anchordata$year %in% input$compplotDisagYears &   # Select only the right years ...
+#                              anchordata$indic == input$compplotDisagHealthIndicator &  # health indicator, and ... 
+#                              anchordata$dimension == input$compplotDisagEquityDimension)  # equity dimension 
+#     
+#     anchordata <- anchordata[ relevant.rows , ]
+#     
+#     benchmarkdata <- getComparisonCountries(indicator = input$compplotDisagHealthIndicator, 
+#                                             stratifier = input$compplotDisagEquityDimension, 
+#                                             countries = input$benchmarkCountries, 
+#                                             years =  unique(anchordata$year), 
+#                                             elasticity = input$benchmarkYears, matchyears=F)
+#     
+#     thedata <- rbind(anchordata, benchmarkdata)  # Merge the relevant initial data with benchmarkdata
+#     if(is.null(thedata) | nrow(thedata)==0){
+#       return()
+#     }
+#     else{
+#       return(thedata)
+#     }
+#   }
+# })
+# 
 
 
 
@@ -1305,9 +1383,9 @@ output$downloadCompplot2 <- renderUI({
 theComparisonPlot2 <- reactive({ 
   #print("Reactive: theComparisonPlot2")
   #print(getData5())
-  plotData<-getData5()
+  plotData<-getBenchmarkDataSum()
   
-  if(is.null(plotData)){
+  if(is.null(plotData) || nrow(plotData)==0){
     return()
   }
   if(nrow(plotData)==0){
@@ -1315,7 +1393,8 @@ theComparisonPlot2 <- reactive({
   }    
   else{
     #print('Never got here')
-    plotData <- plotData[, c('country', 'ccode', 'year', 'indic', 'estimate', 'dimension', 'measure', 'inequal', 'boot.se', 'se', 'anchor')]
+    plotData <- plotData[, c('country', 'ccode', 'year', 'indic', 'estimate', 'dimension', 
+                             'measure', 'inequal', 'boot.se', 'se', 'anchor')]
     
     chartopt <- list()
     chartopt <- lappend(chartopt, 'xaxmax' = as.integer(input$xaxis_limitsmax4))
@@ -1349,25 +1428,25 @@ theComparisonPlot2 <- reactive({
 
 
 #A *Reactive* to fetch benchmark country summary data
-getData5 <- reactive({
-  # This *reactive* fetches benchmark country summary data
-  if(length(input$focus_country) > 0){
-    thecountries <- unique(c(input$focus_country, input$benchmarkCountries))
-  
-    thedata <- getComparisonSummaries(summeasure=input$compplotSumMeasure, 
-                                      indicator=input$compplotSumHealthIndicator, 
-                                      stratifier=input$compplotSumEquityDimension, 
-                                      countries=thecountries, 
-                                      years=input$compplotSumYears, 
-                                      elasticity=input$benchmarkYears, matchyears=T)
-    thedata$anchor <- 0
-    thedata$anchor[thedata$country==input$focus_country] <- 1
-    
-  } else {
-    thedata <- NULL
-  }
-  return(thedata)
-})
+# getData5 <- reactive({
+#   # This *reactive* fetches benchmark country summary data
+#   if(length(input$focus_country) > 0){
+#     thecountries <- unique(c(input$focus_country, input$benchmarkCountries))
+#   
+#     thedata <- getComparisonSummaries(summeasure=input$compplotSumMeasure, 
+#                                       indicator=input$compplotSumHealthIndicator, 
+#                                       stratifier=input$compplotSumEquityDimension, 
+#                                       countries=thecountries, 
+#                                       years=input$compplotSumYears, 
+#                                       elasticity=input$benchmarkYears, matchyears=T)
+#     #thedata$anchor <- 0
+#     #thedata$anchor[thedata$country==input$focus_country] <- 1
+#     
+#   } else {
+#     thedata <- NULL
+#   }
+#   return(thedata)
+# })
 
 
 

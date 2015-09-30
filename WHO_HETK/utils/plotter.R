@@ -390,6 +390,7 @@ plotFigure4 <- function(plotData, chartoptions=NULL){
 
 plotFigure5 <- function(plotData, chartoptions=NULL){
   #  Plot 5: Horizontal line chart for benchmark countries (Disaggregation of data)
+  
   plotPch <- c(19)
   plotPalette <- c()
   sexPalette <- c('#FF7F0F', '#B85A0D')  # ORANGE

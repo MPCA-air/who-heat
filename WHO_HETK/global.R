@@ -29,23 +29,25 @@ focusIndicator_selector <- function(id, multiple = FALSE, core=FALSE){
 
 focusInequalType_selector <- function(id, dimension){
   
-  #   if(length(dimension)>0){
-  #     if(dimension %in% .rdata[['rankable_dimensions']]){
-  #       selectionOptions <- .rdata[['summary_measures_all']]
-  #     }
-  #     if(!dimension %in% .rdata[['rankable_dimensions']]){
-  #       selectionOptions <- .rdata[['summary_measures_unrank']]
-  #     }
-  #   }
-  #   else{
-  #     selectionOptions <- NULL
-  #   }
-  #print(selectionOptions)
+  
+    dimension <- .rdata[['focus_dimension']]
+    if(length(dimension)>0){
+      if(dimension %in% .rdata[['rankable_dimensions']]){
+        selectionOptions <- .rdata[['summary_measures_all']]
+      }
+      if(!dimension %in% .rdata[['rankable_dimensions']]){
+        selectionOptions <- .rdata[['summary_measures_unrank']]
+      }
+    }
+    else{
+      selectionOptions <- NULL
+    }
+  
   selectInput(id, 
               h5("Select summary measure"), 
               choices=.rdata[['summary_measures_all']], 
               selected=c("Range difference" = "rd"), 
-              multiple=TRUE)
+              multiple=FALSE)
   
   
   
@@ -57,14 +59,14 @@ focusDimension_selector <- function(id, multiple = FALSE){
   # TODO: need to unselect non-core if selected in diaggregated
   # and in summary.
   
-  
+
   ifelse(multiple, focus_dimen <- .rdata[['focus_dimension']], focus_dimen <- .rdata[['focus_dimension']][1])
   
   selectInput(inputId = id,
               h5("Select inequality dimensions"),
               choices = .rdata[['equity_dimensions']],
               selected = focus_dimen,
-              multiple=TRUE)
+              multiple=multiple)
   
   
 }

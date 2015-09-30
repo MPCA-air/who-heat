@@ -6,10 +6,11 @@
 .rdata[['focus_dimension']]<<-c("Sex")
 .rdata[['focus_year']]<<-c(2010)
 .rdata[['all_years']]<<-c(2000, 2005, 2010)
+.rdata[['years']]<<-readRDS("data/years.RDS")
 .rdata[['maindata']]<<-readRDS("data/maindata.RDS")
 .rdata[['inequals']]<<-readRDS("data/inequals.RDS")
 .rdata[['nationaldata']]<<-readRDS("data/nationaldata.RDS")
-.rdata[['years']]<<-readRDS("data/years.RDS")
+
 .rdata[['all_table_variables']] <<- c("Country" = 'Country', 
                                       "Year" = "Year", 
                                       "Data source" = "Data source", 
