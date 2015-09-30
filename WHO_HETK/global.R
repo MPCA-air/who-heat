@@ -20,7 +20,7 @@ focusIndicator_selector <- function(id, multiple = FALSE, core=FALSE){
               h5("Select health indicators"), 
               choices  = .rdata[['core_indicators']], 
               multiple = multiple, 
-              selected = .rdata[['core_indicators']][1])
+              selected = .rdata[['focus_indicator']])
   
   
 }

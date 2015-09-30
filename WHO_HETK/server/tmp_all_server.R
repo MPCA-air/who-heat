@@ -1,169 +1,41 @@
 
 
-#*****************************************************************************
-#  Observe -- interactions between explore and compare ----
-#*****************************************************************************
-
-
-observe({
-  if(is.null(input$focus_country_explore)) return()
-  .rdata[['focus_country']] <<- input$focus_country_explore
-  
-
-  
-  country <- isolate(input$focus_country_compare)
-  
-  
-  
-  if(!is.null(country) && country!=.rdata[['focus_country']]){
-    updateSelectInput(session, 'focus_country_compare', selected = .rdata[['focus_country']])
-  }
-  
-  selectYears <- getFilteredYear(country=input$focus_country_explore, 
-                                 isolate(input$focus_data_source_explore))
-  
-  .rdata[['all_years']]<<-selectYears
-  .rdata[['focus_year']]<<-selectYears[1]
-  
-  updateSelectInput(session, 'focus_year_explore', choices = selectYears, selected = selectYears[1])
-  updateSelectInput(session, 'focus_year_compare', choices = selectYears, selected = selectYears[1])
-
-})
-
-
-
-observe({
-  if(is.null(input$focus_country_compare)) return()
-  .rdata[['focus_country']] <<- input$focus_country_compare
-  
-
-  
-  val <- isolate(input$focus_country_explore)
-  
-  if(is.null(val) || val!=.rdata[['focus_country']]){
-    updateSelectInput(session, 'focus_country_explore', selected = .rdata[['focus_country']])
-  }
-  
-  
-  selectYears <- getFilteredYear(country=input$focus_country_compare, 
-                                 isolate(input$focus_data_source_explore))
-  
-  .rdata[['all_years']]<<-selectYears
-  .rdata[['focus_year']]<<-selectYears[1]
-  
-  updateSelectInput(session, 'focus_year_explore', choices = selectYears, selected = selectYears[1])
-  updateSelectInput(session, 'focus_year_compare', choices = selectYears, selected = selectYears[1])
-  
-  
-})
-
-
-
-
-
-observe({
-  if(is.null(input$focus_indicator_explore)) return()
-  .rdata[['focus_indicator']] <<- input$focus_indicator_explore
-  
- 
-  indicator <- isolate(input$focus_indicator_compare)
-  
-  if(!is.null(indicator) && indicator!=.rdata[['focus_indicator']]){
-    
-    updateSelectInput(session, 'focus_indicator_compare', selected = .rdata[['focus_indicator']])
-  }
-  
-})
-
-
-
-observe({
-  if(is.null(input$focus_indicator_compare)) return()
-  .rdata[['focus_indicator']] <<- input$focus_indicator_compare
-  
-  
-  indicator <- isolate(input$focus_indicator_explore)
-  
-  if(is.null(indicator) || indicator!=.rdata[['focus_indicator']]){
-    
-    updateSelectInput(session, 'focus_indicator_explore', selected = .rdata[['focus_indicator']])
-  }
-  
-})
-
-
-
-
-observe({
-  if(is.null(input$focus_dimension_explore)) return()
-  .rdata[['focus_dimension']] <<- input$focus_dimension_explore
-  
-  
-  dimension <- isolate(input$focus_dimension_compare)
-  
-  if(is.null(dimension) || dimension!=.rdata[['focus_dimension']]){
-    
-    updateSelectInput(session, 'focus_dimension_compare', selected = .rdata[['focus_dimension']])
-  }
-  
-})
-
-
-
-observe({
-  if(is.null(input$focus_dimension_compare)) return()
-  .rdata[['focus_dimension']] <<- input$focus_dimension_compare
-  
-  
-  dimension <- isolate(input$focus_dimension_explore)
-  
-  if(is.null(dimension) || dimension!=.rdata[['focus_dimension']]){
-    
-    updateSelectInput(session, 'focus_dimension_explore', selected = .rdata[['focus_dimension']])
-  }
-  
-})
-
-
-
-
-
 
 #*****************************************************************************
 # Explore inequality: all tabs -----
 #*****************************************************************************
 
-reactive({
-  
-  
-  WBgroup      <- input$benchmarkWBgroup
-  WHOregion    <- input$benchmarkWHOregion
-  focusCountry <- .rdata[['focus_country']]
-  
-  filt_WBgroup   <- TRUE
-  filt_WHOregion <- TRUE
-  
-  
-  if(!is.null(WBgroup) & all(WBgroup != "")) 
-    filt_WBgroup <- quote(wbincome2014_4cat %in% WBgroup)
-  
-  if(!is.null(WHOregion) & all(WHOregion != "")) 
-    filt_WHOregion <- quote(wbincome2014_4cat %in% WHOregion)
-  
-  
-  countries <- filter(.rdata[['countrynames']], filt_WBgroup, filt_WHOregion) %>% 
-    select(country) %>% .$country
-  
-  .rdata[['benchmark_countries']] <<-countries
-  
-  
-
-  
-  #return(countries)
-  
-  
-})
-
+# reactive({
+#   
+#   
+#   WBgroup      <- input$benchmarkWBgroup
+#   WHOregion    <- input$benchmarkWHOregion
+#   focusCountry <- .rdata[['focus_country']]
+#   
+#   filt_WBgroup   <- TRUE
+#   filt_WHOregion <- TRUE
+#   
+#   
+#   if(!is.null(WBgroup) & all(WBgroup != "")) 
+#     filt_WBgroup <- quote(wbincome2014_4cat %in% WBgroup)
+#   
+#   if(!is.null(WHOregion) & all(WHOregion != "")) 
+#     filt_WHOregion <- quote(wbincome2014_4cat %in% WHOregion)
+#   
+#   
+#   countries <- filter(.rdata[['countrynames']], filt_WBgroup, filt_WHOregion) %>% 
+#     select(country) %>% .$country
+#   
+#   .rdata[['benchmark_countries']] <<-countries
+#   
+#   
+# 
+#   
+#   #return(countries)
+#   
+#   
+# })
+# 
 
 
 
@@ -234,9 +106,6 @@ output$focus_dimension_explore <- renderUI({
 datasetInput <- reactive({
 
   
-  
-
-  
   theData<-getHETKdata(indicator=input$focus_indicator_explore, 
                        stratifier=input$focus_dimension_explore,  # in hetkdb.R
                        countries=input$focus_country_explore, 
@@ -256,8 +125,7 @@ output$dataTable <- renderDataTable({
 if(is.null(input$focus_country_explore)) return()
   
 theData <- datasetInput()
-  
-  
+
   #theData <- datasetInput()
   
   theData <- theData %>% 
@@ -315,7 +183,7 @@ theData <- datasetInput()
 # Set up the selectInput for the display of data in the Disaggregated Data Table view
 output$dataTableItems <- renderUI({
 
-  
+#print(.rdata[['all_table_variables']])
   if(!is.null(input$dataTableItems)) .rdata[['focus_table_variables']] <- input$dataTableItems
     
     list(
@@ -942,11 +810,18 @@ output$focus_dimension_compare <- renderUI({
 
 output$benchmark_countries <- renderUI({
   
-  if(is.null(.rdata[['benchmark_countries']])) return()
-  countries <- getFilteredCountries(input$benchmarkWBgroup, input$benchmarkWHOregion) 
-  focus_country <- .rdata[['focus_country']]
-  countries <- countries[!countries%in%focus_country]
+  #print(.rdata[['benchmark_countries']])
+  
+  #if(is.null(.rdata[['benchmark_countries']])) return()
+  #countries <- getFilteredCountries(input$benchmarkWBgroup, input$benchmarkWHOregion) 
+#   countries
+#   focus_country <- .rdata[['focus_country']]
+#   countries <- countries[!countries%in%focus_country]
 
+  countries <- .rdata[['benchmark_country_list']]
+  focus <-.rdata[['focus_country']]
+  
+  countries <- countries[!countries%in%focus]
   
   selectInput("benchmark_countries", 
               h5("Select countries"), 
@@ -954,6 +829,30 @@ output$benchmark_countries <- renderUI({
               selected=.rdata[['benchmark_countries']],
               multiple=TRUE)
 })
+
+
+
+output$benchmarkWBgroup <- renderUI({
+  
+  selectInput("benchmarkWBgroup", label = h5("Filter by country income group"),
+              .rdata[['income_groups']],
+              selected = NULL,
+              multiple=T)
+})
+
+
+
+
+output$benchmarkWHOregion <- renderUI({
+  
+  
+  selectInput("benchmarkWHOregion", label = h5("Filter by WHO region"),
+              .rdata[['who_regions']],
+              selected = NULL,
+              multiple=T)
+  
+})
+
 
 
 
@@ -1171,7 +1070,7 @@ output$dataTableBenchmark <- renderDataTable({
   input$benchmarkWHOregion
   input$getcomparisondata1
 
-  
+  print(input$benchmark_countries)
   
 
     
@@ -1201,7 +1100,7 @@ output$dataTableBenchmark <- renderDataTable({
     theData <- rbind(anchordata, benchmarkdata)  # Merge the relevant initial data with benchmarkdata
 
     if(is.null(theData)) return()
-    if(nrow(theData)==0) return()
+    #if(nrow(theData)==0) return()
 
     
     theData <- select(theData, country, year, source, indic, dimension, subgroup, estimate)
@@ -1821,3 +1720,173 @@ output$theComparisonPlot2_web <- renderPlot({
 #     dev.off()
 #   }
 # )   
+
+
+
+
+
+#*****************************************************************************
+#  Observe -- interactions between explore and compare ----
+#*****************************************************************************
+
+
+observe({
+  if(is.null(input$focus_country_explore)) return()
+  .rdata[['focus_country']] <<- input$focus_country_explore
+  
+  
+  
+  country <- isolate(input$focus_country_compare)
+  
+  
+  
+  if(!is.null(country) && country!=.rdata[['focus_country']]){
+    updateSelectInput(session, 'focus_country_compare', selected = .rdata[['focus_country']])
+  }
+  
+  selectYears <- getFilteredYear(country=input$focus_country_explore, 
+                                 isolate(input$focus_data_source_explore))
+  
+  .rdata[['all_years']]<<-selectYears
+  .rdata[['focus_year']]<<-selectYears[1]
+  
+  updateSelectInput(session, 'focus_year_explore', choices = selectYears, selected = selectYears[1])
+  updateSelectInput(session, 'focus_year_compare', choices = selectYears, selected = selectYears[1])
+  
+})
+
+
+
+observe({
+  if(is.null(input$focus_country_compare)) return()
+  .rdata[['focus_country']] <<- input$focus_country_compare
+  
+  
+  
+  val <- isolate(input$focus_country_explore)
+  
+  if(is.null(val) || val!=.rdata[['focus_country']]){
+    updateSelectInput(session, 'focus_country_explore', selected = .rdata[['focus_country']])
+  }
+  
+  
+  selectYears <- getFilteredYear(country=input$focus_country_compare, 
+                                 isolate(input$focus_data_source_explore))
+  
+  .rdata[['all_years']]<<-selectYears
+  .rdata[['focus_year']]<<-selectYears[1]
+  
+  updateSelectInput(session, 'focus_year_explore', choices = selectYears, selected = selectYears[1])
+  updateSelectInput(session, 'focus_year_compare', choices = selectYears, selected = selectYears[1])
+  
+  
+})
+
+
+
+
+
+observe({
+  if(is.null(input$focus_indicator_explore)){
+    print("in here")
+    .rdata[['focus_indicator']] <<- NULL
+    updateSelectInput(session, 'focus_indicator_compare', selected = NULL)
+    return()
+  }
+  .rdata[['focus_indicator']] <<- input$focus_indicator_explore
+  
+  
+  indicator <- isolate(input$focus_indicator_compare)
+  
+  if(!is.null(indicator) && indicator!=.rdata[['focus_indicator']]){
+    
+    updateSelectInput(session, 'focus_indicator_compare', selected = .rdata[['focus_indicator']])
+  }
+  
+})
+
+
+
+observe({
+  if(is.null(input$focus_indicator_compare)){
+    #return()
+    updateSelectInput(session, 'focus_indicator_explore', selected = NULL)
+    return()
+  }
+  .rdata[['focus_indicator']] <<- input$focus_indicator_compare
+  
+  
+  indicator <- isolate(input$focus_indicator_explore)
+  
+  if(is.null(indicator) || indicator!=.rdata[['focus_indicator']]){
+    
+    updateSelectInput(session, 'focus_indicator_explore', selected = .rdata[['focus_indicator']])
+  }
+  
+})
+
+
+
+
+observe({
+  if(is.null(input$focus_dimension_explore)) return()
+  .rdata[['focus_dimension']] <<- input$focus_dimension_explore
+  
+  
+  dimension <- isolate(input$focus_dimension_compare)
+  
+  if(is.null(dimension) || dimension!=.rdata[['focus_dimension']]){
+    
+    updateSelectInput(session, 'focus_dimension_compare', selected = .rdata[['focus_dimension']])
+  }
+  
+})
+
+
+
+observe({
+  if(is.null(input$focus_dimension_compare)) return()
+  .rdata[['focus_dimension']] <<- input$focus_dimension_compare
+  
+  
+  dimension <- isolate(input$focus_dimension_explore)
+  
+  if(is.null(dimension) || dimension!=.rdata[['focus_dimension']]){
+    
+    updateSelectInput(session, 'focus_dimension_explore', selected = .rdata[['focus_dimension']])
+  }
+  
+})
+
+
+observe({
+  
+  if(is.null(input$benchmarkWBgroup) || input$benchmarkWBgroup == "") return()
+  tmpCountries<-getFilteredCountries(input$benchmarkWBgroup, isolate(input$benchmarkWHOregion))
+  tmpCountries <- append(.rdata[['benchmark_countries']], tmpCountries)
+  #print("in observe")
+  #bench <- .rdata[['benchmark_countries']]
+  #.rdata[['benchmark_countries']] <<- bench[bench%in%tmpCountries]
+  
+  #updateSelectInput(session, "benchmark_countries", choices = tmpCountries, selected = .rdata[['benchmark_countries']])
+  updateSelectInput(session, "benchmark_countries", choices = tmpCountries, selected=.rdata[['benchmark_countries']])
+  
+})
+
+
+
+observe({
+  
+  if(is.null(input$benchmarkWHOregion) || input$benchmarkWHOregion == "") return()
+  #print(input$benchmarkWHOregion)
+  tmpCountries<-getFilteredCountries(isolate(input$benchmarkWBgroup), input$benchmarkWHOregion)
+  
+  tmpCountries <- append(.rdata[['benchmark_countries']], tmpCountries)
+  
+  #bench <- .rdata[['benchmark_countries']]
+  #.rdata[['benchmark_countries']] <<- bench[bench%in%tmpCountries]
+  
+  #updateSelectInput(session, "benchmark_countries", choices = tmpCountries, selected = .rdata[['benchmark_countries']])
+  updateSelectInput(session, "benchmark_countries", choices = tmpCountries, selected=.rdata[['benchmark_countries']])
+  
+})

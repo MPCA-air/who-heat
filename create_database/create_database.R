@@ -1,7 +1,7 @@
 library(RSQLite)
 library(dplyr)
 #drv <- dbDriver("SQLite")
-#con<-dbConnect(drv, "X:/projects/who_heat/web/who-heat/WHO_HETK/data/HEMTK.db")
+#con<-dbConnect(drv, "X:/projects/who_heat/data/original_data/20150919_standalone_heat/Standalone/shiny/resources/data/HEMTK.db")
 
 #dbGetQuery(con, "CREATE TABLE maindata_countries AS SELECT DISTINCT country, iso3, whoreg6, whoreg6_name, wbincome2014_4cat FROM maindata")
 #dbGetQuery(con, "CREATE TABLE maindata_years AS SELECT DISTINCT country, year, source FROM maindata")
@@ -14,7 +14,8 @@ library(dplyr)
 # inequals<-dbGetQuery(con, "SELECT * FROM inequals")
 # nationaldata<-dbGetQuery(con, "SELECT * FROM nationaldata")
 # 
-# countrynames <- distinct(maindata, country, iso3, whoreg6, whoreg6_name, wbincome2014_4cat)
+# countrynames <- distinct(.rdata[['maindata']], country, iso3, whoreg6, whoreg6_name, wbincome2014_4cat) %>% 
+#select(country, iso3, whoreg6, whoreg6_name, wbincome2014_4cat)
 # years <- select(maindata, country, year, source) %>%  distinct
 # 
 # saveRDS(maindata, "X:/projects/who_heat/web/who-heat/WHO_HETK/data/maindata.RDS")
@@ -42,3 +43,5 @@ library(dplyr)
 # .rdata[['focus_year']]<<-c(2010)
 # 
 # xx<-filter(.rdata[['maindata']], country=="Armenia", indic == "carep", dimension == 'Sex')
+
+filter(.rdata[['countrynames']], TRUE, whoreg6_name=="Africa")

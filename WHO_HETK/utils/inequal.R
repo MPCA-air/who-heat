@@ -32,15 +32,15 @@ getInequal <- function(indicator = NULL, stratifier = NULL, countries = NULL, ye
   if(!is.null(stratifier)) filt_dimension <- quote(dimension %in% stratifier)
   if(!is.null(inequal_types)) filt_inequaltype <- quote(measure %in% inequal_types)
 
-#   print(paste0('filt_country:', filt_country))
-#   print(paste0('filt_year:', filt_country))
-#   print(paste0('filt_indicator:', filt_country))
-#   print(paste0('filt_dimension:', filt_country))
-#   
-#   print(paste0('country:', countries))
-#   print(paste0('years:', years))
-#   print(paste0('indicator:', indicator))
-#   print(paste0('dimension:', stratifier))
+  #     print(paste0('filt_country:', deparse(filt_country)))
+  #     print(paste0('filt_year:', deparse(filt_year)))
+  #     print(paste0('filt_indicator:', deparse(filt_indicator)))
+  #     print(paste0('filt_dimension:', deparse(filt_dimension)))
+  #     
+  #     print(paste0('country:', countries))
+  #     print(paste0('years:', years))
+  #     print(paste0('indicator:', indicator))
+  #     print(paste0('dimension:', stratifier))
 
   ineqDF <- filter(.rdata[['inequals']], filt_country, filt_year, filt_indicator, filt_dimension, filt_inequaltype) %>% 
     select(country, year, indic, dimension, measure, inequal, boot.se, se)

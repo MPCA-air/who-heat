@@ -9,13 +9,12 @@ getFilteredCountries <- function(WBgroup=NULL, WHOregion=NULL)
   filt_WHOregion <- TRUE
   
   
-  if(!is.null(WBgroup) & all(WBgroup != "")) 
+  if(!is.null(WBgroup) && all(WBgroup != "")) 
     filt_WBgroup <- quote(wbincome2014_4cat %in% WBgroup)
 
-  if(!is.null(WHOregion) & all(WHOregion != "")) 
-    filt_WHOregion <- quote(wbincome2014_4cat %in% WBgroup)
+  if(!is.null(WHOregion) && all(WHOregion != "")) 
+    filt_WHOregion <- quote(whoreg6_name %in% WHOregion)
   
-  #print("getFilteredCountries")
   countries <- filter(.rdata[['countrynames']], filt_WBgroup, filt_WHOregion) %>% 
     select(country) %>% .$country
   

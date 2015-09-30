@@ -1,47 +1,50 @@
-blahblah<<-"a"
 
-#observe({
-
-#if(is.null(input$dataSource)) return()
 .rdata<<-list()
 #if(input$dataSource == "HETK"){
-
-.rdata[['maindata']]<<-readRDS("data/maindata.RDS")
-.rdata[['inequals']]<<-readRDS("data/inequals.RDS")
-.rdata[['nationaldata']]<<-readRDS("data/nationaldata.RDS")
-.rdata[['countrynames']]<<-readRDS("data/countrynames.RDS")
-.rdata[['years']]<<-readRDS("data/years.RDS")
-#print(head(.rdata[['countrynames']]))
-#  }
-
-.rdata[['all_countries']]<<-.rdata[['countrynames']]$country
-
-.rdata[['focus_data_source']]<<-"All"
-.rdata[['mostrecent']]<<-FALSE
-
 .rdata[['focus_country']]<<-"Armenia"
 .rdata[['focus_indicator']]<<-c("carep")
 .rdata[['focus_dimension']]<<-c("Sex")
 .rdata[['focus_year']]<<-c(2010)
 .rdata[['all_years']]<<-c(2000, 2005, 2010)
+.rdata[['maindata']]<<-readRDS("data/maindata.RDS")
+.rdata[['inequals']]<<-readRDS("data/inequals.RDS")
+.rdata[['nationaldata']]<<-readRDS("data/nationaldata.RDS")
+.rdata[['years']]<<-readRDS("data/years.RDS")
+.rdata[['all_table_variables']] <<- c("Country" = 'Country', 
+                                      "Year" = "Year", 
+                                      "Data source" = "Data source", 
+                                      "Health indicator" = "Health indicator", 
+                                      "Inequality dimension" = "Inequality dimension",
+                                      "Subgroup" = "Subgroup",
+                                      "Estimate" = "Estimate",
+                                      "Lower 95%CI"  = "Lower 95%CI",
+                                      "Upper 95%CI"  = "Upper 95%CI",
+                                      "Population share %"   = "Population share %",
+                                      "National estimate"    = "National estimate",
+                                      "Flag" = "flag")
+
+
+
+.rdata[['focus_data_source']]<<-"All"
+.rdata[['mostrecent']]<<-FALSE
+
 
 .rdata[['focus_inequal_type']]<<-'rd'
 
 .rdata[['benchmark_countries']]<<-c("Afghanistan", "Belize", "Liberia")
+.rdata[['countrynames']]<<-readRDS("data/countrynames.RDS")
 
 
-.rdata[['all_table_variables']] <<- c("Country" = 'Country', 
-                                     "Year" = "Year", 
-                                     "Data source" = "Data source", 
-                                     "Health indicator" = "Health indicator", 
-                                     "Inequality dimension" = "Inequality dimension",
-                                     "Subgroup" = "Subgroup",
-                                     "Estimate" = "Estimate",
-                                     "Lower 95%CI"  = "Lower 95%CI",
-                                     "Upper 95%CI"  = "Upper 95%CI",
-                                     "Population share %"   = "Population share %",
-                                     "National estimate"    = "National estimate",
-                                     "Flag" = "flag")
+.rdata[['all_countries']]<<-.rdata[['countrynames']]$country
+.rdata[['benchmark_country_list']]<<-.rdata[['all_countries']]
+.rdata[['income_groups']] <<- sort(unique(.rdata[['countrynames']]$wbincome2014_4cat))
+.rdata[['who_regions']] <<- sort(unique(.rdata[['countrynames']]$whoreg6_name))
+
+
+
+
+
+
 
 .rdata[['focus_table_variables']]<-c("Country", "Year", "Source", "Health indicator", "Inequality dimension", 
                                      "Subgroup", "Estimate", "Population share %", "Lower 95%CI", "Upper 95%CI")
@@ -256,6 +259,10 @@ blahblah<<-"a"
 
 
 #})
+
+
+
+
 
 focusCountry_selector <- function(id){
   

@@ -13,10 +13,10 @@ library(shinythemes)
 
 
 
-source("init.R", local=TRUE)
+
 
 shinyServer(function(input, output, session){  
-
+  source("init.R", local=TRUE)
   #source("global.R", local=TRUE)
   #drv <- dbDriver("SQLite")
   #.connection<<-dbConnect(drv, "data/HEMTK.db")

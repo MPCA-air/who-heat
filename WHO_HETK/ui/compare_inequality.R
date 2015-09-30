@@ -20,24 +20,10 @@ output$compare_inequality_ui <- renderUI({
                        #uiOutput("compplotBenchYears"),
                        
                        h4("Benchmark countries"),
-                       
-                       selectInput("benchmarkWBgroup", label = h5("Filter by country income group"),
-                                   c("Low-income", 
-                                     "Lower middle-income",
-                                     "Upper middle-income",
-                                     "High-income"),
-                                   selected = NULL,
-                                   multiple=T),
-                       
-                       selectInput("benchmarkWHOregion", label = h5("Filter by WHO region"),
-                                   c("Eastern Mediterranean" = "EMR", 
-                                     "Europe" = "EUR",
-                                     "South East Asia" = "SEAR",
-                                     "Americas" = "AMR",
-                                     "Africa" = "AFR",
-                                     "Western Pacific" = "WPR"),
-                                   selected = NULL,
-                                   multiple=T),
+                       uiOutput("benchmarkWBgroup"),
+                       uiOutput("benchmarkWHOregion"),
+
+
                        
                        
                        
