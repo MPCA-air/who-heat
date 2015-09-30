@@ -1401,11 +1401,10 @@ theComparisonPlot2 <- reactive({
   plotData<-getBenchmarkDataSum()
   
   if(is.null(plotData) || nrow(plotData)==0){
+    
     return()
   }
-  if(nrow(plotData)==0){
-    return()
-  }    
+    
   else{
     #print('Never got here')
     plotData <- plotData[, c('country', 'ccode', 'year', 'indic', 'estimate', 'dimension', 
@@ -1465,8 +1464,10 @@ theComparisonPlot2 <- reactive({
 
 
 
-output$theComparisonPlot2_web <- renderPlot({    
+output$theComparisonPlot2_web <- renderPlot({
+  
   if(is.null(theComparisonPlot2())){
+    print("here")
     return()
   }
   print(theComparisonPlot2())  # Remember that print(theDataPlot) just prints the code

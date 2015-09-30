@@ -99,7 +99,8 @@ getComparisonCountries <- function(indicator, stratifier, countries, years, elas
 
 
 
-getComparisonSummaries <- function(summeasure, indicator, stratifier, countries, years, elasticity, matchyears=F){
+getComparisonSummaries <- function(summeasure=NULL, indicator=NULL, stratifier=NULL, 
+                                   countries=NULL, years=NULL, elasticity=NULL, matchyears=F){
   # summeasure: the Inequality summary measure
   # indicator: one pre-selected health indicator
   # stratifier: one pre-selected equity dimension
@@ -107,7 +108,8 @@ getComparisonSummaries <- function(summeasure, indicator, stratifier, countries,
   # years: one or more comparison years
   # elasticity: the number of years around which the benchmark countries' years of data collection can vary from the base country  
 
-if(is.null(.rdata[['years']]))return()
+if(is.null(.rdata[['years']])) return()
+if(is.null(summeasure)) return()
   
   for(i in countries){
     
