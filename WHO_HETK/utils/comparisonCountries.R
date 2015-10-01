@@ -27,7 +27,7 @@ getComparisonCountries <- function(indicator, stratifier, countries, years, elas
       if(length(elastic_years)>0){
         if(!(elastic_years==F)){  # Check to see that there is a relevant year
           elastic_years <- max(elastic_years)      
-          yearsdata <- getHETKdata(indicator=indicator,
+          yearsdata <- getDisagData(indicator=indicator,
                                    stratifier=stratifier, 
                                    countries = i, 
                                    years = elastic_years, 

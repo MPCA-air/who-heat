@@ -1,0 +1,225 @@
+######### All the measures of inequality
+# This manages the return of the inequalities measures inequality measures
+#########
+
+
+
+getInequalData <- function(indicator = NULL, stratifier = NULL, countries = NULL, years = NULL,
+                       mostrecent=NULL, datasource=NULL,  inequal_types=NULL, multiplier1=TRUE,multiplier2=TRUE){
+  #print("In getInequal function a")
+  #print(paste0(indicator, stratifier, countries, years))
+  # Fetch the inequalities data from the inbuilt database  
+  
+  
+  
+  #   inequal.types <- inequal_types
+  #   if(inequal_types=='all'){
+  #     inequal.types <- c('aci', 'bgv', 'idis', 'riikm', 'mdb', 'mdm', 'mld', 
+  #                        'paf', 'par', 'rci', 'rd', 'rii', 'rr', 'sii', 'ti')
+  # }
+  #   
+  
+  filt_country <- TRUE
+  filt_year <- TRUE
+  filt_indicator <- TRUE
+  filt_dimension <- TRUE
+  filt_inequaltype<- TRUE
+  
+  if(!is.null(countries)) filt_country <- quote(country %in% countries)
+  if(!is.null(years) && !is.null(mostrecent) && !mostrecent) filt_year <- quote(year %in% years)
+  if(!is.null(years) && is.null(mostrecent)) filt_year <- quote(year %in% years)
+  if(!is.null(indicator)) filt_indicator <- quote(indic %in% indicator)
+  if(!is.null(stratifier)) filt_dimension <- quote(dimension %in% stratifier)
+  if(!is.null(inequal_types)) filt_inequaltype <- quote(measure %in% inequal_types)
+  
+  #     print(paste0('filt_country:', deparse(filt_country)))
+  #     print(paste0('filt_year:', deparse(filt_year)))
+  #     print(paste0('filt_indicator:', deparse(filt_indicator)))
+  #     print(paste0('filt_dimension:', deparse(filt_dimension)))
+  #     
+  #     print(paste0('country:', countries))
+  #     print(paste0('years:', years))
+  #     print(paste0('indicator:', indicator))
+  #     print(paste0('dimension:', stratifier))
+  
+  ineqDF <- filter(.rdata[['inequals']], filt_country, filt_year, filt_indicator, filt_dimension, filt_inequaltype) %>% 
+    select(country, year, indic, dimension, measure, inequal, boot.se, se, ccode)
+  
+  #   if(is.null(ineqDF)){
+  #     return()
+  #   }
+  
+  ineqDF$year <- as.integer(ineqDF$year)
+  ineqDF$boot.se <- as.numeric(ineqDF$boot.se)
+  ineqDF$boot.se[ineqDF$boot.se==0] <- NA
+  ineqDF$se <- as.numeric(ineqDF$se)
+  ineqDF$se[ineqDF$se == 0] <- NA
+  ineqDF$combo.se <- ineqDF$se
+  ineqDF$combo.se[is.na(ineqDF$se)] <- ineqDF$boot.se[is.na(ineqDF$se)]
+  
+  ineqDF$boot.lowerci <- ineqDF$inequal - (1.96 * ineqDF$boot.se) 
+  ineqDF$boot.upperci <- ineqDF$inequal + (1.96 * ineqDF$boot.se) 
+  ineqDF$se.lowerci <- ineqDF$inequal - (1.96 * ineqDF$se) 
+  ineqDF$se.upperci <- ineqDF$inequal + (1.96 * ineqDF$se) 
+  ineqDF$combo.lowerci <- ineqDF$inequal - (1.96 * ineqDF$combo.se) 
+  ineqDF$combo.upperci <- ineqDF$inequal + (1.96 * ineqDF$combo.se) 
+  
+  
+  
+  ineqDF$combo.se[is.na(ineqDF$combo.se)] <- ineqDF$boot.se[is.na(ineqDF$combo.se)]  #  Make an se that is analytic if it exists, otherwise a boostrap
+  #print("In getInequal function b")
+  
+  
+  if(!is.null(multiplier1) && multiplier1){
+    #print("In dataTableInequal a")
+    ineqDF$inequal[ineqDF$measure=='ti'] <- ineqDF$inequal[ineqDF$measure=='ti'] *1000
+    ineqDF$inequal[ineqDF$measure=='mld'] <- ineqDF$inequal[ineqDF$measure=='mld'] *1000
+    ineqDF$se[ineqDF$measure=='ti'] <- ineqDF$se[ineqDF$measure=='ti'] *1000
+    ineqDF$se[ineqDF$measure=='mld'] <- ineqDF$se[ineqDF$measure=='mld'] *1000
+    ineqDF$se.lowerci[ineqDF$measure=='ti'] <- ineqDF$se.lowerci[ineqDF$measure=='ti'] *1000
+    ineqDF$se.lowerci[ineqDF$measure=='mld'] <- ineqDF$se.lowerci[ineqDF$measure=='mld'] *1000
+    ineqDF$se.upperci[ineqDF$measure=='ti'] <- ineqDF$se.upperci[ineqDF$measure=='ti'] *1000
+    ineqDF$se.upperci[ineqDF$measure=='mld'] <- ineqDF$se.upperci[ineqDF$measure=='mld'] *1000
+    ineqDF$boot.se[ineqDF$measure=='ti'] <- ineqDF$boot.se[ineqDF$measure=='ti'] *1000
+    ineqDF$boot.se[ineqDF$measure=='mld'] <- ineqDF$boot.se[ineqDF$measure=='mld'] *1000
+    ineqDF$boot.lowerci[ineqDF$measure=='ti'] <- ineqDF$boot.lowerci[ineqDF$measure=='ti'] *1000
+    ineqDF$boot.lowerci[ineqDF$measure=='mld'] <- ineqDF$boot.lowerci[ineqDF$measure=='mld'] *1000
+    ineqDF$boot.upperci[ineqDF$measure=='ti'] <- ineqDF$boot.upperci[ineqDF$measure=='ti'] *1000
+    ineqDF$boot.upperci[ineqDF$measure=='mld'] <- ineqDF$boot.upperci[ineqDF$measure=='mld'] *1000
+    ineqDF$combo.se[ineqDF$measure=='ti'] <- ineqDF$combo.se[ineqDF$measure=='ti'] *1000
+    ineqDF$combo.se[ineqDF$measure=='mld'] <- ineqDF$combo.se[ineqDF$measure=='mld'] *1000
+    ineqDF$combo.lowerci[ineqDF$measure=='ti'] <- ineqDF$combo.lowerci[ineqDF$measure=='ti'] *1000
+    ineqDF$combo.upperci[ineqDF$measure=='mld'] <- ineqDF$combo.upperci[ineqDF$measure=='mld'] *1000
+    ineqDF$combo.lowerci[ineqDF$measure=='ti'] <- ineqDF$combo.lowerci[ineqDF$measure=='ti'] *1000
+    ineqDF$combo.upperci[ineqDF$measure=='mld'] <- ineqDF$combo.upperci[ineqDF$measure=='mld'] *1000
+    
+  }
+  
+  if(!is.null(multiplier2) && multiplier2){
+    #print("In dataTableInequal b")
+    ineqDF$inequal[ineqDF$measure=='rci'] <- ineqDF$inequal[ineqDF$measure=='rci'] *100
+    ineqDF$se[ineqDF$measure=='rci'] <- ineqDF$se[ineqDF$measure=='rci'] *100
+    ineqDF$se.lowerci[ineqDF$measure=='rci'] <- ineqDF$se.lowerci[ineqDF$measure=='rci'] *100
+    ineqDF$se.upperci[ineqDF$measure=='rci'] <- ineqDF$se.upperci[ineqDF$measure=='rci'] *100
+    ineqDF$boot.se[ineqDF$measure=='rci'] <- ineqDF$boot.se[ineqDF$measure=='rci'] *100
+    ineqDF$boot.lowerci[ineqDF$measure=='rci'] <- ineqDF$boot.lowerci[ineqDF$measure=='rci'] *100
+    ineqDF$boot.upperci[ineqDF$measure=='rci'] <- ineqDF$boot.upperci[ineqDF$measure=='rci'] *100
+    ineqDF$combo.se[ineqDF$measure=='rci'] <- ineqDF$combo.se[ineqDF$measure=='rci'] *100
+    ineqDF$combo.lowerci[ineqDF$measure=='rci'] <- ineqDF$combo.lowerci[ineqDF$measure=='rci'] *100
+    ineqDF$combo.upperci[ineqDF$measure=='rci'] <- ineqDF$combo.upperci[ineqDF$measure=='rci'] *100
+  }
+  
+  
+  
+  
+  if(!is.null(mostrecent) && mostrecent) {
+    #print("in most recent")
+    ineqDF <- filter(ineqDF, year == max(ineqDF$year))
+  }
+  
+  #print(head(ineqDF))
+  return(ineqDF)
+}
+
+
+getDisagData <- function(indicator = NULL, stratifier = NULL, countries = NULL, years = NULL, mostrecent=FALSE, datasource=NULL){
+  #print(mostrecent)
+  #print("Getting data from getHETKdata")
+  #print(.rdata[['focus_country']])
+  
+  #if(is.null(countries))return()
+  # countries <- c("Afghanistan", "Armenia")
+  
+  #mostrecent<- .rdata[['mostrecent']]
+  
+  filt_country <- TRUE
+  filt_year <- TRUE
+  filt_indicator <- TRUE
+  filt_dimension <- TRUE
+  filt_datasource <- TRUE
+  
+  
+  
+  #   if(!is.null(countries)) filt_country <- quote(country %in% countries)
+  #   if(!is.null(years) && !is.null(mostrecent) && !mostrecent) filt_year <- quote(year %in% years)
+  #   if(!is.null(years) && is.null(mostrecent)) filt_year <- quote(year %in% years)
+  #   if(!is.null(indicator)) filt_indicator <- quote(indic %in% indicator)
+  #   if(!is.null(stratifier)) filt_dimension <- quote(dimension %in% stratifier)
+  #   if(!is.null(datasource) && datasource == 'All') filt_datasource <- TRUE
+  #   if(!is.null(datasource) && datasource != 'All') filt_datasource <- quote(source == datasource)
+  
+  
+  if(!is.null(countries)) filt_country <- paste0("country %in%c('", paste0(countries, collapse="','"), "')")
+  if(!is.null(years) && !is.null(mostrecent) && !mostrecent) filt_year <- paste0("year %in%c('", paste0(years, collapse="','"), "')")
+  if(!is.null(years) && is.null(mostrecent)) filt_year <- paste0("year %in%c('", paste0(years, collapse="','"), "')")
+  if(!is.null(indicator)) filt_indicator <- paste0("indic %in%c('", paste0(indicator, collapse="','"), "')")
+  if(!is.null(stratifier)) filt_dimension <- paste0("dimension %in%c('", paste0(stratifier, collapse="','"), "')")
+  if(!is.null(datasource) && datasource == 'All') filt_datasource <- TRUE
+  if(!is.null(datasource) && datasource != 'All') filt_datasource <- paste0("source %in%c('", paste0(datasource, collapse="','"), "')")
+  
+  
+  #     print(paste0('filt_country:', deparse(filt_country)))
+  #     print(paste0('filt_year:', deparse(filt_year)))
+  #     print(paste0('filt_indicator:', deparse(filt_indicator)))
+  #     print(paste0('filt_dimension:', deparse(filt_dimension)))
+  #     
+  #     print(paste0('country:', countries))
+  #     print(paste0('years:', years))
+  #     print(paste0('indicator:', indicator))
+  #     print(paste0('dimension:', stratifier))
+  
+  
+  hetk.data <- filter_(.rdata[['maindata']], filt_country, filt_year, filt_indicator, filt_dimension, filt_datasource) %>% 
+    select(country, year, source, indic, dimension, subgroup, r, r_lower, r_upper, se, pop, iso3, 
+           rankable, maxoptimum, popshare, flag, rankorder)
+  
+  
+  
+  #national.data <- dbGetQuery(con, selectNationalStr)
+  
+  # in original function getHETK there was a query and filter of national data but 
+  # I'm not sure why this would be necessary if we do an inner join.
+  
+  nationaldata <- select(.rdata[['nationaldata']], country, year, source, indic, r)
+  
+  
+  hetk.data <- inner_join(hetk.data, nationaldata, by=c('country', 'year', 'source', 'indic')) %>% 
+    rename(estimate = r.x, national=r.y, lower_95ci=r_lower, upper_95ci=r_upper)
+  
+  
+  
+  hetk.data$year <- as.integer(hetk.data$year)
+  hetk.data$estimate <- as.numeric(hetk.data$estimate)
+  hetk.data$se <- as.numeric(hetk.data$se)
+  hetk.data$pop <- as.integer(hetk.data$pop)
+  hetk.data$lower_95ci <- as.numeric(hetk.data$lower_95ci)
+  hetk.data$upper_95ci <- as.numeric(hetk.data$upper_95ci)
+  hetk.data$rankable <- as.integer(hetk.data$rankable)
+  #names(hetk.data)[which(names(hetk.data)=='r')] <- 'estimate'
+  #names(hetk.data)[which(names(hetk.data)=='r_lower')] <- 'lower_95ci'
+  #names(hetk.data)[which(names(hetk.data)=='r_upper')] <- 'upper_95ci'
+  
+  if(!is.null(mostrecent) && mostrecent) {
+    hetk.data <- filter(hetk.data, year == max(hetk.data$year))
+  }
+  
+  hetk.data <- orderHetkFactors(hetk.data)
+  #print(head(.rdata[['maindata']]))
+  
+  return(hetk.data)
+}
+
+
+
+
+
+orderHetkFactors <- function(DF){
+  geo_levels <- unique(DF$subgroup[which(DF$dimension == 'Geographic region')])
+  factor_order <- c('Quintile 1 (poorest)', 'Quintile 2', 'Quintile 3', 'Quintile 4', 'Quintile 5 (richest)', 'No education', 'Primary school', 'Secondary school+', 'Urban', 'Rural', 'Male', 'Female')
+  if(length(geo_levels>0)){  # Test to see that there are any geo_levels
+    factor_order <- c(factor_order, geo_levels)
+  }
+  DF$subgroup <- factor(DF$subgroup, levels = factor_order)
+  DF$subgroup <- factor(DF$subgroup)
+  return(DF)
+}

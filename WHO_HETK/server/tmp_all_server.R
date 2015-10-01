@@ -107,7 +107,7 @@ output$focus_dimension_explore <- renderUI({
 datasetInput <- reactive({
 
   
-  theData<-getHETKdata(indicator=input$focus_indicator_explore, 
+  theData<-getDisagData(indicator=input$focus_indicator_explore, 
                        stratifier=input$focus_dimension_explore,  # in hetkdb.R
                        countries=input$focus_country_explore, 
                        years=input$focus_year_explore, 
@@ -458,7 +458,7 @@ datasetInequal <- reactive({
   #if(input$dataSource=='HETK' & input$assessment_panel=='sumtable'){
     #print('Getting equity data table a')
     #print(.rdata[['focus_year']])
-    ineqDF <- getInequal(indicator=.rdata[['focus_indicator']], 
+    ineqDF <- getInequalData(indicator=.rdata[['focus_indicator']], 
                          stratifier=.rdata[['focus_dimension']], 
                          countries=.rdata[['focus_country']], 
                          years=.rdata[['focus_year']], 
@@ -905,7 +905,7 @@ output$compplotBenchEquityDimension <- renderUI({
 
 output$compplotBenchYears <- renderUI({    
   # Multiple select for the years of interest
-  years<-getHETKdata(indicator=input$healthIndicator, 
+  years<-getDisagData(indicator=input$healthIndicator, 
               stratifier=input$equityDimension,  # in hetkdb.R
               countries=input$focus_country, 
               years=input$years, 
@@ -1085,7 +1085,7 @@ getBenchmarkData <- reactive({
   if(is.null(input$benchmarkYears)) return()
 
   
-  anchordata<-getHETKdata(indicator=input$focus_indicator_compare, 
+  anchordata<-getDisagData(indicator=input$focus_indicator_compare, 
                           stratifier=input$focus_dimension_compare,  # in hetkdb.R
                           countries=input$focus_country_compare, 
                           years=input$focus_year_compare, 

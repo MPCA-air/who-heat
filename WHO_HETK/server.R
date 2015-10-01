@@ -27,9 +27,10 @@ shinyServer(function(input, output, session){
   source("helper.R", local=TRUE)
   source("utils/get_filtered.R", local=TRUE)
   source("utils/health_indicator_list.R", local=TRUE)
-  source("utils/hetkdb.R", local=TRUE)
+  #source("utils/hetkdb.R", local=TRUE)
   source("utils/plotter.R", local=TRUE)
-  source("utils/inequal.R", local=TRUE)
+  source("utils/get_data.R", local=TRUE)
+  #source("utils/inequal.R", local=TRUE)
   source("utils/comparisonCountries.R", local=TRUE)
 
   source("ui/data_management.R", local=TRUE)
