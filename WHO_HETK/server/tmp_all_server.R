@@ -1986,7 +1986,7 @@ observe({
   
 })
 
-
+#****************** Watch year_explore
 
 observe({
   if(is.null(input$focus_year_explore)) return()
@@ -2002,18 +2002,10 @@ observe({
     updateSelectInput(session, 'focus_year_compare', selected = .rdata[['focus_year']])
   }
   
-#   selectYears <- getFilteredYear(country=input$focus_country_explore, 
-#                                  isolate(input$focus_data_source_explore))
-#   
-#   .rdata[['all_years']]<<-selectYears
-#   .rdata[['focus_year']]<<-selectYears[1]
-#   
-#   updateSelectInput(session, 'focus_year_explore', choices = selectYears, selected = selectYears[1])
-#   updateSelectInput(session, 'focus_year_compare', choices = selectYears, selected = selectYears[1])
-  
+
 })
 
-
+#****************** Watch year_compare
 
 observe({
   if(is.null(input$focus_year_compare)) return()
@@ -2027,17 +2019,40 @@ observe({
     updateSelectInput(session, 'focus_year_explore', selected = .rdata[['focus_year']])
   }
   
+
+})
+
+
+#****************** Watch mostrecent_explore
+
+observe({
+  if(is.null(input$mostrecent_explore)) return()
+  .rdata[['mostrecent']] <<- input$mostrecent_explore
   
-#   selectYears <- getFilteredYear(country=input$focus_country_compare, 
-#                                  isolate(input$focus_data_source_explore))
-#   
-#   .rdata[['all_years']]<<-selectYears
-#   .rdata[['focus_year']]<<-selectYears[1]
-#   
-#   updateSelectInput(session, 'focus_year_explore', choices = selectYears, selected = selectYears[1])
-#   updateSelectInput(session, 'focus_year_compare', choices = selectYears, selected = selectYears[1])
-#   
+  mostrecent <- isolate(input$mostrecent_compare)
+  
+
+  if(!is.null(mostrecent) && mostrecent!=.rdata[['mostrecent']]){
+    updateCheckboxInput(session,'mostrecent_compare', value=.rdata[['mostrecent']])
+  }
+  
   
 })
 
 
+
+#****************** Watch mostrecent_compare
+
+observe({
+  if(is.null(input$mostrecent_compare)) return()
+  .rdata[['mostrecent']] <<- input$mostrecent_compare
+  
+  mostrecent <- isolate(input$mostrecent_explore)
+  
+  
+  if(!is.null(mostrecent) && mostrecent!=.rdata[['mostrecent']]){
+    updateCheckboxInput(session,'mostrecent_explore', value=.rdata[['mostrecent']])
+  }
+  
+  
+})
