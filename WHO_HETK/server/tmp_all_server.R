@@ -1093,7 +1093,7 @@ getBenchmarkData <- reactive({
                           datasource=input$focus_data_source_compare)
   
   #print(head(anchordata))
-  if(!is.null(anchordata)) anchordata$anchor <- 1
+  if(!is.null(anchordata) && nrow(anchordata)>0) anchordata$anchor <- 1
   
   benchmarkdata <- getComparisonCountries(indicator = input$focus_indicator_compare, 
                                           stratifier = input$focus_dimension_compare, 
@@ -1103,7 +1103,7 @@ getBenchmarkData <- reactive({
                                           matchyears=F)
   
   
-  if(!is.null(benchmarkdata)) benchmarkdata$anchor <- 0
+  if(!is.null(benchmarkdata) && nrow(benchmarkdata)>0) benchmarkdata$anchor <- 0
   
   #     benchmarkdata <- getComparisonCountries(indicator = input$compplotBenchHealthIndicator, 
   #                                             stratifier = input$compplotBenchEquityDimension, 
@@ -1985,3 +1985,59 @@ observe({
   updateSelectInput(session, "benchmark_countries", choices = tmpCountries, selected=.rdata[['benchmark_countries']])
   
 })
+
+
+
+observe({
+  if(is.null(input$focus_year_explore)) return()
+  .rdata[['focus_year']] <<- input$focus_year_explore
+  
+  
+  
+  year <- isolate(input$focus_year_compare)
+  
+  
+  
+  if(!is.null(year) && year!=.rdata[['focus_year']]){
+    updateSelectInput(session, 'focus_year_compare', selected = .rdata[['focus_year']])
+  }
+  
+#   selectYears <- getFilteredYear(country=input$focus_country_explore, 
+#                                  isolate(input$focus_data_source_explore))
+#   
+#   .rdata[['all_years']]<<-selectYears
+#   .rdata[['focus_year']]<<-selectYears[1]
+#   
+#   updateSelectInput(session, 'focus_year_explore', choices = selectYears, selected = selectYears[1])
+#   updateSelectInput(session, 'focus_year_compare', choices = selectYears, selected = selectYears[1])
+  
+})
+
+
+
+observe({
+  if(is.null(input$focus_year_compare)) return()
+  .rdata[['focus_year']] <<- input$focus_year_compare
+  
+  
+  
+  year <- isolate(input$focus_year_explore)
+  
+  if(is.null(year) || year!=.rdata[['focus_year']]){
+    updateSelectInput(session, 'focus_year_explore', selected = .rdata[['focus_year']])
+  }
+  
+  
+#   selectYears <- getFilteredYear(country=input$focus_country_compare, 
+#                                  isolate(input$focus_data_source_explore))
+#   
+#   .rdata[['all_years']]<<-selectYears
+#   .rdata[['focus_year']]<<-selectYears[1]
+#   
+#   updateSelectInput(session, 'focus_year_explore', choices = selectYears, selected = selectYears[1])
+#   updateSelectInput(session, 'focus_year_compare', choices = selectYears, selected = selectYears[1])
+#   
+  
+})
+
+
