@@ -2,9 +2,11 @@
 # Downloading explore
 #******************************************************************************
 
-# ----- Explore
 
-#Handler for downloading the data selected in the modal download table
+# ----------------------------------------
+# --- Explore disaggregated data
+# ----------------------------------------
+
 output$btnDownloadDisagData_explore <- renderUI({
 
   list(br(),
@@ -29,10 +31,13 @@ output$btnStartDownloadDisagData_explore <- downloadHandler(
 )
 
 
+# the dataTable is left in server
+
+# ----------------------------------------
+# --- Explore disaggregated plot
+# ----------------------------------------
 
 
-
-# Create a download button contingent on the existence of a plot of the disaggregated data
 output$btnDownloadDisagPlot_explore <- renderUI({
   #print("In downloadDataplot")
   
@@ -44,6 +49,9 @@ output$btnDownloadDisagPlot_explore <- renderUI({
          actionButton("btnDownloadDisagPlot_explore", "Download Plot", class = "btn-primary"))
   }  
 })
+
+
+
 
 
 output$theDataPlot_web <- renderPlot({
@@ -67,6 +75,9 @@ output$btnStartDownloadDisagPlot_explore  <- downloadHandler(
 
 
 
+# ----------------------------------------
+# --- Explore summary data
+# ----------------------------------------
 
 
 output$btnDownloadSummaryData_explore <- renderUI({
@@ -92,6 +103,15 @@ output$btnStartDownloadSummaryData_explore <- downloadHandler(
   }
 )
 
+
+# dataTableInequal left in main server
+
+
+
+
+# ----------------------------------------
+# --- Explore summary plot
+# ----------------------------------------
 
 
 output$btnDownloadSummaryPlot_explore <- renderUI({
@@ -122,112 +142,69 @@ output$btnStartDownloadSummaryPlot_explore  <- downloadHandler(
 
 
 
+output$theSumPlot_web <- renderPlot({
+  print(theSummaryPlot())  # Remember that print(theSummaryPlot) just prints the code
+}, res=90, height=exprToFunction(input$plot_height_sum), width=exprToFunction(input$plot_width_sum))
 
 
 
 
+#******************************************************************************
+# Downloading compare
+#******************************************************************************
+
+# ----------------------------------------
+# --- Compare summary data
+# ----------------------------------------
 
 
 
+output$btnDownloadDisagData_compare <- renderUI({
+  
+  list(br(),
+       actionButton("btnDownloadDisagData_compare", "Download table", class = "btn-primary"))
+  
+})
 
 
 
-
-
-
-
-
-
-
-
-
-
-#XXXXXX
-
-
-
-# Handler for downloading the data selected in the modal download table
-output$downloadSummaryData_explore <- downloadHandler(
+output$btnStartDownloadDisagData_compare <- downloadHandler(
   filename = function() {
-    paste(input$focus_country_explore, "_summary_", Sys.Date(), '.csv', sep='')
+    paste(input$focus_country_compare, "_and_benchmark_countries_", Sys.Date(), '.csv', sep='')
   },
   content = function(file) {
-    sep <- switch(input$filetype2, "csv" = ",", "tsv" = "\t")
+    dat <- getBenchmarkData()
+    sep <- switch(input$filetype_benchmark, "csv" = ",", "tsv" = "\t")
     
     # Write to a file specified by the 'file' argument
-    dat <- datasetInequal()
-    
-    
     write.table(dat, file, sep = sep,
                 row.names = FALSE)
   }
 )
 
-output$downloadSummplot <- renderUI({
-  thePlot <- theSummaryPlot()
-  if(is.null(thePlot)){
-    return()
-  } else {
+
+#getBenchmarkData 
+
+
+
+
+
+
+# ----------------------------------------
+# --- Compare disaggregated plot
+# ----------------------------------------
+
+
+
+output$btnDownloadDisagPlot_compare <- renderUI({
+#   thePlot <- theSummaryPlot()
+#   if(is.null(thePlot)){
+#     return()
+#   } else {
     list(br(),
-         actionButton("downloadSummplot", "Download Plot", class = "btn-primary"))
-  }  
+         actionButton("btnDownloadDisagPlot_compare", "Download Plot", class = "btn-primary"))
+ # }  
 })
-
-output$theSumPlot_web <- renderPlot({
-  print(theSummaryPlot())  # Remember that print(theSummaryPlot) just prints the code
-}, res=90, height=exprToFunction(input$plot_height_sum), width=exprToFunction(input$plot_width_sum))
-
-# ----- Compare
-
-
-
-
-#downloadDisagPlot_explore
-
-#******************************************************************************
-# Downloading plots
-#******************************************************************************
-
-
-
-
-
-
-
-
-# ----- Explore
-
-# Handler for downloading the data selected in the modal download table
-
-
-# Handler for downloading the data selected in the modal download table
-output$downloadCompplot1 <- downloadHandler(
-  filename = function() { 
-    paste(input$focus_country_explore, '_summary_', Sys.Date(), '.pdf', sep='')
-  },
-  content = function(file) {
-    pdf(file, width=(as.numeric(input$plot2_width)/2.54), height=(as.numeric(input$plot2_height)/2.45), paper=input$papersize2)
-    print(theSummaryPlot()) 
-    dev.off()
-  }
-)   
-
-
-
-
-# ----- Compare
-
-
-output$theComparisonPlot2_web <- renderPlot({
-  
-  if(is.null(theComparisonPlot2())){
-    print("here")
-    return()
-  }
-  print(theComparisonPlot2())  # Remember that print(theDataPlot) just prints the code
-}, res=90, height=exprToFunction(input$plot_height3), width=exprToFunction(input$plot_width3))
-
-
 
 
 output$theComparisonPlot1_web <- renderPlot({
@@ -239,29 +216,56 @@ output$theComparisonPlot1_web <- renderPlot({
 
 
 # Handler for downloading the data selected in the modal download plot
-output$downloadCompPlot1 <- downloadHandler(
+output$btnStartDownloadDisagPlot_compare <- downloadHandler(
   filename = function() { 
-    paste(input$focus_country, '_comp_', Sys.Date(), '.pdf', sep='')
+    paste(input$focus_country_compare, '_disaggregated_compare_', Sys.Date(), '.pdf', sep='')
   },
   content = function(file) {
-    pdf(file, width=(as.numeric(input$plot1_width)/2.54), height=(as.numeric(input$plot1_height)/2.45), paper=input$papersize1)
+    pdf(file, width=(as.numeric(input$plot2_width)/2.54), height=(as.numeric(input$plot2_height)/2.45), paper=input$papersize2)
     print(theComparisonPlot1()) 
     dev.off()
   }
 ) 
 
+# ----------------------------------------
+# --- Compare summary plot
+# ----------------------------------------
 
-# Handler for downloading the data selected in the modal download plot
-output$downloadCompPlot2 <- downloadHandler(
+
+output$btnDownloadSummaryPlot_compare <- renderUI({
+#   thePlot <- theSummaryPlot()
+#   if(is.null(thePlot)){
+#     return()
+#   } else {
+    list(br(),
+         actionButton("btnDownloadSummaryPlot_compare", "Download Plot", class = "btn-primary"))
+  #}  
+})
+
+
+
+
+output$btnStartDownloadSummaryPlot_compare <- downloadHandler(
   filename = function() { 
-    paste(input$focus_country, '_comp_', Sys.Date(), '.pdf', sep='')
+    paste(input$focus_country_compare, '_summary_compare_', Sys.Date(), '.pdf', sep='')
   },
   content = function(file) {
-    pdf(file, width=(as.numeric(input$plot1_width)/2.54), height=(as.numeric(input$plot1_height)/2.45), paper=input$papersize1)
+    pdf(file, width=(as.numeric(input$plot3_width)/2.54), height=(as.numeric(input$plot3_height)/2.45), paper=input$papersize2)
     print(theComparisonPlot2()) 
     dev.off()
   }
-)   
+) 
+
+
+
+output$theComparisonPlot2_web <- renderPlot({    
+  if(is.null(theComparisonPlot2())){
+    return(NULL)
+  }
+  print(theComparisonPlot2())  # Remember that print(theDataPlot) just prints the code
+}, res=90, height=exprToFunction(input$plot_height3), width=exprToFunction(input$plot_width3))
+
+
 
 
 

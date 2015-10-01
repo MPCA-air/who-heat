@@ -106,7 +106,19 @@ output$compare_inequality_ui <- renderUI({
     
     
     mainPanel(
-      bsModal(id = "compplot1Modal", title = "Download comparison plot (PDF)", trigger = "downloadCompplot1", 
+      bsModal(id = "compdataModal", title = "Download disaggregated data", trigger = "btnDownloadDisagData_compare", 
+              tags$p("The data in the table will be downloaded as a text file with the values separated
+                       by a comma or a tab.  Select your preferred field separator and then download the data.
+               These can be opened in a text editor, or spreadsheet package."),
+              br(),
+              tags$p("Close the window once the download has commenced."),
+              br(),
+              radioButtons(inputId="filetype_benchmark", label='Field separator:',
+                           choices=c("Comma separated valued" = "csv",
+                                     "Tab separated values" = "tsv")),
+              downloadButton(outputId = 'btnStartDownloadDisagData_compare', label = "Start"),
+              size = "medium"),
+      bsModal(id = "compplot1Modal", title = "Download comparison plot (PDF)", trigger = "btnDownloadDisagPlot_compare", 
               tags$p("Set the dimensions for the plot here and download it.  The fit of the plot is determined
                                  by the size of the paper you choose, and not by the display dimensions you select.
                                  For printing purposes, you may need to reduce the number of variables plotted"),
@@ -127,9 +139,9 @@ output$compare_inequality_ui <- renderUI({
                                textInputRow(inputId="plot2_width", label='Width cm', value = '17.78'),
                                br(), br()
               ),
-              downloadButton(outputId = 'downloadDisagPlot_compare', label = "Start", class = NULL),
+              downloadButton(outputId = 'btnStartDownloadDisagPlot_compare', label = "Start", class = NULL),
               size = "medium"),
-      bsModal(id = "compplot2Modal", title = "Download comparison plot (PDF)", trigger = "downloadCompplot2", 
+      bsModal(id = "compplot2Modal", title = "Download comparison plot (PDF)", trigger = "btnDownloadSummaryPlot_compare", 
               tags$p("Set the dimensions for the plot here and download it.  The fit of the plot is determined
                                  by the size of the paper you choose, and not by the display dimensions you select.
                                  For printing purposes, you may need to reduce the number of variables plotted"),
@@ -150,20 +162,21 @@ output$compare_inequality_ui <- renderUI({
                                textInputRow(inputId="plot3_width", label='Width cm', value = '17.78'),
                                br(), br()
               ),
-              downloadButton(outputId = 'downloadSummaryPlot_compare', label = "Start", class = NULL),
+              downloadButton(outputId = 'btnStartDownloadSummaryPlot_compare', label = "Start", class = NULL),
               size = "medium"),
       tabsetPanel(id = "comparison_panel", 
-                  tabPanel(h6("Benchmark countries"), value='inequalbenchmark', 
+                  tabPanel(h6("Benchmark countries"), value='inequalbenchmark',
+                           uiOutput('btnDownloadDisagData_compare'),
                            dataTableOutput(outputId="dataTableBenchmark")
                   ),
                   tabPanel(h6("Disaggregated plot"), value='inequaldisag', 
-                           uiOutput('downloadCompplot1'),
+                           uiOutput('btnDownloadDisagPlot_compare'),
                            div(class="container-fluid", style="overflow:visible;height:1000px;", plotOutput('theComparisonPlot1_web'))
                   ),
                   tabPanel(h6("Summary plot"), value='inequalsum', 
                            # Plot points (default) or country codes on the Comparison Summary Plot
                            checkboxInput(inputId='points_ccode', 'Show country codes', value=FALSE),
-                           uiOutput('downloadCompplot2'),
+                           uiOutput('btnDownloadSummaryPlot_compare'),
                            div(class="container-fluid", style="overflow:visible;height:800px;", plotOutput('theComparisonPlot2_web'))
                   )
       )#endtabsetpanel
