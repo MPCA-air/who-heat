@@ -127,7 +127,7 @@ output$compare_inequality_ui <- renderUI({
                                textInputRow(inputId="plot2_width", label='Width cm', value = '17.78'),
                                br(), br()
               ),
-              downloadButton(outputId = 'downloadCompPlot1', label = "Start", class = NULL),
+              downloadButton(outputId = 'downloadDisagPlot_compare', label = "Start", class = NULL),
               size = "medium"),
       bsModal(id = "compplot2Modal", title = "Download comparison plot (PDF)", trigger = "downloadCompplot2", 
               tags$p("Set the dimensions for the plot here and download it.  The fit of the plot is determined
@@ -150,7 +150,7 @@ output$compare_inequality_ui <- renderUI({
                                textInputRow(inputId="plot3_width", label='Width cm', value = '17.78'),
                                br(), br()
               ),
-              downloadButton(outputId = 'downloadCompPlot2', label = "Start", class = NULL),
+              downloadButton(outputId = 'downloadSummaryPlot_compare', label = "Start", class = NULL),
               size = "medium"),
       tabsetPanel(id = "comparison_panel", 
                   tabPanel(h6("Benchmark countries"), value='inequalbenchmark', 

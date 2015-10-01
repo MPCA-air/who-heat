@@ -30,6 +30,7 @@ shinyServer(function(input, output, session){
   source("ui/information.R", local=TRUE)
   source("server/tmp_all_server.R", local=TRUE)
   source("server/server_observers.R", local=TRUE)
+  source("server/server_downloading.R", local=TRUE)
   
 #   session$onSessionEnded(function() {
 #     isolate({

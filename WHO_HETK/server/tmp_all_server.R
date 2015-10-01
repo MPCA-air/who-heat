@@ -200,37 +200,23 @@ output$dataTableItems <- renderUI({
 
 
 
-# Create a download button contingent on data in the table
-output$downloadDatatable <- renderUI({
-  #print("In downloadDatatable")
-  
-  theData <- datasetInput()
-  if(nrow(theData)==0){
-    return()
-  } else {
-     list(br(),
-          actionButton("downloadDatatable", "Download table", class = "btn-primary"))
-   }  
-})
+# 
+# # Create a download button contingent on data in the table
+# output$downloadDatatable <- renderUI({
+#   #print("In downloadDatatable")
+#   
+# #   theData <- datasetInput()
+# #   if(nrow(theData)==0){
+# #     return()
+# #   } else {
+#      list(br(),
+#           actionButton("downloadDatatable", "Download table", class = "btn-primary"))
+#    #}  
+# })
+# 
 
 
 
-
-
-
-#Handler for downloading the data selected in the modal download table
-output$downloadAnyData <- downloadHandler(
-  filename = function() {
-    paste(input$focus_country, Sys.Date(), '.csv', sep='')
-  },
-  content = function(file) {
-    sep <- switch(input$filetype1, "csv" = ",", "tsv" = "\t")
-    
-    # Write to a file specified by the 'file' argument
-    write.table(datasetInput(), file, sep = sep,
-                row.names = FALSE)
-  }
-)
 
 
 
@@ -241,25 +227,8 @@ output$downloadAnyData <- downloadHandler(
 #############################################################
 
 
-# Create a download button contingent on the existence of a plot of the disaggregated data
-output$downloadDataplot <- renderUI({
-  #print("In downloadDataplot")
-  
-  thePlot <- theDataPlot()
-  if(is.null(thePlot)){
-    return()
-  } else {
-    list(br(),
-         actionButton("downloadDataplot", "Download Plot", class = "btn-primary"))
-  }  
-})
 
 
-output$theDataPlot_web <- renderPlot({
-  #print("In theDataPlot_web")
-  
-  print(theDataPlot())  # Remember that print(theDataPlot) just prints the code
-}, res=90, height=exprToFunction(input$plot_height1), width=exprToFunction(input$plot_width1))
 
 
 # Generate a reactive element for plotting the Managed Data.
@@ -317,18 +286,6 @@ theDataPlot <- reactive({
   
 })  
 
-
-# Handler for downloading the data selected in the modal download table
-output$downloadAnyPlot <- downloadHandler(
-  filename = function() { 
-    paste(input$focus_country, '_disag_', Sys.Date(), '.pdf', sep='')
-  },
-  content = function(file) {
-    pdf(file, width=(as.numeric(input$plot1_width)/2.54), height=(as.numeric(input$plot1_height)/2.45), paper=input$papersize1)
-    print(theDataPlot()) 
-    dev.off()
-  }
-)   
 
 
 
@@ -557,29 +514,14 @@ output$dataTableInequal <- renderDataTable({
 
 
 
-# Handler for downloading the data selected in the modal download table
-output$downloadAnySumm <- downloadHandler(
-  filename = function() {
-    paste(input$focus_country, Sys.Date(), '.csv', sep='')
-  },
-  content = function(file) {
-    sep <- switch(input$filetype2, "csv" = ",", "tsv" = "\t")
-    
-    # Write to a file specified by the 'file' argument
-    dat <- datasetInequal()
-
-    
-    write.table(dat, file, sep = sep,
-                row.names = FALSE)
-  }
-)
 
 
-output$focusCountry2 <- renderText({ 
-  if(length(input$focus_country) > 0){
-    return(input$focus_country)
-  }
-})
+
+# output$focusCountry2 <- renderText({ 
+#   if(length(input$focus_country) > 0){
+#     return(input$focus_country)
+#   }
+# })
 
 
 ##############################################################
@@ -660,19 +602,7 @@ output$sumplotYears <- renderUI({
 
 
 
-output$downloadSummplot <- renderUI({
-  thePlot <- theSummaryPlot()
-  if(is.null(thePlot)){
-    return()
-  } else {
-    list(br(),
-         actionButton("downloadSummplot", "Download Plot", class = "btn-primary"))
-  }  
-})
 
-output$theSumPlot_web <- renderPlot({
-  print(theSummaryPlot())  # Remember that print(theSummaryPlot) just prints the code
-}, res=90, height=exprToFunction(input$plot_height_sum), width=exprToFunction(input$plot_width_sum))
 
 
 
@@ -744,18 +674,6 @@ theSummaryPlot <- reactive({
 
 
 
-
-# Handler for downloading the data selected in the modal download table
-output$downloadSummPlot <- downloadHandler(
-  filename = function() { 
-    paste(input$focus_country, '_summ_', Sys.Date(), '.pdf', sep='')
-  },
-  content = function(file) {
-    pdf(file, width=(as.numeric(input$plot2_width)/2.54), height=(as.numeric(input$plot2_height)/2.45), paper=input$papersize2)
-    print(theSummaryPlot()) 
-    dev.off()
-  }
-)   
 
 
 
@@ -1264,22 +1182,8 @@ output$dataTableBenchmark <- renderDataTable({
 
 #####  Comparison Plot 1  Download
 # Create a download button contingent on the existence of a plot of the comparison disaggregated data
-output$downloadCompplot1 <- renderUI({
-  thePlot <- theComparisonPlot1()
-  if(is.null(thePlot)){
-    return()
-  } else {
-    list(br(),
-         actionButton("downloadCompplot1", "Download Plot", class = "btn-primary"))
-  }  
-})
 
-output$theComparisonPlot1_web <- renderPlot({
-  if(is.null(theComparisonPlot1())){
-    return()
-  }
-  print(theComparisonPlot1())  # Remember that print(theDataPlot) just prints the code
-}, res=90, height=exprToFunction(input$plot_height2), width=exprToFunction(input$plot_width2))
+
 
 
 
@@ -1375,17 +1279,6 @@ theComparisonPlot1 <- reactive({
 #############################################################
 
 
-#####  Comparison Plot 2  Download
-# Create a download button contingent on the existence of a plot of the comparison disaggregated data
-output$downloadCompplot2 <- renderUI({
-  thePlot <- theComparisonPlot2()
-  if(is.null(thePlot)){
-    return()
-  } else {
-    list(br(),
-         actionButton("downloadCompplot2", "Download Plot", class = "btn-primary"))
-  }  
-})
 
 
 
@@ -1462,16 +1355,6 @@ theComparisonPlot2 <- reactive({
 #   return(thedata)
 # })
 
-
-
-output$theComparisonPlot2_web <- renderPlot({
-  
-  if(is.null(theComparisonPlot2())){
-    print("here")
-    return()
-  }
-  print(theComparisonPlot2())  # Remember that print(theDataPlot) just prints the code
-}, res=90, height=exprToFunction(input$plot_height3), width=exprToFunction(input$plot_width3))
 
 
 
@@ -1558,18 +1441,7 @@ output$theComparisonPlot2_web <- renderPlot({
  
 
 
-# # Create a download button contingent on the existence of a comparison plot of the disaggregated data
-# output$downloadCompplot1 <- renderUI({
-#   thePlot <- theDataPlot()
-#   if(is.null(thePlot)){
-#     return()
-#   } else {
-#     list(br(),
-#          actionButton("downloadCompplot1", "Download Plot", class = "btn-primary"))
-#   }  
-# })
-# 
-# 
+
 
 # output$benchmarkCountriesSum <- renderUI({
 #   countries <- getFilteredCountries(input$benchmarkWBgroup, input$benchmarkWHOregion, input$dataSource)   
