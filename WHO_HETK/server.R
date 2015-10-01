@@ -12,11 +12,11 @@ library(stringr) # this was in the userful.R file, not sure how important
 library(shinythemes)
 
 
-
+options(shiny.maxRequestSize = 0.100*1024^2)
 
 
 shinyServer(function(input, output, session){  
-  source("init.R", local=TRUE)
+  source("utils/initial_settings.R", local=TRUE)
   #source("global.R", local=TRUE)
   #drv <- dbDriver("SQLite")
   #.connection<<-dbConnect(drv, "data/HEMTK.db")
@@ -24,21 +24,28 @@ shinyServer(function(input, output, session){
   #maindata<<-dbGetQuery(.connection, "SELECT * FROM maindata")
 
 
-  source("helper.R", local=TRUE)
+  #source("helper.R", local=TRUE)
   source("utils/get_filtered.R", local=TRUE)
-  source("utils/health_indicator_list.R", local=TRUE)
+  #source("utils/health_indicator_list.R", local=TRUE)
   #source("utils/hetkdb.R", local=TRUE)
-  source("utils/plotter.R", local=TRUE)
+  source("utils/get_plots.R", local=TRUE)
   source("utils/get_data.R", local=TRUE)
   #source("utils/inequal.R", local=TRUE)
-  source("utils/comparisonCountries.R", local=TRUE)
+  #source("utils/comparisonCountries.R", local=TRUE)
 
   source("ui/data_management.R", local=TRUE)
   source("ui/explore_inequality.R", local=TRUE)
   source("ui/compare_inequality.R", local=TRUE)
   source("ui/information.R", local=TRUE)
   source("server/tmp_all_server.R", local=TRUE)
+  source("server/server_observers.R", local=TRUE)
   
+#   session$onSessionEnded(function() {
+#     isolate({
+#       # This will get executed when a session exits
+#       rm(.rdata)
+#     })
+#   })
   
   
 })

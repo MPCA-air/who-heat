@@ -73,6 +73,27 @@ focusDimension_selector <- function(id, multiple = FALSE){
 
 
 
+focusCountry_selector <- function(id){
+  
+  #print("in focus country")
+  #print(.rdata[['all_countries']])
+  
+  if(is.null(.rdata[['all_countries']])) return()
+  #print(.rdata[['focus_country']])
+  
+  countries <- .rdata[['all_countries']]
+  #countries <- getFilteredCountries()
+  #if(is.null(countries)){ countries <- c()}
+  
+  
+  selectInput(id, 
+              h5("Country:"), 
+              choices  = countries, 
+              multiple = FALSE, 
+              selected = .rdata[['focus_country']])
+  
+  
+}
 
 
 
