@@ -1,5 +1,5 @@
 #******************************************************************************
-# Downloading data
+# Downloading explore
 #******************************************************************************
 
 # ----- Explore
@@ -14,7 +14,7 @@ output$btnDownloadDisagData_explore <- renderUI({
 
 
 
-output$btnStartDownloadDisag_explore <- downloadHandler(
+output$btnStartDownloadDisagData_explore <- downloadHandler(
   filename = function() {
     paste(input$focus_country_explore, "_disaggregated_", Sys.Date(), '.csv', sep='')
   },
@@ -33,7 +33,7 @@ output$btnStartDownloadDisag_explore <- downloadHandler(
 
 
 # Create a download button contingent on the existence of a plot of the disaggregated data
-output$downloadDataplot <- renderUI({
+output$btnDownloadDisagPlot_explore <- renderUI({
   #print("In downloadDataplot")
   
   thePlot <- theDataPlot()
@@ -41,9 +41,109 @@ output$downloadDataplot <- renderUI({
     return()
   } else {
     list(br(),
-         actionButton("downloadDataplot", "Download Plot", class = "btn-primary"))
+         actionButton("btnDownloadDisagPlot_explore", "Download Plot", class = "btn-primary"))
   }  
 })
+
+
+output$theDataPlot_web <- renderPlot({
+  #print("In theDataPlot_web")
+  
+  print(theDataPlot())  # Remember that print(theDataPlot) just prints the code
+}, res=90, height=exprToFunction(input$plot_height1), width=exprToFunction(input$plot_width1))
+
+
+output$btnStartDownloadDisagPlot_explore  <- downloadHandler(
+  filename = function() { 
+    paste(input$focus_country_explore, '_disaggregated_', Sys.Date(), '.pdf', sep='')
+  },
+  content = function(file) {
+    pdf(file, width=(as.numeric(input$plot1_width)/2.54), height=(as.numeric(input$plot1_height)/2.45), paper=input$papersize1)
+    print(theDataPlot()) 
+    dev.off()
+  }
+)   
+
+
+
+
+
+
+output$btnDownloadSummaryData_explore <- renderUI({
+  
+  list(br(),
+       actionButton("btnDownloadSummaryData_explore", "Download table", class = "btn-primary"))
+  
+})
+
+
+
+output$btnStartDownloadSummaryData_explore <- downloadHandler(
+  filename = function() {
+    paste(input$focus_country_explore, "_summary_", Sys.Date(), '.csv', sep='')
+  },
+  content = function(file) {
+    dat <- datasetInequal()
+    sep <- switch(input$filetype2, "csv" = ",", "tsv" = "\t")
+    
+    # Write to a file specified by the 'file' argument
+    write.table(dat, file, sep = sep,
+                row.names = FALSE)
+  }
+)
+
+
+
+output$btnDownloadSummaryPlot_explore <- renderUI({
+#   thePlot <- theDataPlot()
+#   print(thePlot)
+#   if(is.null(thePlot)){
+#     return()
+#   } else {
+  list(br(),
+       actionButton("btnDownloadSummaryPlot_explore", "Download plot", class = "btn-primary"))
+  #}
+})
+
+
+
+output$btnStartDownloadSummaryPlot_explore  <- downloadHandler(
+  filename = function() { 
+    paste(input$focus_country_explore, '_summary_', Sys.Date(), '.pdf', sep='')
+  },
+  content = function(file) {
+    pdf(file, width=(as.numeric(input$plot_width_sum)/2.54), height=(as.numeric(input$plot_height_sum)/2.45), paper=input$papersize2)
+    p <- theSummaryPlot()
+    print(p) 
+    #plot(1:10, 1:10)
+    dev.off()
+  }
+)   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#XXXXXX
+
 
 
 # Handler for downloading the data selected in the modal download table
@@ -73,6 +173,9 @@ output$downloadSummplot <- renderUI({
   }  
 })
 
+output$theSumPlot_web <- renderPlot({
+  print(theSummaryPlot())  # Remember that print(theSummaryPlot) just prints the code
+}, res=90, height=exprToFunction(input$plot_height_sum), width=exprToFunction(input$plot_width_sum))
 
 # ----- Compare
 
@@ -85,19 +188,16 @@ output$downloadSummplot <- renderUI({
 # Downloading plots
 #******************************************************************************
 
+
+
+
+
+
+
+
 # ----- Explore
 
 # Handler for downloading the data selected in the modal download table
-output$downloadDisagPlot_explore <- downloadHandler(
-  filename = function() { 
-    paste(input$focus_country_explore, '_disaggregated_', Sys.Date(), '.pdf', sep='')
-  },
-  content = function(file) {
-    pdf(file, width=(as.numeric(input$plot1_width)/2.54), height=(as.numeric(input$plot1_height)/2.45), paper=input$papersize1)
-    print(theDataPlot()) 
-    dev.off()
-  }
-)   
 
 
 # Handler for downloading the data selected in the modal download table
@@ -112,16 +212,8 @@ output$downloadCompplot1 <- downloadHandler(
   }
 )   
 
-output$theDataPlot_web <- renderPlot({
-  #print("In theDataPlot_web")
-  
-  print(theDataPlot())  # Remember that print(theDataPlot) just prints the code
-}, res=90, height=exprToFunction(input$plot_height1), width=exprToFunction(input$plot_width1))
 
 
-output$theSumPlot_web <- renderPlot({
-  print(theSummaryPlot())  # Remember that print(theSummaryPlot) just prints the code
-}, res=90, height=exprToFunction(input$plot_height_sum), width=exprToFunction(input$plot_width_sum))
 
 # ----- Compare
 

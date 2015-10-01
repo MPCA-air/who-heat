@@ -234,12 +234,14 @@ output$dataTableItems <- renderUI({
 # Generate a reactive element for plotting the Managed Data.
 # Pass to the webpage using renderPlot(print(theDataPlot))
 theDataPlot <- reactive({ 
-  #print("In theDataPlot")
+  
   
   #print("Reactive: theDataPlot")
   plotData <- datasetInput()
   plotData <- select(plotData, country, year, indic, subgroup, dimension, estimate, se)
 
+  print(head(plotData))
+  
   if(!is.null(plotData) & nrow(plotData)>0){
     chartopt <- list()
     # Chart options for axis max and min values
@@ -272,6 +274,7 @@ theDataPlot <- reactive({
     
     if(input$assessment_panel == 'dataplot' & input$ai_plot_type=='data_bar'){        
       p <- plotFigure1(plotData, chartoptions=chartopt)
+
       return(p)
     }
     if(input$assessment_panel == 'dataplot' & input$ai_plot_type=='data_line'){
