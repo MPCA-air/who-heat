@@ -20,8 +20,8 @@ output$explore_inequality_ui <- renderUI({
       ),
       conditionalPanel(condition = "input.assessment_panel == 'dataplot'",
                        tags$p(),
-                       h4("Select chart type"),
-                       radioButtons("ai_plot_type", h3("Plot options"),
+                       #h4("Select chart type"),
+                       radioButtons("ai_plot_type", HTML("<h3>Plot options</h3><p><h4>Select chart type</h4></p>"),
                                     c("Bar Chart" = "data_bar",
                                       "Line Chart" = "data_line"),
                                     inline=T,
@@ -41,7 +41,7 @@ output$explore_inequality_ui <- renderUI({
                        br(),
                        h4('Select plot names'),
                        
-                       checkboxInput(inputId='long_names1', label='Long health indicator names', value = FALSE),
+                       #checkboxInput(inputId='long_names1', label='Long health indicator names', value = FALSE),
                        
                        textInputRow(inputId="axis_limitsmin1", label=h5("Axis-min"), value = NULL),
                        textInputRow(inputId="axis_limitsmax1", label=h5("Axis-max"), value = NULL),
@@ -58,6 +58,7 @@ output$explore_inequality_ui <- renderUI({
                        
       ),
       
+      hr(),
       
       conditionalPanel(condition = "input.assessment_panel == 'sumtable'",
                        
@@ -67,12 +68,12 @@ output$explore_inequality_ui <- renderUI({
                        #uiOutput("sumtableEquityDimension"),
                        #uiOutput("sumtableYears"),
                        h4('Summary measure options'),
+                       h5('Select estimate to display'),
                        checkboxInput('summultiplier1', 'MLD and TI x1000', TRUE),
                        checkboxInput('summultiplier2', 'RCI x100', TRUE),
-                       sliderInput('sumsigfig', h5('Estimate precision'), min=0, max=5, value=2, round=T, width='50%'),
-                       hr(),
+                       sliderInput('sumsigfig', h5('Select estimate precision'), min=0, max=5, value=2, round=T, width='50%'),
                        radioButtons(inputId='se_type', 
-                                    label=h5('Standard error options'), 
+                                    label=h5('Select standard error type'), 
                                     choices = c('Bootstrap and Analytic' = 'both',
                                                 'Analytic' = 'analytic',
                                                 'Bootstrap' = 'bootstrap',
@@ -83,20 +84,15 @@ output$explore_inequality_ui <- renderUI({
       conditionalPanel(condition = "input.assessment_panel == 'sumplot'",
                        
          
-                       #uiOutput("sumplotSumMeasures"),
-                       #uiOutput("sumplotHealthIndicator"),
-                       #uiOutput("sumplotEquityDimension"),
-                       #uiOutput("sumplotYears"),
+   
                        br(),
-                       h4("Select chart type"),
-                       radioButtons("sumplot_type", h3("Plot options"),
+                  
+                       radioButtons("sumplot_type", HTML("<h3>Plot options</h3><p><h4>Select chart type</h4></p>"),
                                     c("Bar Chart" = "data_bar",
                                       "Line Chart" = "data_line"),
                                     inline=T,
                                     selected="data_line"),
-                       
-                       #uiOutput('downloadSummplot'),
-                       
+                       br(),
                        h4('Select plot dimensions'),
                        
                        sliderInput('plot_height_sum', h5('Height'), min=200, max=1500, value=400, step = 50,
@@ -109,9 +105,9 @@ output$explore_inequality_ui <- renderUI({
                        
                        br(),   
                        
-                       h4('Plot names'),
+                       h4('Select plot names'),
                        
-                       checkboxInput(inputId='long_names2', label='Long health indicator names', value = FALSE),
+                       #checkboxInput(inputId='long_names2', label='Long health indicator names', value = FALSE),
                        textInputRow(inputId="axis_limitsmin2", label=h5("Axis-min"), value = NULL),
                        textInputRow(inputId="axis_limitsmax2", label=h5("Axis-max"), value = NULL),                      
                        textInput(inputId = 'main_title2', label = h5('Main title'), value = ""),

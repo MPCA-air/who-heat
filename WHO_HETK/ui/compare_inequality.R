@@ -55,7 +55,7 @@ output$compare_inequality_ui <- renderUI({
                                    round = T,
                                    ticks = TRUE, animate = FALSE),                                        
                        
-                       h4("Plot names"),
+                       h4("Select plot names"),
                        checkboxInput(inputId='long_names3', label=h5('Long health indicator names'), value = FALSE),                                         
                        textInputRow(inputId="axis_limitsmin3", label=h5("Axis-min"), value = NULL),
                        textInputRow(inputId="axis_limitsmax3", label=h5("Axis-max"), value = NULL),
@@ -88,7 +88,7 @@ output$compare_inequality_ui <- renderUI({
                                    ticks = TRUE, animate = FALSE),
                        
                        
-                       h4("Plot names"),
+                       h4("Select plot names"),
                        ## INSERT  Long health indicator names
                        textInputRow(inputId="xaxis_limitsmin4", label = h5("X-axis min"), value = NULL),
                        textInputRow(inputId="xaxis_limitsmax4", label = h5("X-axis max"), value = NULL),

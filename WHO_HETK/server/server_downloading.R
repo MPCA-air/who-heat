@@ -46,7 +46,7 @@ output$btnDownloadDisagPlot_explore <- renderUI({
     return()
   } else {
     list(br(),
-         actionButton("btnDownloadDisagPlot_explore", "Download Plot", class = "btn-primary"))
+         actionButton("btnDownloadDisagPlot_explore", "Download graph", class = "btn-primary"))
   }  
 })
 
@@ -121,7 +121,7 @@ output$btnDownloadSummaryPlot_explore <- renderUI({
 #     return()
 #   } else {
   list(br(),
-       actionButton("btnDownloadSummaryPlot_explore", "Download plot", class = "btn-primary"))
+       actionButton("btnDownloadSummaryPlot_explore", "Download graph", class = "btn-primary"))
   #}
 })
 
@@ -202,7 +202,7 @@ output$btnDownloadDisagPlot_compare <- renderUI({
 #     return()
 #   } else {
     list(br(),
-         actionButton("btnDownloadDisagPlot_compare", "Download Plot", class = "btn-primary"))
+         actionButton("btnDownloadDisagPlot_compare", "Download graph", class = "btn-primary"))
  # }  
 })
 
@@ -215,7 +215,7 @@ output$theComparisonPlot1_web <- renderPlot({
 }, res=90, height=exprToFunction(input$plot_height2), width=exprToFunction(input$plot_width2))
 
 
-# Handler for downloading the data selected in the modal download plot
+# Handler for downloading the data selected in the modal Download graph
 output$btnStartDownloadDisagPlot_compare <- downloadHandler(
   filename = function() { 
     paste(input$focus_country_compare, '_disaggregated_compare_', Sys.Date(), '.pdf', sep='')
@@ -238,7 +238,7 @@ output$btnDownloadSummaryPlot_compare <- renderUI({
 #     return()
 #   } else {
     list(br(),
-         actionButton("btnDownloadSummaryPlot_compare", "Download Plot", class = "btn-primary"))
+         actionButton("btnDownloadSummaryPlot_compare", "Download graph", class = "btn-primary"))
   #}  
 })
 

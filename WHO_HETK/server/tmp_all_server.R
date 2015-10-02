@@ -93,7 +93,7 @@ output$focus_indicator_explore <- renderUI({
 
 
 output$focus_dimension_explore <- renderUI({
-  print(paste0("inputdatatable:", input$assessment_panel))
+  #print(paste0("inputdatatable:", input$assessment_panel))
   focusDimension_selector("focus_dimension_explore", multiple=TRUE)
   
   
@@ -240,7 +240,7 @@ theDataPlot <- reactive({
   plotData <- datasetInput()
   plotData <- select(plotData, country, year, indic, subgroup, dimension, estimate, se)
 
-  print(head(plotData))
+  #print(head(plotData))
   
   if(!is.null(plotData) & nrow(plotData)>0){
     chartopt <- list()
@@ -265,12 +265,14 @@ theDataPlot <- reactive({
     
     
     
-    if(input$long_names1==T){
-      relevant_names <- which(names(.rdata[['health_indicator_abbr']]) %in% unique(plotData$indic))
-      plotData$indic <- factor(plotData$indic,
-                               levels = names(.rdata[['health_indicator_abbr']])[relevant_names],
-                               labels = unname(.rdata[['health_indicator_abbr']])[relevant_names]) 
-    }
+#     if(input$long_names1==T){
+#       
+#       
+#       relevant_names <- which(names(.rdata[['health_indicator_abbr']]) %in% unique(plotData$indic))
+#       plotData$indic <- plotData$indic_name#factor(plotData$indic,
+#                                #levels = names(.rdata[['health_indicator_abbr']])[relevant_names],
+#                                #labels = unname(.rdata[['health_indicator_abbr']])[relevant_names]) 
+#     }
     
     if(input$assessment_panel == 'dataplot' & input$ai_plot_type=='data_bar'){        
       p <- plotFigure1(plotData, chartoptions=chartopt)
@@ -648,13 +650,13 @@ theSummaryPlot <- reactive({
         
         #plotData <- plotData[relevant.rows, ]      
         
-        if(input$long_names2==T){
-          #relevant_names <- which(names(.rdata[['health_indicator_abbr']]) %in% unique(plotData$indic))
-          plotData$indic <- factor(plotData$indic,
-                                   levels = names(.rdata[['health_indicator_abbr']]),
-                                   labels = unname(.rdata[['health_indicator_abbr']])) 
-        }
-        
+#         if(input$long_names2==T){
+#           #relevant_names <- which(names(.rdata[['health_indicator_abbr']]) %in% unique(plotData$indic))
+#           plotData$indic <- factor(plotData$indic,
+#                                    levels = names(.rdata[['health_indicator_abbr']]),
+#                                    labels = unname(.rdata[['health_indicator_abbr']])) 
+#         }
+#         
         
         if(input$assessment_panel == 'sumplot' & input$sumplot_type=='data_bar'){                   
           p <- plotFigure3(plotData, chartoptions=chartopt)

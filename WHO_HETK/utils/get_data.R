@@ -171,7 +171,7 @@ getDisagData <- function(indicator = NULL, stratifier = NULL, countries = NULL, 
   
   hetk.data <- filter_(.rdata[['maindata']], filt_country, filt_year, filt_indicator, filt_dimension, filt_datasource) %>% 
     select(country, year, source, indic, dimension, subgroup, r, r_lower, r_upper, se, pop, iso3, 
-           rankable, maxoptimum, popshare, flag, rankorder)
+           rankable, maxoptimum, popshare, flag, rankorder, indic_name)
   
   
   
