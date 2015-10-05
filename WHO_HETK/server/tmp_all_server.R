@@ -275,7 +275,7 @@ theDataPlot <- reactive({
 #     }
     
     if(input$assessment_panel == 'dataplot' & input$ai_plot_type=='data_bar'){        
-      p <- plotFigure1(plotData, chartoptions=chartopt)
+      p <- plotBar_explore(plotData, chartoptions=chartopt)
 
       return(p)
     }
