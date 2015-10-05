@@ -6,7 +6,8 @@ output$compare_inequality_ui <- renderUI({
     sidebarPanel(
       
       uiOutput("focus_country_compare"),
-      uiOutput("focus_year_compare"),
+      uiOutput('focus_source_year_compare'),
+      #uiOutput("focus_year_compare"),
       uiOutput("focus_indicator_compare"),
       uiOutput("focus_dimension_compare"),
       uiOutput("benchmark_countries"),

@@ -706,11 +706,38 @@ output$focus_indicator_compare <- renderUI({
 })
 
 
-output$focus_year_compare <- renderUI({
+# output$focus_year_compare <- renderUI({
+#   
+# 
+#   list(
+# 
+#     h5("Select years"),
+#     checkboxInput('mostrecent_compare', 'Most recent year', .rdata[['mostrecent']]),
+#     
+#     conditionalPanel( condition = "!input.mostrecent_compare",  
+#                       
+#                       selectInput(inputId="focus_year_compare", 
+#                                   label='', 
+#                                   choices=.rdata[['all_years']], 
+#                                   multiple=FALSE, 
+#                                   selected=.rdata[['all_years']][1])
+#     )
+#   )
+# })
+# 
+
+
+
+output$focus_source_year_compare <- renderUI({
   
-
   list(
-
+    conditionalPanel(condition = "input.comparison_panel == 'inequalbenchmark' | input.assessment_panel == 'inequaldisag'",
+                     radioButtons("focus_data_source_compare", h5("Select data sources"),
+                                  c("All", "DHS", "MICS"),
+                                  inline=TRUE,
+                                  selected="All")
+    ),
+    
     h5("Select years"),
     checkboxInput('mostrecent_compare', 'Most recent year', .rdata[['mostrecent']]),
     
@@ -720,10 +747,14 @@ output$focus_year_compare <- renderUI({
                                   label='', 
                                   choices=.rdata[['all_years']], 
                                   multiple=FALSE, 
-                                  selected=.rdata[['all_years']][1])
+                                  selected=.rdata[['focus_country']])
     )
   )
 })
+
+
+
+
 
 
 output$focus_summeasure_compare_summary <- renderUI({
@@ -1022,6 +1053,8 @@ getBenchmarkData <- reactive({
                                           stratifier = input$focus_dimension_compare, 
                                           countries = input$benchmark_countries, 
                                           years =  unique(input$focus_year_compare), 
+                                          mostrecent = input$mostrecent_compare,
+                                          datasource = input$focus_data_source_compare,
                                           elasticity = input$benchmarkYears, 
                                           matchyears=F)
   

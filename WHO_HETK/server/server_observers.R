@@ -236,3 +236,40 @@ observe({
   
   
 })
+
+
+
+
+#****************** Watch focus_data_source_explore
+
+observe({
+  if(is.null(input$focus_data_source_explore)) return()
+  .rdata[['focus_data_source']] <<- input$focus_data_source_explore
+  
+  focus_data_source <- isolate(input$focus_data_source_compare)
+  
+  
+  if(!is.null(focus_data_source) && focus_data_source!=.rdata[['focus_data_source']]){
+    updateCheckboxInput(session,'focus_data_source_compare', value=.rdata[['focus_data_source']])
+  }
+  
+  
+})
+
+
+
+#****************** Watch focus_data_source_compare
+
+observe({
+  if(is.null(input$focus_data_source_compare)) return()
+  .rdata[['focus_data_source']] <<- input$focus_data_source_compare
+  
+  focus_data_source <- isolate(input$focus_data_source_explore)
+  
+  
+  if(!is.null(focus_data_source) && focus_data_source!=.rdata[['focus_data_source']]){
+    updateCheckboxInput(session,'focus_data_source_explore', value=.rdata[['focus_data_source']])
+  }
+  
+  
+})

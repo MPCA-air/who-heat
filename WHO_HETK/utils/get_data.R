@@ -230,7 +230,10 @@ orderHetkFactors <- function(DF){
 # 
 #******************************************************************************
 
-getComparisonCountries <- function(indicator, stratifier, countries, years, elasticity, matchyears=F){
+getComparisonCountries <- function(indicator = NULL, stratifier = NULL, countries = NULL, 
+                                   years = NULL, mostrecent=FALSE, datasource=NULL, 
+                                   elasticity, matchyears=F){
+  
   # indicator: one pre-selected health indicator
   # stratifier: one pre-selected equity dimension
   # countries: one or more pre-selected benchmark countries
@@ -256,7 +259,7 @@ getComparisonCountries <- function(indicator, stratifier, countries, years, elas
                                     stratifier=stratifier, 
                                     countries = i, 
                                     years = elastic_years, 
-                                    datasource='All')
+                                    datasource=datasource)
           if(nrow(yearsdata)>0 & matchyears==T){
             yearsdata$year <- j  # Fix the benchmark year to the anchor year not the actual benchmark year
           }
