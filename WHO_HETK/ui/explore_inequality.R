@@ -66,6 +66,7 @@ output$explore_inequality_ui <- renderUI({
                        #uiOutput("sumtableHealthIndicator"),
                        #uiOutput("sumtableEquityDimension"),
                        #uiOutput("sumtableYears"),
+                       hr(),
                        h4('Summary measure options'),
                        h5('Select estimate to display'),
                        checkboxInput('summultiplier1', 'MLD and TI x1000', TRUE),

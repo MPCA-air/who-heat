@@ -15,7 +15,7 @@ output$compare_inequality_ui <- renderUI({
       uiOutput("benchmark_countries"),
       uiOutput("benchmarkWBgroup"),
       uiOutput("benchmarkWHOregion"),
-      hr(),
+
       conditionalPanel(condition = "input.comparison_panel == 'inequalbenchmark'",
                        
                        #uiOutput("focus_country"),
@@ -44,7 +44,7 @@ output$compare_inequality_ui <- renderUI({
                        #uiOutput("compplotDisagHealthIndicator"),
                        #uiOutput("compplotDisagEquityDimension"),
                        #uiOutput("compplotDisagYears"),
-  
+                       hr(),
                        p(),
                        h3('Plot options'),
                        h4('Select plot dimensions'),
@@ -75,7 +75,7 @@ output$compare_inequality_ui <- renderUI({
                        #uiOutput("compplotSumHealthIndicator"),
                        #uiOutput("compplotSumEquityDimension"),
                        #uiOutput("compplotSumYears"),
-
+                       hr(),
                        p(),
                        h3('Plot options'),
                        h4('Select plot dimensions'),
