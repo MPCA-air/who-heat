@@ -140,24 +140,25 @@ getDisagData <- function(indicator = NULL, stratifier = NULL, countries = NULL, 
   
   
   
-  #   if(!is.null(countries)) filt_country <- quote(country %in% countries)
-  #   if(!is.null(years) && !is.null(mostrecent) && !mostrecent) filt_year <- quote(year %in% years)
-  #   if(!is.null(years) && is.null(mostrecent)) filt_year <- quote(year %in% years)
-  #   if(!is.null(indicator)) filt_indicator <- quote(indic %in% indicator)
-  #   if(!is.null(stratifier)) filt_dimension <- quote(dimension %in% stratifier)
-  #   if(!is.null(datasource) && datasource == 'All') filt_datasource <- TRUE
-  #   if(!is.null(datasource) && datasource != 'All') filt_datasource <- quote(source == datasource)
+    if(!is.null(countries)) filt_country <- quote(country %in% countries)
+    if(!is.null(years) && !is.null(mostrecent) && !mostrecent) filt_year <- quote(year %in% years)
+    if(!is.null(years) && is.null(mostrecent)) filt_year <- quote(year %in% years)
+    if(!is.null(indicator)) filt_indicator <- quote(indic %in% indicator)
+    if(!is.null(stratifier)) filt_dimension <- quote(dimension %in% stratifier)
+    if(!is.null(datasource) && datasource == 'All') filt_datasource <- TRUE
+    if(!is.null(datasource) && datasource != 'All') filt_datasource <- quote(source == datasource)
   
   
-  if(!is.null(countries)) filt_country <- paste0("country %in%c('", paste0(countries, collapse="','"), "')")
-  if(!is.null(years) && !is.null(mostrecent) && !mostrecent) filt_year <- paste0("year %in%c('", paste0(years, collapse="','"), "')")
-  if(!is.null(years) && is.null(mostrecent)) filt_year <- paste0("year %in%c('", paste0(years, collapse="','"), "')")
-  if(!is.null(indicator)) filt_indicator <- paste0("indic %in%c('", paste0(indicator, collapse="','"), "')")
-  if(!is.null(stratifier)) filt_dimension <- paste0("dimension %in%c('", paste0(stratifier, collapse="','"), "')")
-  if(!is.null(datasource) && datasource == 'All') filt_datasource <- TRUE
-  if(!is.null(datasource) && datasource != 'All') filt_datasource <- paste0("source %in%c('", paste0(datasource, collapse="','"), "')")
-  
-  
+  # if you use this you need to use filter_ below ALSO the quote in Mother's education causes issues
+#   if(!is.null(countries)) filt_country <- paste0("country %in%c('", paste0(countries, collapse="','"), "')")
+#   if(!is.null(years) && !is.null(mostrecent) && !mostrecent) filt_year <- paste0("year %in%c('", paste0(years, collapse="','"), "')")
+#   if(!is.null(years) && is.null(mostrecent)) filt_year <- paste0("year %in%c('", paste0(years, collapse="','"), "')")
+#   if(!is.null(indicator)) filt_indicator <- paste0("indic %in%c('", paste0(indicator, collapse="','"), "')")
+#   if(!is.null(stratifier)) filt_dimension <- paste0("dimension %in%c('", paste0(stratifier, collapse="','"), "')")
+#   if(!is.null(datasource) && datasource == 'All') filt_datasource <- TRUE
+#   if(!is.null(datasource) && datasource != 'All') filt_datasource <- paste0("source %in%c('", paste0(datasource, collapse="','"), "')")
+#   
+#   
   #     print(paste0('filt_country:', deparse(filt_country)))
   #     print(paste0('filt_year:', deparse(filt_year)))
   #     print(paste0('filt_indicator:', deparse(filt_indicator)))
@@ -167,13 +168,12 @@ getDisagData <- function(indicator = NULL, stratifier = NULL, countries = NULL, 
   #     print(paste0('years:', years))
   #     print(paste0('indicator:', indicator))
   #     print(paste0('dimension:', stratifier))
-  
-  
-  hetk.data <- filter_(.rdata[['maindata']], filt_country, filt_year, filt_indicator, filt_dimension, filt_datasource) %>% 
+
+  hetk.data <- filter(.rdata[['maindata']], filt_country, filt_year, filt_indicator, filt_dimension, filt_datasource) %>% 
     select(country, year, source, indic, dimension, subgroup, r, r_lower, r_upper, se, pop, iso3, 
            rankable, maxoptimum, popshare, flag, rankorder, indic_name)
   
-  
+
   
   #national.data <- dbGetQuery(con, selectNationalStr)
   
