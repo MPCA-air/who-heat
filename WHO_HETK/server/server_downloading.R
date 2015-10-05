@@ -54,11 +54,6 @@ output$btnDownloadDisagPlot_explore <- renderUI({
 
 
 
-output$theDataPlot_web <- renderPlot({
-  #print("In theDataPlot_web")
-  
-  print(theDataPlot())  # Remember that print(theDataPlot) just prints the code
-}, res=90, height=exprToFunction(input$plot_height1), width=exprToFunction(input$plot_width1))
 
 
 output$btnStartDownloadDisagPlot_explore  <- downloadHandler(
@@ -115,14 +110,13 @@ output$btnStartDownloadSummaryData_explore <- downloadHandler(
 
 
 output$btnDownloadSummaryPlot_explore <- renderUI({
-#   thePlot <- theDataPlot()
-#   print(thePlot)
-#   if(is.null(thePlot)){
-#     return()
-#   } else {
+  thePlot <- theDataPlot()
+  if(is.null(thePlot)){
+    return()
+  } else {
   list(br(),
        actionButton("btnDownloadSummaryPlot_explore", "Download graph", class = "btn-primary"))
-  #}
+  }
 })
 
 
@@ -141,10 +135,6 @@ output$btnStartDownloadSummaryPlot_explore  <- downloadHandler(
 )   
 
 
-
-output$theSumPlot_web <- renderPlot({
-  print(theSummaryPlot())  # Remember that print(theSummaryPlot) just prints the code
-}, res=90, height=exprToFunction(input$plot_height_sum), width=exprToFunction(input$plot_width_sum))
 
 
 

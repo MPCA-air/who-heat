@@ -324,6 +324,30 @@ output$focus_summeasure_explore_summary <- renderUI({
 #############################################################
 
 
+output$theDataPlot_web <- renderPlot({
+  #print("In theDataPlot_web")
+  p<-theDataPlot()
+  
+  
+  validate(
+    need(all(!is.null(p)), "There is no data for this combination of variables")
+  )
+  
+  print(p)  # Remember that print(theDataPlot) just prints the code
+})
+
+
+output$theSumPlot_web <- renderPlot({
+  p<-theSummaryPlot()
+  
+  validate(
+    need(all(!is.null(p)), "There is no data for this combination of variables")
+  )
+  
+  print(p)
+  # Remember that print(theSummaryPlot) just prints the code
+}, res=90, height=exprToFunction(input$plot_height_sum), width=exprToFunction(input$plot_width_sum))
+
 
 
 ### Creating reactive input for the Summary Tables
@@ -619,7 +643,10 @@ theSummaryPlot <- reactive({
   
   
   plotData <- datasetInequal()
-  #print(head(plotData))
+  
+  validate(
+    need(!is.null(plotData) && nrow(plotData)>0, "There is no data for this combination of variables")
+  )
   
   
   #print(class(plotData))
