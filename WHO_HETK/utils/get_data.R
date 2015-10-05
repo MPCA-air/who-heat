@@ -187,6 +187,8 @@ getDisagData <- function(indicator = NULL, stratifier = NULL, countries = NULL, 
     rename(estimate = r.x, national=r.y, lower_95ci=r_lower, upper_95ci=r_upper)
   
   
+  hetk.data <- filter(hetk.data, !is.null(estimate), !is.na(estimate), estimate!="")
+  
   
   hetk.data$year <- as.integer(hetk.data$year)
   hetk.data$estimate <- as.numeric(hetk.data$estimate)
