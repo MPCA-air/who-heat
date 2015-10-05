@@ -58,7 +58,6 @@ output$explore_inequality_ui <- renderUI({
                        
       ),
       
-      hr(),
       
       conditionalPanel(condition = "input.assessment_panel == 'sumtable'",
                        

@@ -2,12 +2,15 @@
 shinyUI(
   
   tagList(
-  tags$head(tags$link(rel="stylesheet", type="text/css",href="style.css")),
+    
+  tags$head(tags$link(rel="stylesheet", type="text/css",href="spacelab.min.css")),
+  #tags$head(tags$link(rel="stylesheet", type="text/css",href="style.css")),
   
   navbarPage("Health Equity Assessment Toolkit", 
                    id= "who_heat", 
                    inverse=TRUE, 
                    collapsible = TRUE,
+                   #theme = shinytheme("spacelab"),
                    #tags$head(tags$style("style.css")),
                    #   fluidPage(  theme = shinytheme("readable"), 
                    #               img(src='WHO-EN-B-H.jpg', align = "right", height = 72, width = 232),

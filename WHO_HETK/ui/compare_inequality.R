@@ -10,8 +10,11 @@ output$compare_inequality_ui <- renderUI({
       #uiOutput("focus_year_compare"),
       uiOutput("focus_indicator_compare"),
       uiOutput("focus_dimension_compare"),
+      hr(),
+      h4("Benchmark options"),
       uiOutput("benchmark_countries"),
-
+      uiOutput("benchmarkWBgroup"),
+      uiOutput("benchmarkWHOregion"),
       hr(),
       conditionalPanel(condition = "input.comparison_panel == 'inequalbenchmark'",
                        
@@ -19,10 +22,7 @@ output$compare_inequality_ui <- renderUI({
                        #uiOutput("compplotBenchHealthIndicator"),
                        #uiOutput("compplotBenchEquityDimension"),
                        #uiOutput("compplotBenchYears"),
-                       
-                       h4("Benchmark countries"),
-                       uiOutput("benchmarkWBgroup"),
-                       uiOutput("benchmarkWHOregion"),
+
 
 
                        
@@ -44,7 +44,8 @@ output$compare_inequality_ui <- renderUI({
                        #uiOutput("compplotDisagHealthIndicator"),
                        #uiOutput("compplotDisagEquityDimension"),
                        #uiOutput("compplotDisagYears"),
-                       hr(),
+  
+                       p(),
                        h3('Plot options'),
                        h4('Select plot dimensions'),
                        
@@ -74,8 +75,7 @@ output$compare_inequality_ui <- renderUI({
                        #uiOutput("compplotSumHealthIndicator"),
                        #uiOutput("compplotSumEquityDimension"),
                        #uiOutput("compplotSumYears"),
-                       p(),
-                       hr(),
+
                        p(),
                        h3('Plot options'),
                        h4('Select plot dimensions'),
@@ -170,11 +170,11 @@ output$compare_inequality_ui <- renderUI({
                            uiOutput('btnDownloadDisagData_compare'),
                            dataTableOutput(outputId="dataTableBenchmark")
                   ),
-                  tabPanel(h6("Disaggregated plot"), value='inequaldisag', 
+                  tabPanel(HTML("<h6 style='text-align: center;'>Disaggregated data</br>(graphs)<h6>"), value='inequaldisag', 
                            uiOutput('btnDownloadDisagPlot_compare'),
                            div(class="container-fluid", style="overflow:visible;height:1000px;", plotOutput('theComparisonPlot1_web'))
                   ),
-                  tabPanel(h6("Summary plot"), value='inequalsum', 
+                  tabPanel(HTML("<h6 style='text-align: center;'>Summary measures</br>(graphs)<h6>"), value='inequalsum', 
                            # Plot points (default) or country codes on the Comparison Summary Plot
                            checkboxInput(inputId='points_ccode', 'Show country codes', value=FALSE),
                            uiOutput('btnDownloadSummaryPlot_compare'),

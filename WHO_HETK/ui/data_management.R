@@ -8,8 +8,8 @@ output$home_ui <- renderUI({
       sidebarPanel(
 #         
         
-        h4("Database used:"),
-        h1("Health Equity Monitor Database")
+        helpText("This application uses the"),
+        h2("Health Equity Monitor Database")
         
         
 #         selectInput("dataSource", label = h5("Select data sources"),

@@ -731,7 +731,7 @@ output$focus_indicator_compare <- renderUI({
 output$focus_source_year_compare <- renderUI({
   
   list(
-    conditionalPanel(condition = "input.comparison_panel == 'inequalbenchmark' | input.assessment_panel == 'inequaldisag'",
+    conditionalPanel(condition = "input.comparison_panel == 'inequalbenchmark' | input.comparison_panel == 'inequaldisag'",
                      radioButtons("focus_data_source_compare", h5("Select data sources"),
                                   c("All", "DHS", "MICS"),
                                   inline=TRUE,
@@ -786,7 +786,7 @@ output$benchmark_countries <- renderUI({
   countries <- countries[!countries%in%focus]
   
   selectInput("benchmark_countries", 
-              h5("Select countries"), 
+              h5("Select benchmark countries"), 
               choices=countries, 
               selected=.rdata[['benchmark_countries']],
               multiple=TRUE)
@@ -796,7 +796,7 @@ output$benchmark_countries <- renderUI({
 
 output$benchmarkWBgroup <- renderUI({
   
-  selectInput("benchmarkWBgroup", label = h5("Filter by country income group"),
+  selectInput("benchmarkWBgroup", label = h5("Filter benchmark countries by income group"),
               .rdata[['income_groups']],
               selected = NULL,
               multiple=T)
@@ -808,7 +808,7 @@ output$benchmarkWBgroup <- renderUI({
 output$benchmarkWHOregion <- renderUI({
   
   
-  selectInput("benchmarkWHOregion", label = h5("Filter by WHO region"),
+  selectInput("benchmarkWHOregion", label = h5("Filter benchmark countries by WHO region"),
               .rdata[['who_regions']],
               selected = NULL,
               multiple=T)
