@@ -14,62 +14,17 @@ library(grid)
 library(RColorBrewer)
 
 #######PLOT 1
-plotFigure1 <- function(plotData, chartoptions=NULL){
+plotBar_explore <- function(plotData, chartoptions=NULL){
   # Plot 1: Barchart for a single country (Disaggregation of data)
   
   #print("plotFigure1() in plotter.R")
   #print(chartoptions)
   
   if(!('geo_only' %in% names(chartoptions))){
-    legendRow <- 1
-    plotPalette <- c()
-    sexPalette <- c('#FF7F0F', '#B85A0D')  # ORANGE
-    ecoPalette <- c("#D8BD35", '#ADB828', '#82A93C','#54A338', '#29A03C' )  # GREENS
-    eduPalette <- c('#E75727', '#D23E4E', '#C94D8C')  # REDS
-    ruralPalette <- c('#3CB7CC', '#39737C')  # TURQUOISE
-    legendBreaks <- c()
-    
-    educationLevels <- length(unique(plotData$subgroup[plotData$dimension=="Mother's education"]))
-    if(educationLevels==2){
-      eduPalette <- eduPalette[c(1,3)]
-    }
-    if(educationLevels==1){
-      eduPalette <- eduPalette[2]
-    }
-    
-    if('Economic status' %in% plotData$dimension){ 
-      plotPalette <- c(plotPalette, ecoPalette)
-      legendBreaks <- c(legendBreaks, as.character(unique(plotData$subgroup[plotData$dimension=="Economic status"])))
-    }
-    
-    if("Mother's education" %in% plotData$dimension){ 
-      ##  NEED TO PUT A LINE HERE TO CHECK THE NUMBER OF education CATEGORIES
-      plotPalette <- c(plotPalette, eduPalette)
-      legendBreaks <- c(legendBreaks, as.character(unique(plotData$subgroup[plotData$dimension=="Mother's education"])))
-    }
-    
-    if("Place of residence" %in% plotData$dimension){ 
-      plotPalette <- c(plotPalette, ruralPalette)
-      legendBreaks <- c(legendBreaks, as.character(unique(plotData$subgroup[plotData$dimension=="Place of residence"])))
-    }
-    if('Sex' %in% plotData$dimension){ 
-      plotPalette <- c(plotPalette, sexPalette)
-      legendBreaks <- c(legendBreaks, as.character(unique(plotData$subgroup[plotData$dimension=="Sex"])))
-    }
-    if("Geographic region" %in% plotData$dimension){
-      numberOfRegions <- length(unique(plotData$subgroup[plotData$dimension=="Geographic region"]))
-      plotPalette <- c(plotPalette, rep('#00008B', numberOfRegions))
-    }
-    
-    if(length(legendBreaks)>2){
-      legendRow <- 2
-    }
-    if("Mother's education" %in% plotData$dimension & length(legendBreaks)>2){
-      legendRow <- 3
-    }
-    if("Economic status" %in% plotData$dimension){
-      legendRow <- 5
-    }
+    vals <- getPaletteInfo(plotData$dimension, plotData$subgroup)
+    legendRow <- vals[['legendRow']]
+    plotPalette <- vals[['plotPalette']]
+    legendBreaks <- vals[['legendBreaks']]
   }
   
   
@@ -537,3 +492,60 @@ plotFigure6 <- function(plotData, chartoptions=NULL){
   p
 }
 
+
+
+getPaletteInfo<-function(dimension, subgroup){
+  
+  
+  legendRow <- 1
+  plotPalette <- c()
+  sexPalette <- c('#FF7F0F', '#B85A0D')  # ORANGE
+  ecoPalette <- c("#D8BD35", '#ADB828', '#82A93C','#54A338', '#29A03C' )  # GREENS
+  eduPalette <- c('#E75727', '#D23E4E', '#C94D8C')  # REDS
+  ruralPalette <- c('#3CB7CC', '#39737C')  # TURQUOISE
+  legendBreaks <- c()
+  
+  educationLevels <- length(unique(subgroup[dimension=="Mother's education"]))
+  if(educationLevels==2){
+    eduPalette <- eduPalette[c(1,3)]
+  }
+  if(educationLevels==1){
+    eduPalette <- eduPalette[2]
+  }
+  
+  if('Economic status' %in% dimension){ 
+    plotPalette <- c(plotPalette, ecoPalette)
+    legendBreaks <- c(legendBreaks, as.character(unique(subgroup[dimension=="Economic status"])))
+  }
+  
+  if("Mother's education" %in% dimension){ 
+    ##  NEED TO PUT A LINE HERE TO CHECK THE NUMBER OF education CATEGORIES
+    plotPalette <- c(plotPalette, eduPalette)
+    legendBreaks <- c(legendBreaks, as.character(unique(subgroup[dimension=="Mother's education"])))
+  }
+  
+  if("Place of residence" %in% dimension){ 
+    plotPalette <- c(plotPalette, ruralPalette)
+    legendBreaks <- c(legendBreaks, as.character(unique(subgroup[dimension=="Place of residence"])))
+  }
+  if('Sex' %in% dimension){ 
+    plotPalette <- c(plotPalette, sexPalette)
+    legendBreaks <- c(legendBreaks, as.character(unique(subgroup[dimension=="Sex"])))
+  }
+  if("Geographic region" %in% dimension){
+    numberOfRegions <- length(unique(subgroup[dimension=="Geographic region"]))
+    plotPalette <- c(plotPalette, rep('#00008B', numberOfRegions))
+  }
+  
+  if(length(legendBreaks)>2){
+    legendRow <- 2
+  }
+  if("Mother's education" %in% dimension & length(legendBreaks)>2){
+    legendRow <- 3
+  }
+  if("Economic status" %in% dimension){
+    legendRow <- 5
+  }
+  
+  return(list(legendrow=legendRow, plotPalette=plotPalette, legendBreaks=legendBreaks))
+}
