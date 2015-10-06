@@ -2,6 +2,7 @@
 # Reference: Harper & Lynch (p.8)
 
 wrap.bgv <- function(x, w, national_est=NULL){
+
   # Between Group Variance wrapper function
   if(is.null(national_est)){  # Calculate the population average from the data if a national average is unavailable
     prop.pop <- w/sum(w)  # Calculate proportion of the population in each group
@@ -16,7 +17,13 @@ wrap.bgv <- function(x, w, national_est=NULL){
 }
 
 
-bgv <- function(x, w=-1, se=-1, bs=F, national_est=NULL){
+bgv <- function(dat, bs=FALSE){
+  x<-dat$r
+  w<-dat$pop
+  se<-dat$se
+  national_est <-NULL#unique(dat$r_national)
+  #print(national_est)
+  #x, w=-1, se=-1, bs=F, national_est=NULL
   # This function returns the between group variance and is calculated as the square of the differences in group
   # rates from the population average, weighted by each groups population sizes:
   # Usage

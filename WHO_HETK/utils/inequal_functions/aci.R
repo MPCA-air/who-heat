@@ -18,7 +18,13 @@ wrap.aci <- function(x, w){
 
 
 # Absolute Concentration Index (ACI)
-aci <- function(x, w=-1, se=-1, bs=F, rankorder){ 
+aci <- function(dat, bs=FALSE){ 
+  #dat<-x
+  #original arguments: x, w=-1, se=-1, bs=F, rankorder
+  x<-dat$r
+  w<-dat$pop
+  se <- dat$se
+  rankorder <- dat$order
   # This function returns the Absolute Concentration Index of inequality:
   # Usage
   # x -- a vector of numbers

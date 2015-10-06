@@ -10,7 +10,13 @@ wrap.rii <- function(y, w){
 }
 
 
-rii <- function(y, w=-1, se=-1, bs=F, rankorder=NULL, maxopt=1){
+rii <- function(dat, bs=FALSE){
+  y<-dat$r
+  w<-dat$pop
+  se<-dat$se
+  #national_est <-unique(dat$r_national)
+  maxopt <- unique(dat$maxoptimum)
+  rankorder <- dat$order
   # This function returns the slope index of inequality and is calculated as the beta-coefficient in the regression
   # of the mean health variable on the mean relative rank variable.:
   # Usage

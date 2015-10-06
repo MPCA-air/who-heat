@@ -273,3 +273,38 @@ observe({
   
   
 })
+
+
+#****************** Watch focus_inequal_type_explore
+
+observe({
+  if(is.null(input$focus_inequal_type_explore)) return()
+  .rdata[['focus_inequal_type']] <<- input$focus_inequal_type_explore
+  
+  focus_inequal_type <- isolate(input$focus_inequal_type_compare)
+  
+  
+  if(!is.null(focus_inequal_type) && focus_inequal_type!=.rdata[['focus_inequal_type']]){
+    updateCheckboxInput(session,'focus_inequal_type_compare', value=.rdata[['focus_inequal_type']])
+  }
+  
+  
+})
+
+
+
+#****************** Watch focus_inequal_type_compare
+
+observe({
+  if(is.null(input$focus_inequal_type_compare)) return()
+  .rdata[['focus_inequal_type']] <<- input$focus_inequal_type_compare
+  
+  focus_inequal_type <- isolate(input$focus_inequal_type_explore)
+  
+  
+  if(!is.null(focus_inequal_type) && focus_inequal_type!=.rdata[['focus_inequal_type']]){
+    updateCheckboxInput(session,'focus_inequal_type_explore', value=.rdata[['focus_inequal_type']])
+  }
+  
+  
+})

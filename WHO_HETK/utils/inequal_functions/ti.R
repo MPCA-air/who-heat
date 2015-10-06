@@ -19,7 +19,13 @@ wrap.theil <- function(y, w){
 }
 
 
-ti <- function(y, w=-1, se=-1, bs=F){ 
+ti <- function(dat, bs=FALSE){ 
+  y<-dat$r
+  w<-dat$pop
+  se<-dat$se
+  #national_est <-unique(dat$r_national)
+  #maxopt <- unique(dat$maxoptimum)
+  #rankorder <- dat$order
   # This function returns the Theil Index of inequality:
   # Usage
   # y -- a vector of numbers

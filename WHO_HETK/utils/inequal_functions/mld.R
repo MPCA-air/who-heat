@@ -27,7 +27,11 @@ wrap.mld <- function(x, w, national_est=NULL){
 }
 
 
-mld <- function(x, w=-1, se=-1, bs=F, national_est=NULL){
+mld <- function(dat, bs=FALSE){
+  x<-dat$r
+  w<-dat$pop
+  se<-dat$se
+  national_est <-unique(dat$r_national)
   # This function returns the difference (i.e., the range) between the maximum and minimum values in a vector of rates
   #
   # Usage

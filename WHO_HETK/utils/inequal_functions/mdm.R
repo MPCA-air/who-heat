@@ -21,7 +21,12 @@ wrap.mdm <- function(x, w, national_est=NULL){
 }
 
 
-mdm <- function(x, w=-1, se=-1, bs=F, national_est=NULL){
+mdm <- function(dat, bs=TRUE){
+  x<-dat$r
+  w<-dat$pop
+  se<-dat$se
+  national_est <-unique(dat$r_national)
+
   # This function returns the mean difference between each groups rate and the mean
   #
   # Usage

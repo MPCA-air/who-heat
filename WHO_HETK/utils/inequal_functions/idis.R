@@ -20,7 +20,11 @@ wrap.idis <- function(x, national_est){
 }
 
 
-idis <- function(x, w=-1, se=-1, bs=F, national_est){
+idis <- function(dat, bs=FALSE){
+  x<-dat$r
+  w<-dat$pop
+  se<-dat$se
+  national_est <-unique(dat$r_national)
   # This function returns the difference (i.e., the range) between the national values in a vector of rates
   #
   # Usage

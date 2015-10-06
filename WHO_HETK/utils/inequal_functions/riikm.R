@@ -11,7 +11,14 @@ wrap.riikm <- function(y, w){
 }
 
 
-riikm <- function(y, w=-1, se=-1, bs=F, rankorder=NULL, maxopt=1){
+riikm <- function(dat, bs=FALSE){
+  
+  y<-dat$r
+  w<-dat$pop
+  se<-dat$se
+  national_est <-unique(dat$r_national)
+  maxopt <- unique(dat$maxoptimum)
+  rankorder <- dat$order
   # This function returns the Kunst Mackenbach index of inequality:
   # Usage
   # y -- a vector of numbers
@@ -21,41 +28,31 @@ riikm <- function(y, w=-1, se=-1, bs=F, rankorder=NULL, maxopt=1){
   # maxopt -- if higher indicators are better, maxopt is 1, if lower is better, 0
   # returns: riikm and its standard erros.
   #
-  if(!is.rank(rankorder)){  # If these are not rankordered, then RII does not apply
-    return(NULL)
-  }
   
-  if(is.na(maxopt)){
-    return(NULL)
-  }
+  if(!any(is.na(y))) return()
+  if(!is.rank(rankorder)) return()  # If these are not rankordered, then RII does not apply
+  if(is.na(maxopt)) return()
   
-  if(any(is.na(w))){
-    w <- -1
-  }
+  if(any(is.na(w))) w <- -1
+  if(any(is.na(se)))se <- -1
+    
+
   
-  if(any(is.na(se))){
-    se <- -1
-  }
+  if(!is.numeric(y) | !is.numeric(w) | !is.numeric(se)) stop('This function operates on vector of numbers')
+
   
-  if(!is.numeric(y) | !is.numeric(w) | !is.numeric(se)){
-    stop('This function operates on vector of numbers')
-  }
+  if(length(w)==1 & w[1]==-1) w <- rep(1, length(y))  # i.e., if no population numbers are given assume each group has a weight of 1
+
   
-  if(length(w)==1 & w[1]==-1){  # i.e., if no population numbers are given assume each group has a weight of 1
-    w <- rep(1, length(y))
-  }
+  if(length(se)==1 & se[1]==-1) se <- rep(0, length(y))
+
   
-  if(length(se)==1 & se[1]==-1){
-    se <- rep(0, length(y))
-  }
-  
-  if( !(length(y) == length(w)) | !(length(y)==length(se)) ){
+  if( !(length(y) == length(w)) | !(length(y)==length(se))) 
     stop('the rates, population-size, and standard errors must all be of the same length')
-  }
+
   
-  if(all(w==0)){  # The calculation fails in midproppoint if their are no population numbers / this is a judgement call
-    w <- rep(1, length(w))
-  }
+  if(all(w==0)) w <- rep(1, length(w))  # The calculation fails in midproppoint if their are no population numbers / this is a judgement call
+    
   
   if(maxopt == 0){  # If decreasing indicator is better (e.g., U5MR)
     decrease <- T

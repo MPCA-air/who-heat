@@ -9,14 +9,22 @@
 wrap.rci <- function(y, w, se, rankorder){
   # Relative Concentration Index wrapper function
   prop.pop <- w/sum(w)  # Each groups proportion of the population
-  inequal.aci <- aci(x=y, w=w, se=se, bs=F, rankorder=rankorder)$inequal.aci  # ACI
+  dat <- data.frame(r=y, pop=w, se=se, order=rankorder)
+
+  inequal.aci <- aci(dat, bs=F)$inequal.aci  # ACI
   inequal.rci <- inequal.aci / sum(prop.pop * y)
   return (inequal.rci)  
 }
 
 
 
-rci <- function(y, w=-1, se=-1, bs=F, rankorder){ 
+rci <- function(dat, bs=FALSE){ 
+  y<-dat$r
+  w<-dat$pop
+  se<-dat$se
+  #national_est <-unique(dat$r_national)
+  #maxopt <- unique(dat$maxoptimum)
+  rankorder <- dat$order
   # This function returns the Absolute Concentration Index of inequality:
   # Usage
   # y -- a vector of numbers

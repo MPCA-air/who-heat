@@ -8,7 +8,13 @@
 #########
 
 
-rd <- function(x, w=-1, se=-1, bs=F, rankorder=NULL){
+rd <- function(dat, bs=FALSE){
+  x<-dat$r
+  w<-dat$pop
+  se<-dat$se
+  #national_est <-unique(dat$r_national)
+  #maxopt <- unique(dat$maxoptimum)
+  rankorder <- dat$order
   # This function returns the difference (i.e., the range) between the maximum and minimum values in a vector of rates
   #
   # Usage

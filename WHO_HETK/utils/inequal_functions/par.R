@@ -47,7 +47,13 @@ wrap.par <- function(x, w, maxopt=F, rankorder, national_est=NULL){
 }
 
                
-PAR <- function(x, w=-1, se=-1, bs=F, maxopt=F, rankorder, national_est=NULL){
+PAR <- function(dat, bs=FALSE){
+  x<-dat$r
+  w<-dat$pop
+  se<-dat$se
+  national_est <-unique(dat$r_national)
+  maxopt <- unique(dat$maxoptimum)
+  rankorder <- dat$order
   # This function returns the difference between the population rate and the most desirable group rate
   # Usage
   # x -- a vector of numbers

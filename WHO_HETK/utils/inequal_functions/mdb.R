@@ -14,7 +14,11 @@ wrap.mdb <- function(x, w, maxopt=0){
 }
 
 
-mdb <- function(x, w=-1, se=-1, bs=F, maxopt=0){
+mdb <- function(dat, bs=FALSE){
+  x<-dat$r
+  w<-dat$pop
+  se<-dat$se
+  maxopt <- unique(dat$maxoptimum)
   # This function returns the mean difference between each groups rate and the best performing group
   #
   # Usage

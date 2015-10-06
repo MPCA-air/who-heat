@@ -173,7 +173,7 @@ getDisagData <- function(indicator = NULL, stratifier = NULL, countries = NULL, 
     select(country, year, source, indic, dimension, subgroup, r, r_lower, r_upper, se, pop, iso3, 
            rankable, maxoptimum, popshare, flag, rankorder, indic_name)
   
-
+#print(head(hetk.data))
   
   #national.data <- dbGetQuery(con, selectNationalStr)
   
