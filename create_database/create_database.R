@@ -53,7 +53,8 @@ forInequal <- left_join(maindata,
                         by=c("country", "year", "source", "indic", "indic_name"))
 
 
-#strata <- distinct(maindata, country, year, source, indic, dimension)
+strata <- filter(forInequal, !grepl("Not available", flag)) %>% 
+  distinct(country, year, source, indic, indic_name, dimension)
 
 
 

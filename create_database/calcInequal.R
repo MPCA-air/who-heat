@@ -1,7 +1,6 @@
 
   
-  strata <- filter(forInequal, !grepl("Not available", flag)) %>% 
-                   distinct(country, year, source, indic, indic_name, dimension)
+
   
 
   inequal.types <- c('aci', 'bgv', 'idis', 'riikm', 'mdb', 'mdm', 'mld', 
@@ -67,6 +66,7 @@
                       year = uniquestrata$year,
                       indic = uniquestrata$indic,
                       dimension = uniquestrata$dimension,
+                      source = uniquestrata$source,
                       measure = inequal_type,
                       inequal = inequal,
                       boot.se = boot.se,
