@@ -113,7 +113,7 @@ datasetInput <- reactive({
                        years=input$focus_year_explore, 
                        mostrecent=input$mostrecent_explore,
                        datasource=input$focus_data_source_explore)
-  
+  #print(head(theData))
 
 })
 
@@ -152,8 +152,11 @@ theData <- datasetInput()
       Flag                   = flag
     ) 
   
+  
+  
   #if(theData[["Data source"]][1] %in% c('DHS', 'MICS')){
   #print(head(theData))
+  print(input$dataTableItems)
     theData <- theData[, input$dataTableItems]
     
 #   }

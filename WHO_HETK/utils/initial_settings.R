@@ -22,7 +22,7 @@
                                       "Upper 95%CI"  = "Upper 95%CI",
                                       "Population share %"   = "Population share %",
                                       "National estimate"    = "National estimate",
-                                      "Flag" = "flag")
+                                      "Flag" = "Flag")
 
 
 
