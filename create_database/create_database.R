@@ -1,8 +1,18 @@
-library(gdata)
+#******************************************************************************
+# Script to create the RDS files for the Shiny app
+#******************************************************************************
+
+
+#library(gdata)
 library(dplyr)
 library(readxl)
-path<-"X:/projects/who_heat/data/original_data/20151006_updated_database/HEAT database (national in rows) 2015-10.xlsx"
 
+
+
+# ----- here is the raw data. Both national-level and disaggregated 
+# ----- data as rows
+
+path<-"X:/projects/who_heat/data/original_data/20151006_updated_database/HEAT database (national in rows) 2015-10.xlsx"
 
 types<-c("text", "numeric", "text", "text", "text", "text","text",
          "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric",
@@ -11,12 +21,23 @@ types<-c("text", "numeric", "text", "text", "text", "text","text",
 dat<-read_excel(path, col_names=TRUE, col_types = types)
 
 
+# ----- This is the table of indicators with names and abbreviations
+
 indicpath<-"X:/projects/who_heat/data/original_data/20151006_updated_database/HEAT indicator list 2015-10.xlsx"
 indicators <- read_excel(indicpath) %>% 
   filter(show==1)
 
+
+# ----- For the moment I'm choosing to restrict the data included in the
+# ----- app to the indicators of interest (rather than restricting within
+# ----- the app.
+
+
 dat <- semi_join(dat, indicators, by="indic")
 
+
+
+# ----- we can now create several tables
 
 
 maindata <- filter(dat, dimension != "National average")
@@ -24,6 +45,15 @@ nationaldata <- filter(dat, dimension == "National average")
 countrynames <- distinct(maindata, country, iso3, whoreg6, whoreg6_name, wbincome) %>% 
   select(country, iso3, whoreg6, whoreg6_name, wbincome)
 years <- select(maindata, country, year, source) %>%  distinct
+indicators <- select(indicators, -show)
+strata <- filter(maindata, !grepl("Not available", flag)) %>% 
+  select(country, year, source, indic, indic_name, dimension) %>% 
+  distinct
+
+
+
+# ----- For comparing to the original data I received to make sure that
+# ----- the inequal calculations are done correctly
 
 # if you want to compare to previous skip part above
 #maindata<-readRDS("X:/projects/who_heat/web/who-heat/WHO_HETK/data/maindata.RDS")
@@ -34,7 +64,7 @@ years <- select(maindata, country, year, source) %>%  distinct
 
 
 
-
+# ----- do some renaming and limiting
 
 nationaldata <- rename(nationaldata,
                        r_national=r,
@@ -48,13 +78,22 @@ nationaldata <- nationaldata[, c("country", "year", "source", "indic", "indic_na
                  "se_national", "flag_national")]
 
 
+# ----- we may want to use this dataset as "maindata" and skip nationaldata
+# ----- but I think it might be useful to have both. In any case, this is the
+# ----- data we will use to do the inequality calculations
+
 forInequal <- left_join(maindata, 
                         nationaldata,
                         by=c("country", "year", "source", "indic", "indic_name"))
 
 
-strata <- filter(forInequal, !grepl("Not available", flag)) %>% 
-  distinct(country, year, source, indic, indic_name, dimension)
+
+
+
+
+# JUNK BELOW THAT I WILL DELETE
+
+
 
 
 

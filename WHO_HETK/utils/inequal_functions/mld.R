@@ -9,10 +9,13 @@
 
 wrap.mld <- function(x, w, national_est=NULL){
   # The Mean Log Deviation (MLD)
+  
+  pop.prop <- w/sum(w) 
   if(is.null(national_est)){  # Calculate the population average from the data if a national average is unavailable
-    prop.pop <- w/sum(w)  # Calculate proportion of the population in each group
+    #prop.pop <- w/sum(w)  # Calculate proportion of the population in each group
     meanx <- weighted.mean(x, prop.pop)  # Calculate the weighted mean 
   } else {
+    
     meanx <- national_est
   }
   
@@ -20,7 +23,7 @@ wrap.mld <- function(x, w, national_est=NULL){
   x[which(x==0)]  <- .000001
   
   
-  pop.prop <- w/sum(w)  
+   
   rj <- x/meanx
   inequal.mld <- sum(pop.prop * -log(rj))
   return(inequal.mld)
@@ -68,7 +71,7 @@ mld <- function(dat, bs=FALSE){
   }
       
   
-  inequal.mld <- wrap.mld(x, w)
+  inequal.mld <- wrap.mld(x, w, national_est)
   
   #   # Bootstrap SE  DISABLED
   #   # The bootstrap for MLD is not quite right.  The process keeps looping if a negative value is generated

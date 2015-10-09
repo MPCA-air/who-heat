@@ -7,11 +7,13 @@
 
 wrap.mdm <- function(x, w, national_est=NULL){
   # Mean difference from the best performing subgroup 
+  #print(paste0("mdm: ", national_est))
   p <- w/sum(w)  # Propo
   if(is.null(national_est)){  # Calculate the population average from the data if a national average is unavailable
     p <- w/sum(w)
     w.mean <- weighted.mean(x, p)
   } else {
+    #print(paste0("mdm: ", national_est))
     w.mean <- national_est
   }
  
@@ -26,6 +28,7 @@ mdm <- function(dat, bs=TRUE){
   w<-dat$pop
   se<-dat$se
   national_est <-unique(dat$r_national)
+  #if(is.na(national_est) || national_est == "") national_est <- NULL
 
   # This function returns the mean difference between each groups rate and the mean
   #
@@ -60,7 +63,7 @@ mdm <- function(dat, bs=TRUE){
   }
   
   
-  inequal.mdm <- wrap.mdm(x, w)
+  inequal.mdm <- wrap.mdm(x, w, national_est)
   
   # Bootstrap SE
   se.boot <- NA

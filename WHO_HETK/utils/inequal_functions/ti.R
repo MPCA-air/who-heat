@@ -3,13 +3,21 @@
 #########
 
 
-wrap.theil <- function(y, w){
+wrap.theil <- function(y, w, national_est){
   # Theil Index wrapper function
   # Protect against log(0) by adding a tiny positive value to any 0
   y[which(y==0)]  <- .000001
   
   prop.pop <- w/sum(w)
-  mu <- sum(prop.pop * y)
+  
+  if(is.null(national_est)){  # Calculate the population average from the data if a national average is unavailable
+    
+    mu <- weighted.mean(x, pop.prop)
+  } else {
+    print(paste0("ti: ", national_est))
+    mu <- national_est
+  }
+  
   rj <- y / mu
   if(any(rj <=0)){
     return(NULL)
@@ -23,7 +31,7 @@ ti <- function(dat, bs=FALSE){
   y<-dat$r
   w<-dat$pop
   se<-dat$se
-  #national_est <-unique(dat$r_national)
+  national_est <-unique(dat$r_national)
   #maxopt <- unique(dat$maxoptimum)
   #rankorder <- dat$order
   # This function returns the Theil Index of inequality:
@@ -64,7 +72,7 @@ ti <- function(dat, bs=FALSE){
     w <- rep(1, length(w))
   }
   
-  inequal.ti <- wrap.theil(y, w)
+  inequal.ti <- wrap.theil(y, w, national_est)
   
   
   # Formula-based SE: provided by Ahmad Hosseinpoor (WHO, Geneva)
@@ -81,7 +89,7 @@ ti <- function(dat, bs=FALSE){
     ti.boot <- c()  # Start with an empty vector of estimated BGVs
     for(i in 1:200){  # Run 1000 bootstraps
       ny <- rnorm(length(y), y, se)  # create a new set of estimates (y) varying as rnorm(mean=y, sd=se)
-      ti.boot <- c(ti.boot, wrap.theil(ny, w))  # calculate the RCI on the new data
+      ti.boot <- c(ti.boot, wrap.theil(ny, w, national_est))  # calculate the RCI on the new data
     } 
     se.boot <- sd(ti.boot)  # Estimate the standard error of RCI as the SD of all the bootstrap BGVs 
   }

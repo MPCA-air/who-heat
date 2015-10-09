@@ -1,12 +1,27 @@
 ######### Relative Index of Inequality (RII)
 
 
-wrap.rii <- function(y, w){
+wrap.rii <- function(y, w, national_est){
   # Relative Index of Inequality wrapper  
-  prop.pop <- w/sum(w)
+
+  
+  
+  prop.pop <- w/sum(w)  # Each groups proportion of the population
+  
+  if(is.null(national_est)){  # Us the weighted mean of the data if there is no national estimate
+    
+    w.mean <- weighted.mean(y, pop.prop)
+  } else {
+    #print(paste0("rii: ", national_est))
+    w.mean <- national_est
+  }
+ 
   inequal.sii <- wrap.sii(y, w)
-  inequal.rii <- inequal.sii/(sum(prop.pop * y))
-  return(inequal.rii)
+  inequal.rii <- inequal.sii/w.mean
+  return (inequal.rii) 
+  
+  
+  
 }
 
 
@@ -14,7 +29,7 @@ rii <- function(dat, bs=FALSE){
   y<-dat$r
   w<-dat$pop
   se<-dat$se
-  #national_est <-unique(dat$r_national)
+  national_est <-unique(dat$r_national)
   maxopt <- unique(dat$maxoptimum)
   rankorder <- dat$order
   # This function returns the slope index of inequality and is calculated as the beta-coefficient in the regression
@@ -78,7 +93,7 @@ rii <- function(dat, bs=FALSE){
   rankorder <- rankorder[order(rankorder, decreasing=decrease)]
   
   
-  inequal.rii <- wrap.rii(y, w)
+  inequal.rii <- wrap.rii(y, w, national_est)
   
   
   # Bootstrap SE
@@ -86,7 +101,7 @@ rii <- function(dat, bs=FALSE){
     rii.boot <- c()  # Start with an empty vector of estimated BGVs
     for(i in 1:200){  # Run 200 bootstraps 
       ny <- rnorm(length(y), y, se)  # create a new set of estimates (y) varying as rnorm(mean=x, sd=se)
-      rii.boot <- c(rii.boot, wrap.rii(ny, w))  # calculate the RII on the new data
+      rii.boot <- c(rii.boot, wrap.rii(ny, w, national_est))  # calculate the RII on the new data
     } 
     se.boot <- sd(rii.boot)  # Estimate the standard error of RII as the SD of all the bootstrap RIIs 
   }

@@ -15,11 +15,13 @@ wrap.par <- function(x, w, maxopt=F, rankorder, national_est=NULL){
   # par is the difference between the overall average and the worst off subgroup
   #
   # If the data subgroups are ranked but the reference siubgroup is missing, then it is treated as unranked subgroups
+  pop.prop <- w/sum(w)
   
   if(is.null(national_est)){  # Calculate the population average from the data if a national average is unavailable
-    pop.prop <- w/sum(w)
+
     w.mean <- weighted.mean(x, pop.prop)
   } else {
+    print(paste0("par: ", national_est))
     w.mean <- national_est
   }
   

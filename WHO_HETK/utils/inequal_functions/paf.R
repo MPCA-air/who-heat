@@ -9,11 +9,12 @@
 
 wrap.paf <- function(x, w, maxopt=F, rankorder, national_est=NULL){
   # The population attributable fraction
-  
+  pop.prop <- w/sum(w) 
   if(is.null(national_est)){  # Us the weighted mean of the data if there is no national estimate
-    pop.prop <- w/sum(w)  
+    
     w.mean <- weighted.mean(x, pop.prop)
   } else {
+    print(paste0("paf: ", national_est))
     w.mean <- national_est
   }
   

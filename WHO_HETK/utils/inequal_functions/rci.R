@@ -6,13 +6,22 @@
 # Reference:
 #########
 
-wrap.rci <- function(y, w, se, rankorder){
+wrap.rci <- function(y, w, se, rankorder, national_est){
   # Relative Concentration Index wrapper function
   prop.pop <- w/sum(w)  # Each groups proportion of the population
+  
+  if(is.null(national_est)){  # Us the weighted mean of the data if there is no national estimate
+    
+    w.mean <- weighted.mean(y, pop.prop)
+  } else {
+    #print(paste0("rci: ", national_est))
+    w.mean <- national_est
+  }
+
   dat <- data.frame(r=y, pop=w, se=se, order=rankorder)
 
   inequal.aci <- aci(dat, bs=F)$inequal.aci  # ACI
-  inequal.rci <- inequal.aci / sum(prop.pop * y)
+  inequal.rci <- inequal.aci / w.mean
   return (inequal.rci)  
 }
 
@@ -22,7 +31,7 @@ rci <- function(dat, bs=FALSE){
   y<-dat$r
   w<-dat$pop
   se<-dat$se
-  #national_est <-unique(dat$r_national)
+  national_est <-unique(dat$r_national)
   #maxopt <- unique(dat$maxoptimum)
   rankorder <- dat$order
   # This function returns the Absolute Concentration Index of inequality:
@@ -71,7 +80,7 @@ rci <- function(dat, bs=FALSE){
   }
   
   
-  inequal.rci <- wrap.rci(y, w, se, rankorder)
+  inequal.rci <- wrap.rci(y, w, se, rankorder, national_est)
   
   
   # Formula-based SE: provided by Ahmad Hosseinpoor (WHO, Geneva)
@@ -87,7 +96,7 @@ rci <- function(dat, bs=FALSE){
     rci.boot <- c()  # Start with an empty vector of estimated BGVs
     for(i in 1:200){  # Run 200 bootstraps
       ny <- rnorm(length(y), y, se)  # create a new set of estimates (y) varying as rnorm(mean=y, sd=se)
-      rci.boot <- c(rci.boot, wrap.rci(ny, w, se, rankorder))  # calculate the RCI on the new data
+      rci.boot <- c(rci.boot, wrap.rci(ny, w, se, rankorder, national_est))  # calculate the RCI on the new data
     } 
     se.boot <- sd(rci.boot)  # Estimate the standard error of RCI as the SD of all the bootstrap BGVs 
   }

@@ -1,6 +1,18 @@
 
-  
+#******************************************************************************
+# I completely changed the approach to computing the inequality measures
+# since it was taking so long
+#******************************************************************************  
 
+
+# 1) oneInequalMeasure is a function that takes a single combination
+#    of country, year, source, indic, indic_name, dimension, pulls out
+#    the disaggregated data and computes the specified inequality measure
+
+# 2) the returnInequalDF function just applies the oneInequalMeasure to
+#    all strata
+
+# 3) Then I have the 
   
 
   inequal.types <- c('aci', 'bgv', 'idis', 'riikm', 'mdb', 'mdm', 'mld', 
@@ -8,75 +20,75 @@
   
 
   
-  # disagdata is the maindata joined to national data.
-  # it's what I called forInequal
-  
-  ptm<-proc.time()
-  res <- lapply( "riikm", 
-         function(x) returnInequalDF(strata=strata, disagdata=forInequal, inequal_type=x, bs=TRUE))
- proc.time()-ptm
-  
- 
- 
- 
-  #returnInequalDF(strata=strata, disagdata=forInequal, inequal_type="riikm", bs=TRUE)
-  returnInequalDF <- function(strata, disagdata, inequal_type, bs){
-    print(inequal_type)
-    #strata <- strata
-    #disagdata<-forInequal
-    #inequal_type<-"riikm"
-    #bs=TRUE
-    dat<-lapply(1:1000,  function(x) oneInequalMeasure(strata[x,], 
-                                                 disagdata = disagdata, 
-                                                 inequal_type=inequal_type, 
-                                                 bs=TRUE, count=x))
-    return(do.call("rbind", dat))
-  }
-  
-  
-  # this function focuses on ONE inequality measure and goes through
-  # all the strata to get results as a list
-  oneInequalMeasure<-function(strata1, disagdata, inequal_type, bs, count){
-    
-    if(count%%1000==0) print(count)
-    #print(strata1)
-    #print(dat)
-    #disagdata <- tmpDF
-    #strata1<-strata[1,]
-    #inequal_type <-"riikm
-    disag1strata<-semi_join(disagdata, strata1, by=c("country", "year", "source", "indic", "indic_name", "dimension"))
-    #print(disag1strata)
+vals<-multiInequalMeasures(c("mdm", "ti"), strata=strata, disagdata=forInequal, bs=TRUE)
 
-    vals<-do.call(inequal_type, list(dat=disag1strata, bs=bs))
- 
-    
-    uniquestrata <- unique(disag1strata[,c("country", "year", "source", "indic", "dimension")])
-    
-    whereBS <- grep("boot", names(vals))
-    boot.se<-ifelse(length(whereBS)>0, vals[[whereBS]], NA)
-    
-    whereAnalytic <- grep("formula", names(vals))
-    se<-ifelse(length(whereAnalytic)>0, vals[[whereAnalytic]], NA)
-    
-    whereInequal <- grep("inequal", names(vals))
-    inequal<-ifelse(length(whereInequal)>0, vals[[whereInequal]], NA)
-    
-    
-    return(data.frame(country=uniquestrata$country,
-                      year = uniquestrata$year,
-                      indic = uniquestrata$indic,
-                      dimension = uniquestrata$dimension,
-                      source = uniquestrata$source,
-                      measure = inequal_type,
-                      inequal = inequal,
-                      boot.se = boot.se,
-                      se = se,
-                      ccode = NA,
-                      stringsAsFactors = FALSE
-                      ))
-  }
+
+multiInequalMeasures <- function(inequal_types, strata, disagdata,  bs){
+  res<-lapply(inequal_types, 
+         function(x) returnInequalDF(strata=strata, disagdata=disagdata, inequal_type=x, bs=TRUE))
+  
+  return(res)
+}
+
+
+#returnInequalDF(strata=strata, disagdata=forInequal, inequal_type="riikm", bs=TRUE)
+returnInequalDF <- function(strata, disagdata, inequal_type, bs){
+  print(inequal_type)
+  
+  dat<-lapply(1:10,  function(x) oneInequalMeasure(strata[x,], 
+                                                                  disagdata = disagdata, 
+                                                                  inequal_type=inequal_type, 
+                                                                  bs=TRUE, count=x))
+  return(do.call("rbind", dat))
+}
+
+
+# this function focuses on ONE inequality measure and goes through
+# all the strata to get results as a list
+oneInequalMeasure<-function(strata1, disagdata, inequal_type, bs, count){
+  
+  if(count%%1000==0) print(count)
+  #print(strata1)
+  #print(dat)
+  #disagdata <- forInequal
+  #strata1<-strata[1,]
+  #inequal_type <-"aci"
+  #bs<-TRUE
+  
+  #print(strata1)
+  disag1strata<-semi_join(disagdata, strata1, by=c("country", "year", "source", "indic", "indic_name", "dimension"))
+  #print(disag1strata)
+  
+  vals<-do.call(inequal_type, list(dat=disag1strata, bs=bs))
   
   
+  uniquestrata <- unique(disag1strata[,c("country", "year", "source", "indic", "dimension")])
+  
+  whereBS <- grep("boot", names(vals))
+  boot.se<-ifelse(length(whereBS)>0, vals[[whereBS]], NA)
+  
+  whereAnalytic <- grep("formula", names(vals))
+  se<-ifelse(length(whereAnalytic)>0, vals[[whereAnalytic]], NA)
+  
+  whereInequal <- grep("inequal", names(vals))
+  inequal<-ifelse(length(whereInequal)>0, vals[[whereInequal]], NA)
+  
+  
+  return(data.frame(country=uniquestrata$country,
+                    year = uniquestrata$year,
+                    indic = uniquestrata$indic,
+                    dimension = uniquestrata$dimension,
+                    source = uniquestrata$source,
+                    measure = inequal_type,
+                    inequal = inequal,
+                    boot.se = boot.se,
+                    se = se,
+                    ccode = NA,
+                    stringsAsFactors = FALSE
+  ))
+}
+
+
   
 # 
 # 
