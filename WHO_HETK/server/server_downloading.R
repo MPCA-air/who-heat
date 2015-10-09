@@ -160,7 +160,7 @@ output$btnDownloadDisagData_compare <- renderUI({
 
 output$btnStartDownloadDisagData_compare <- downloadHandler(
   filename = function() {
-    paste(input$focus_country_compare, "_and_benchmark_countries_", Sys.Date(), '.csv', sep='')
+    paste(input$focus_country_compare, "_benchmark_disaggregated_", Sys.Date(), '.csv', sep='')
   },
   content = function(file) {
     dat <- getBenchmarkData()
@@ -186,15 +186,32 @@ output$btnStartDownloadDisagData_compare <- downloadHandler(
 
 
 
-output$btnDownloadDisagPlot_compare <- renderUI({
+output$btnDownloadDisagPlotData_compare <- renderUI({
 #   thePlot <- theSummaryPlot()
 #   if(is.null(thePlot)){
 #     return()
 #   } else {
     list(br(),
-         actionButton("btnDownloadDisagPlot_compare", "Download graph", class = "btn-primary"))
- # }  
+
+actionButton("btnDownloadDisagPlotData_compare", "Download table", class = "btn-primary")
+
+       
+         )
+ # }  btnDownloadDisagPlotData_compare
 })
+
+
+output$btnDownloadDisagPlot_compare <- renderUI({
+
+  list(br(),
+
+         actionButton("btnDownloadDisagPlot_compare", "Download graph", class = "btn-primary")
+       )
+       
+  
+  # }  btnDownloadDisagPlotData_compare
+})
+
 
 
 output$theComparisonPlot1_web <- renderPlot({
@@ -208,7 +225,7 @@ output$theComparisonPlot1_web <- renderPlot({
 # Handler for downloading the data selected in the modal Download graph
 output$btnStartDownloadDisagPlot_compare <- downloadHandler(
   filename = function() { 
-    paste(input$focus_country_compare, '_disaggregated_compare_', Sys.Date(), '.pdf', sep='')
+    paste(input$focus_country_compare, '_benchmark_disaggregated_', Sys.Date(), '.pdf', sep='')
   },
   content = function(file) {
     pdf(file, width=(as.numeric(input$plot2_width)/2.54), height=(as.numeric(input$plot2_height)/2.45), paper=input$papersize2)
@@ -217,18 +234,68 @@ output$btnStartDownloadDisagPlot_compare <- downloadHandler(
   }
 ) 
 
+
+
+
+# output$btnDownloadDisagPlotData_compare <- renderUI({
+#   #   thePlot <- theSummaryPlot()
+#   #   if(is.null(thePlot)){
+#   #     return()
+#   #   } else {
+#        actionButton("btnDownloadDisagPlotData_compare", "Download table", class = "btn-primary")
+# 
+#   # }  btnDownloadDisagPlotData_compare
+# })
+
+
+
+output$btnStartDownloadDisagPlotData_compare <- downloadHandler(
+  filename = function() {
+    paste(input$focus_country_compare, "_benchmark_disaggregated_", Sys.Date(), '.csv', sep='')
+  },
+  content = function(file) {
+    dat <- getBenchmarkData()
+    sep <- switch(input$filetype_benchmark_disag, "csv" = ",", "tsv" = "\t")
+    
+    # Write to a file specified by the 'file' argument
+    write.table(dat, file, sep = sep,
+                row.names = FALSE)
+  }
+)
+
+
+
+
+
+
+
 # ----------------------------------------
 # --- Compare summary plot
 # ----------------------------------------
 
 
-output$btnDownloadSummaryPlot_compare <- renderUI({
+output$btnDownloadSummaryPlotData_compare <- renderUI({
 #   thePlot <- theSummaryPlot()
 #   if(is.null(thePlot)){
 #     return()
 #   } else {
     list(br(),
-         actionButton("btnDownloadSummaryPlot_compare", "Download graph", class = "btn-primary"))
+         actionButton("btnDownloadSummaryPlotData_compare", "Download table", class = "btn-primary")
+         )
+  #}  
+})
+
+
+
+
+output$btnDownloadSummaryPlot_compare <- renderUI({
+  #   thePlot <- theSummaryPlot()
+  #   if(is.null(thePlot)){
+  #     return()
+  #   } else {
+  list(br(),
+       actionButton("btnDownloadSummaryPlot_compare", "Download graph", class = "btn-primary")
+       )
   #}  
 })
 
@@ -237,7 +304,7 @@ output$btnDownloadSummaryPlot_compare <- renderUI({
 
 output$btnStartDownloadSummaryPlot_compare <- downloadHandler(
   filename = function() { 
-    paste(input$focus_country_compare, '_summary_compare_', Sys.Date(), '.pdf', sep='')
+    paste(input$focus_country_compare, '_benchmark_summary_', Sys.Date(), '.pdf', sep='')
   },
   content = function(file) {
     pdf(file, width=(as.numeric(input$plot3_width)/2.54), height=(as.numeric(input$plot3_height)/2.45), paper=input$papersize2)
@@ -254,6 +321,21 @@ output$theComparisonPlot2_web <- renderPlot({
   }
   print(theComparisonPlot2())  # Remember that print(theDataPlot) just prints the code
 }, res=90, height=exprToFunction(input$plot_height3), width=exprToFunction(input$plot_width3))
+
+
+output$btnStartDownloadSummaryPlotData_compare <- downloadHandler(
+  filename = function() {
+    paste(input$focus_country_compare, "_benchmark_summary_", Sys.Date(), '.csv', sep='')
+  },
+  content = function(file) {
+    dat <- getBenchmarkDataSum()
+    sep <- switch(input$filetype_benchmark_summary, "csv" = ",", "tsv" = "\t")
+    
+    # Write to a file specified by the 'file' argument
+    write.table(dat, file, sep = sep,
+                row.names = FALSE)
+  }
+)
 
 
 

@@ -142,6 +142,18 @@ output$compare_inequality_ui <- renderUI({
               ),
               downloadButton(outputId = 'btnStartDownloadDisagPlot_compare', label = "Start", class = NULL),
               size = "medium"),
+      bsModal(id = "compdataDisagModal", title = "Download disaggregated data", trigger = "btnDownloadDisagPlotData_compare", 
+              tags$p("The data in the table will be downloaded as a text file with the values separated
+                     by a comma or a tab.  Select your preferred field separator and then download the data.
+                     These can be opened in a text editor, or spreadsheet package."),
+              br(),
+              tags$p("Close the window once the download has commenced."),
+              br(),
+              radioButtons(inputId="filetype_benchmark_disag", label='Field separator:',
+                           choices=c("Comma separated valued" = "csv",
+                                     "Tab separated values" = "tsv")),
+              downloadButton(outputId = 'btnStartDownloadDisagPlotData_compare', label = "Start"),
+              size = "medium"),
       bsModal(id = "compplot2Modal", title = "Download comparison plot (PDF)", trigger = "btnDownloadSummaryPlot_compare", 
               tags$p("Set the dimensions for the plot here and download it.  The fit of the plot is determined
                                  by the size of the paper you choose, and not by the display dimensions you select.
@@ -165,18 +177,33 @@ output$compare_inequality_ui <- renderUI({
               ),
               downloadButton(outputId = 'btnStartDownloadSummaryPlot_compare', label = "Start", class = NULL),
               size = "medium"),
+      bsModal(id = "compdataSummaryModal", title = "Download summary data", trigger = "btnDownloadSummaryPlotData_compare", 
+              tags$p("The data in the table will be downloaded as a text file with the values separated
+                     by a comma or a tab.  Select your preferred field separator and then download the data.
+                     These can be opened in a text editor, or spreadsheet package."),
+              br(),
+              tags$p("Close the window once the download has commenced."),
+              br(),
+              radioButtons(inputId="filetype_benchmark_summary", label='Field separator:',
+                           choices=c("Comma separated valued" = "csv",
+                                     "Tab separated values" = "tsv")),
+              downloadButton(outputId = 'btnStartDownloadSummaryPlotData_compare', label = "Start"),
+              size = "medium"),
       tabsetPanel(id = "comparison_panel", 
                   tabPanel(h6("Benchmark countries"), value='inequalbenchmark',
                            uiOutput('btnDownloadDisagData_compare'),
                            dataTableOutput(outputId="dataTableBenchmark")
                   ),
                   tabPanel(HTML("<h6 style='text-align: center;'>Disaggregated data</br>(graphs)<h6>"), value='inequaldisag', 
+                           uiOutput('btnDownloadDisagPlotData_compare'),
                            uiOutput('btnDownloadDisagPlot_compare'),
+                           #uiOutput('btnDownloadDisagPlotData_compare'),
                            div(class="container-fluid", style="overflow:visible;height:1000px;", plotOutput('theComparisonPlot1_web'))
                   ),
                   tabPanel(HTML("<h6 style='text-align: center;'>Summary measures</br>(graphs)<h6>"), value='inequalsum', 
                            # Plot points (default) or country codes on the Comparison Summary Plot
                            checkboxInput(inputId='points_ccode', 'Show country codes', value=FALSE),
+                           uiOutput('btnDownloadSummaryPlotData_compare'),
                            uiOutput('btnDownloadSummaryPlot_compare'),
                            div(class="container-fluid", style="overflow:visible;height:800px;", plotOutput('theComparisonPlot2_web'))
                   )
