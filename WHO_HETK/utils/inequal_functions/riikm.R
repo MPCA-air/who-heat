@@ -2,17 +2,32 @@
 
 wrap.riikm <- function(y, w){
   # Relative Index of Inequality wrapper  
-  p <- w/sum(w)
-  x <- midPointProp(w)
-  sii_ <- wrap.sii(y, w)
-  denominator <- (sum(p * y)) - (sii_ * (sum(p*x) -1))
-  inequal.riikm <- (sii_/denominator)
+ p <- w/sum(w)
+#   x <- midPointProp(w)
+#   sii_ <- wrap.sii(y, w)
+#   denominator <- (sum(p * y)) - (sii_ * (sum(p*x) -1))
+  #inequal.riikm <- (sii_/denominator)
+  
+  #X <- round(cumsum(p) - 0.5*p,2)
+  
+  #siiNumerator<-round(sum(p*X*y)-(sum(p*X)*sum(p*y)),2)
+  #siiDenom <- round(sum(p*X^2)-(sum(p*X)^2),2)
+  
+  #sii<-round(siiNumerator/siiDenom, 2)
+ 
+  X <- midPointProp(w)
+  sii_ <- wrap.sii(y, p)
+
+  b0<-sum(p*y) - sii_*sum(p*X)
+  inequal.riikm<-abs((b0+sii_)/b0)
+  
+  
   return(inequal.riikm)
 }
 
 
 riikm <- function(dat, bs=FALSE){
-  
+ # print(data.frame(dat))
   y<-dat$r
   w<-dat$pop
   se<-dat$se
@@ -29,13 +44,12 @@ riikm <- function(dat, bs=FALSE){
   # returns: riikm and its standard erros.
   #
   
-  if(!any(is.na(y))) return()
+  if(any(is.na(y))) return()
   if(!is.rank(rankorder)) return()  # If these are not rankordered, then RII does not apply
   if(is.na(maxopt)) return()
-  
   if(any(is.na(w))) w <- -1
   if(any(is.na(se)))se <- -1
-    
+  
 
   
   if(!is.numeric(y) | !is.numeric(w) | !is.numeric(se)) stop('This function operates on vector of numbers')
@@ -111,4 +125,17 @@ riikm <- function(dat, bs=FALSE){
 
 
 
-
+# y <- c(6.8, 7.3, 12.9, 25.8, 56.4)
+# p<-c(0.21, 0.22, 0.20, 0.19, 0.18)
+# 
+# X <- round(cumsum(p) - 0.5*p,2)
+# 
+# siiNumerator<-round(sum(p*X*y)-(sum(p*X)*sum(p*y)),2)
+# siiDenom <- round(sum(p*X^2)-(sum(p*X)^2),2)
+# 
+# sii<-round(siiNumerator/siiDenom, 2)
+# 
+# 
+# b0<-sum(p*y) - sii*sum(p*X)
+# abs((b0+sii)/b0)
+# 

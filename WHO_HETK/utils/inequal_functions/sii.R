@@ -1,12 +1,23 @@
 ######### Slope Index of Inequality (SII)
 
 wrap.sii <- function(y, w){
+  
+  #w is the proportions of population
+  #y are the r values
   # Slope Index of Inequality wrapper  
+  
+  
   x <- midPointProp(w)
   if(x[1] == 'Fail'){  # 
     return(x)
   }
+  
+print(y)
+print(x)
+print(w)
+  
   inequal.sii <- lm(y~x, weights=w)$coefficients[2]
+print(inequal.sii)
   names(inequal.sii) <- NULL
   
   ### An alternative coding from Sam Harper producing identical results

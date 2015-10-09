@@ -21,7 +21,6 @@ wrap.par <- function(x, w, maxopt=F, rankorder, national_est=NULL){
 
     w.mean <- weighted.mean(x, pop.prop)
   } else {
-    print(paste0("par: ", national_est))
     w.mean <- national_est
   }
   

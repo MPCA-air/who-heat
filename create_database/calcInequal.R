@@ -15,12 +15,34 @@
 # 3) Then I have the 
   
 
-  inequal.types <- c('aci', 'bgv', 'idis', 'riikm', 'mdb', 'mdm', 'mld', 
-                     'paf', 'PAR', 'rci', 'rd', 'rii', 'rr', 'sii', 'ti')
+inequal.types <- c('aci', 'bgv', 'idis', 'riikm', 'mdb', 'mdm', 'mld', 
+                   'paf', 'PAR', 'rci', 'rd', 'rii', 'rr', 'sii', 'ti')
   
 
-  
+# run the whole thing  
 vals<-multiInequalMeasures(c("mdm", "ti"), strata=strata, disagdata=forInequal, bs=TRUE)
+
+
+# run just one strata one measure
+oneInequalMeasure(strata[1,], forInequal, "mdb", bs=TRUE, count=1)
+
+
+# choose strata
+
+onestrata <-filter(strata, country=="Albania", indic=="anc1", year=="2005", dimension=="Economic status")
+onestrata <-filter(strata, country=="Albania", indic=="overwgt5", year=="2005", dimension=="Economic status")
+oneInequalMeasure(onestrata, forInequal, "paf", bs=TRUE, count=1)
+
+#tmpdata<-filter(maindata, country=="Albania", indic=="anc1", year=="2005", dimension=="Economic status")
+#tmpdata$r<-c(6.8, 7.3, 12.9, 25.8, 56.4)
+#tmpdata$pop <- 1000*c(0.21, 0.22, 0.20, 0.19, 0.18)
+oneInequalMeasure(onestrata, tmpdata, "riikm", bs=TRUE, count=1)
+
+
+
+
+
+
 
 
 multiInequalMeasures <- function(inequal_types, strata, disagdata,  bs){

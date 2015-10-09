@@ -14,7 +14,7 @@ wrap.paf <- function(x, w, maxopt=F, rankorder, national_est=NULL){
     
     w.mean <- weighted.mean(x, pop.prop)
   } else {
-    print(paste0("paf: ", national_est))
+    #print(paste0("paf: ", national_est))
     w.mean <- national_est
   }
   
@@ -43,42 +43,24 @@ paf <- function(dat, bs=FALSE){
   #
   # returns the percentage of the PAR over the population rate
   # 
-  if(is.na(maxopt)){
-    return(NULL)
-  }
+  if(is.na(maxopt)) return(NULL)
+  if(all(rankorder>0) & all(!rankorder==1))return(NULL)# The data are ordered by subgroup, but the base subgroup is missing
+
   
-  if(all(rankorder>0) & all(!rankorder==1)){
-    # The data are ordered by subgroup, but the base subgroup is missing
-    return(NULL)
-  }
+  if(any(is.na(w))) w <- -1
   
-  if(any(is.na(w))){
-    w <- -1
-  }
+  if(any(is.na(se))) se <- -1
   
-  if(any(is.na(se))){
-    se <- -1
-  }
+  if(!is.numeric(x) | !is.numeric(w) | !is.numeric(se)) stop('This function operates on vector of numbers')
   
-  if(!is.numeric(x) | !is.numeric(w) | !is.numeric(se)){
-    stop('This function operates on vector of numbers')
-  }
+  if(length(w)==1 & w[1]==-1) w <- rep(1000, length(x))
   
-  if(length(w)==1 & w[1]==-1){  # i.e., if no population numbers are given assume each group has a n of 1,000
-    w <- rep(1000, length(x))
-  }
+  if(length(se)==1 && se==-1)se <- rep(0, length(x)) # i.e., if there are no standard errors provided, make the se's=0
+
   
-  if(length(se)==1){
-    if(se==-1){  # i.e., if there are no standard errors provided, make the se's=0
-      se <- rep(0, length(x))
-    }
-  }
-  
-  if( !(length(x) == length(w)) | !(length(x)==length(se)) ){
+  if( !(length(x) == length(w)) | !(length(x)==length(se)) ) 
     stop('the rates, population-size, and standard errors must all be of the same length')
-  }
-  
-  
+
   
   inequal.paf <- wrap.paf(x, w, maxopt, rankorder, national_est)
   
@@ -93,11 +75,30 @@ paf <- function(dat, bs=FALSE){
     se.boot <- sd(paf.boot)  # Estimate the standard error of PAR as the SD of all the bootstrap PARs 
   }
   
+  
+  
+  # this matches up with the Excel spreadsheet I was provided
+  # inequality measures(Sam Harper) v1
+  mu<-weighted.mean(x, w/sum(w)) #af
+  
+  co6<-w[which.min(x)] - (min(x)/100)*w[which.min(x)]
+  cp6<-(min(x)/100)*w[which.min(x)]
+  cq6 <- (mu/100)*sum(w)-cp6
+  cr6 <- sum(w)-cq6-cp6-co6
+  cv6 <- mu-min(x)
+  cx6 <- cv6/mu
+  cs6<-sqrt((cr6+cx6*(cq6+co6))/((sum(w)*cp6)))
+  
+  ct6<-(log(1-cx6))-qnorm(0.975)*cs6
+  cu6<-(log(1-cx6))+qnorm(0.975)*cs6
+  cy6<-100*abs((1-exp(ct6))-(1-exp(cu6)))/(2*(qnorm(0.975)))
+  
+  
   if(length(se)==length(x)){
-    se.formula <- NA
+    se.formula <- cy6
   }
   else{
-    se.formula <- NA    
+    se.formula <- NA   
   }
   
   
@@ -107,3 +108,56 @@ paf <- function(dat, bs=FALSE){
   return(list(inequal.paf=inequal.paf, se.paf.boot=se.boot,  se.paf.formula=se.formula))  # return a list of the inequality measure and the standard error 
   
 }
+
+
+
+
+# dat<-filter(maindata, country=="Albania", indic=="anc1", year=="2005", dimension=="Economic status")
+# natl<-data.frame(filter(nationaldata, country=="Albania", indic=="anc1", year=="2005"))
+# 
+# x<-dat$r
+# w<-dat$pop
+# se<-dat$se
+# national_est <-unique(dat$r_national)
+# maxopt <- unique(dat$maxoptimum)
+# rankorder <- dat$order
+# 
+# g=r
+# h=se
+# i=pop
+# 
+# mu<-weighted.mean(x, w/sum(w)) #af
+# 
+# co6<-w[which.min(x)] - (min(x)/100)*w[which.min(x)]
+# cp6<-(min(x)/100)*w[which.min(x)]
+# cq6 <- (mu/100)*sum(w)-cp6
+# cr6 <- sum(w)-cq6-cp6-co6
+# cv6 <- mu-min(x)
+# cx6 <- cv6/mu
+# cs6<-sqrt((cr6+cx6*(cq6+co6))/((sum(w)*cp6)))
+# 
+# ct6<-(log(1-cx6))-qnorm(0.975)*cs6
+# cu6<-(log(1-cx6))+qnorm(0.975)*cs6
+# cy6<-100*abs((1-exp(ct6))-(1-exp(cu6)))/(2*(qnorm(0.975)))
+# 
+# 
+# 
+# 
+# cp6<-(MIN(x)/100)*(OFFSET(x[1],MATCH(MIN(x),x,0)-1,2))
+# cq6 <- (AF6/100)*SUM(I2:I6)-CP6
+# cr6 <- SUM(I2:I6)-CQ6-CP6-CO6
+# cs6<-sqrt((CR6+CX6*(CQ6+CO6))/((sum(w)*CP6)))
+# cx6 <- CV6/AF6
+# ct6<-(ln(1-CX6))-NORMSINV(0.975)*CS6
+# cu6<-(ln(1-CX6))+NORMSINV(0.975)*CS6
+# fin<-abs((1-exp(CT6))-(1-exp(CU6)))/(2*(NORMSINV(0.975)))
+
+
+
+
+
+
+
+
+
+
