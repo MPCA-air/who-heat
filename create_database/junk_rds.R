@@ -59,7 +59,11 @@ years <- select(maindata, country, year, source) %>%  distinct
 # saveRDS(nationaldata, "X:/projects/who_heat/web/who-heat/WHO_HETK/data/nationaldata.RDS")
 # saveRDS(countrynames, "X:/projects/who_heat/web/who-heat/WHO_HETK/data/countrynames.RDS")
 # saveRDS(years, "X:/projects/who_heat/web/who-heat/WHO_HETK/data/years.RDS")
-
+# maindata <- readRDS("X:/projects/who_heat/web/who-heat/WHO_HETK/data/maindata.RDS")
+# strata <- filter(maindata, !grepl("Not available", flag)) %>% 
+#   select(country,iso3, year, source, indic, indic_name, dimension) %>% 
+#   distinct
+#saveRDS(strata, "X:/projects/who_heat/web/who-heat/WHO_HETK/data/strata.RDS")
 
 # .rdata<-list()
 # .rdata[['maindata']]<-readRDS("X:/projects/who_heat/web/who-heat/WHO_HETK/data/maindata.RDS")
@@ -73,6 +77,10 @@ years <- select(maindata, country, year, source) %>%  distinct
 # xx<-filter(.rdata[['inequals']], measure %in% c("rci", "mld"))
 # 
 # 
+
+
+
+
 # .rdata[['focus_country']]<<-"Armenia"
 # .rdata[['focus_indicator']]<<-c("carep")
 # .rdata[['focus_dimension']]<<-c("Sex")

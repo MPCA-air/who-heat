@@ -5,8 +5,8 @@ focusIndicator_selector <- function(id, multiple = FALSE, core=FALSE){
   # TODO: need to unselect non-core if selected in diaggregated
   # and in summary.
   
-  if(core)  indicators <- .rdata[['core_indicators']]
-  if(!core) indicators <- .rdata[['full_indicators']]
+  #if(core)  indicators <- .rdata[['core_indicators']]
+  #if(!core) indicators <- .rdata[['full_indicators']]
   #countries <- getFilteredCountries()
   #if(is.null(indicators)){ indicators <- c()}
   
@@ -18,7 +18,7 @@ focusIndicator_selector <- function(id, multiple = FALSE, core=FALSE){
   
   selectInput(id, 
               h5("Select health indicators"), 
-              choices  = .rdata[['core_indicators']], 
+              choices  = .rdata[['full_indicators']], 
               multiple = multiple, 
               selected = .rdata[['focus_indicator']])
   
