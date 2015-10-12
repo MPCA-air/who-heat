@@ -38,7 +38,7 @@
 
 .rdata[['benchmark_countries']]<<-c("Afghanistan", "Belize", "Liberia")
 .rdata[['countrynames']]<<-readRDS("data/countrynames.RDS")
-
+print(head(.rdata[['countrynames']]))
 
 .rdata[['all_countries']]<<-.rdata[['countrynames']]$country
 .rdata[['benchmark_country_list']]<<-.rdata[['all_countries']]
