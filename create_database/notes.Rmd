@@ -1,3 +1,17 @@
+Unusual examples:
+
+Albania, 2008, dhs, anc1, Education. One subgroup (No education) is missing data
+
+
+
+
+
+
+
+
+
+
+
 
 datasetInequal: creates ineqDF. This is run for sumplot or sumtable. Only difference is 
 that se is set to NA for a plot if it's 0.

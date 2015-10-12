@@ -19,8 +19,8 @@ mdb <- function(dat, bs=FALSE){
   x<-dat$r
   w<-dat$pop
   se<-dat$se
-  print("mdb maxoptimum")
-  print(dat$maxoptimum)
+  #print("mdb maxoptimum")
+  #print(dat$maxoptimum)
   maxopt <- unique(dat$maxoptimum)
   # This function returns the mean difference between each groups rate and the best performing group
   #

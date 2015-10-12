@@ -43,6 +43,12 @@ paf <- function(dat, bs=FALSE){
   #
   # returns the percentage of the PAR over the population rate
   # 
+  
+  #print(paste0("x is: ", paste(x, collapse=",")))
+  #print(paste0("w is: ", paste(w, collapse=",")))
+  #print(paste0("se is: ", paste(se, collapse=",")))
+  #print(paste0("x is: ", paste(x, collapse=",")))
+  
   if(is.na(maxopt)) return(NULL)
   if(all(rankorder>0) & all(!rankorder==1))return(NULL)# The data are ordered by subgroup, but the base subgroup is missing
 
@@ -70,6 +76,13 @@ paf <- function(dat, bs=FALSE){
     paf.boot <- c()  # Start with an empty vector of estimated PARs
     for(i in 1:200){  # Run 200 bootstraps 
       nx <- rnorm(length(x), x, se)  # create a new set of estimates (y) varying as rnorm(mean=x, sd=se)
+      if(any(is.nan(nx)) && i==1){
+        #print(data.frame(dat))
+#         print(paste0("x is: ", paste(x, collapse=",")))
+#         print(paste0("w is: ", paste(w, collapse=",")))
+#         print(paste0("se is: ", paste(se, collapse=",")))
+      }
+
       paf.boot <- c(paf.boot, wrap.paf(nx, w, maxopt, rankorder, national_est))  # calculate the PAR on the new data
     } 
     se.boot <- sd(paf.boot)  # Estimate the standard error of PAR as the SD of all the bootstrap PARs 

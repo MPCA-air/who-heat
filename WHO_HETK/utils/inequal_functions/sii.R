@@ -12,12 +12,12 @@ wrap.sii <- function(y, w){
     return(x)
   }
   
-print(y)
-print(x)
-print(w)
+#print(y)
+#print(x)
+#print(w)
   
   inequal.sii <- lm(y~x, weights=w)$coefficients[2]
-print(inequal.sii)
+#print(inequal.sii)
   names(inequal.sii) <- NULL
   
   ### An alternative coding from Sam Harper producing identical results

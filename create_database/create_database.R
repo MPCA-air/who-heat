@@ -3,27 +3,30 @@
 #******************************************************************************
 
 
-#library(gdata)
 library(dplyr)
 library(readxl)
 
-
+datpath<-"X:/projects/who_heat/data/original_data/20151006_updated_database/HEAT database (national in rows) 2015-10.xlsx"
+indicpath<-"X:/projects/who_heat/data/original_data/20151006_updated_database/HEAT indicator list 2015-10.xlsx"
+outpath <- "d:/junk/who/"
 
 # ----- here is the raw data. Both national-level and disaggregated 
 # ----- data as rows
 
-path<-"X:/projects/who_heat/data/original_data/20151006_updated_database/HEAT database (national in rows) 2015-10.xlsx"
+
 
 types<-c("text", "numeric", "text", "text", "text", "text","text",
          "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric",
          "text", "text", "text", "text", "text", "text", 
          "text", "numeric", "numeric", "numeric")
-dat<-read_excel(path, col_names=TRUE, col_types = types)
+
+print("Reading Excel data file")
+dat<-read_excel(datpath, col_names=TRUE, col_types = types)
 
 
 # ----- This is the table of indicators with names and abbreviations
 
-indicpath<-"X:/projects/who_heat/data/original_data/20151006_updated_database/HEAT indicator list 2015-10.xlsx"
+
 indicators <- read_excel(indicpath) %>% 
   filter(show==1)
 
@@ -47,21 +50,29 @@ countrynames <- distinct(maindata, country, iso3, whoreg6, whoreg6_name, wbincom
 years <- select(maindata, country, year, source) %>%  distinct
 indicators <- select(indicators, -show)
 strata <- filter(maindata, !grepl("Not available", flag)) %>% 
-  select(country, year, source, indic, indic_name, dimension) %>% 
+  select(country,iso3, year, source, indic, indic_name, dimension) %>% 
   distinct
 
+
+saveRDS(maindata, paste0(outpath, "maindata.RDS"))
+saveRDS(nationaldata, paste0(outpath, "nationaldata.RDS"))
+saveRDS(years, paste0(outpath, "years.RDS"))
+saveRDS(indicators, paste0(outpath, "indicators.RDS"))
+saveRDS(strata, paste0(outpath, "strata.RDS"))
 
 
 # ----- For comparing to the original data I received to make sure that
 # ----- the inequal calculations are done correctly
 
-# if you want to compare to previous skip part above
-#maindata<-readRDS("X:/projects/who_heat/web/who-heat/WHO_HETK/data/maindata.RDS")
-#maindata<-semi_join(maindata, indicators, by="indic")
-#maindata <- rename(maindata, order = rankorder)
-#nationaldata<-readRDS("X:/projects/who_heat/web/who-heat/WHO_HETK/data/nationaldata.RDS")
-#nationaldata <- rename(nationaldata, wbincome = wbincome2014_4cat)
-
+# # if you want to compare to previous skip part above
+# maindata<-readRDS("X:/projects/who_heat/web/who-heat/WHO_HETK/data/maindata.RDS")
+# maindata<-semi_join(maindata, indicators, by="indic")
+# maindata <- rename(maindata, order = rankorder)
+# nationaldata<-readRDS("X:/projects/who_heat/web/who-heat/WHO_HETK/data/nationaldata.RDS")
+# nationaldata <- rename(nationaldata, wbincome = wbincome2014_4cat)
+# strata <- filter(maindata, !grepl("Not available", flag)) %>% 
+#   select(country, year, source, indic, indic_name, dimension) %>% 
+#   distinct
 
 
 # ----- do some renaming and limiting
@@ -91,59 +102,33 @@ forInequal <- left_join(maindata,
 
 
 
-# JUNK BELOW THAT I WILL DELETE
+#******************************************************************************
+# Examples of running
+#******************************************************************************  
+source("create_database/calcInequal.R", local=TRUE)
+
+inequal.types <- c('aci', 'bgv', 'idis', 'riikm', 'mdb', 'mdm', 'mld', 
+                   'paf', 'PAR', 'rci', 'rd', 'rii', 'rr', 'sii', 'ti')
+
+# run the whole thing  
+vals<-multiInequalMeasures(inequal.types, strata=strata, disagdata=forInequal, bs=TRUE,
+                           outpath = NULL, n=100)
+
+inequal<-do.call("rbind", vals)
+#theFinalFiles<-list.files(outpath, full.names=TRUE)
+#inequal<-do.call("rbind", lapply(theFinalFiles, read.csv, stringsAsFactors=FALSE))
+saveRDS(inequal, paste0(outpath, "inequal.RDS"))
 
 
 
 
 
 
-library(RSQLite)
-library(dplyr)
-#drv <- dbDriver("SQLite")
-#con<-dbConnect(drv, "X:/projects/who_heat/data/original_data/20150919_standalone_heat/Standalone/shiny/resources/data/HEMTK.db")
-
-#dbGetQuery(con, "CREATE TABLE maindata_countries AS SELECT DISTINCT country, iso3, whoreg6, whoreg6_name, wbincome2014_4cat FROM maindata")
-#dbGetQuery(con, "CREATE TABLE maindata_years AS SELECT DISTINCT country, year, source FROM maindata")
-
-#dbGetQuery(con, "DROP TABLE maindata_years")
 
 
-# 
-# maindata<-dbGetQuery(con, "SELECT * FROM maindata")
-# inequals<-dbGetQuery(con, "SELECT * FROM inequals")
-# nationaldata<-dbGetQuery(con, "SELECT * FROM nationaldata")
-# 
-countrynames <- distinct(.rdata[['maindata']], country, iso3, whoreg6, whoreg6_name, wbincome2014_4cat) %>% 
-select(country, iso3, whoreg6, whoreg6_name, wbincome2014_4cat)
-years <- select(maindata, country, year, source) %>%  distinct
-# 
-# saveRDS(maindata, "X:/projects/who_heat/web/who-heat/WHO_HETK/data/maindata.RDS")
-# saveRDS(inequals, "X:/projects/who_heat/web/who-heat/WHO_HETK/data/inequals.RDS")
-# saveRDS(nationaldata, "X:/projects/who_heat/web/who-heat/WHO_HETK/data/nationaldata.RDS")
-# saveRDS(countrynames, "X:/projects/who_heat/web/who-heat/WHO_HETK/data/countrynames.RDS")
-# saveRDS(years, "X:/projects/who_heat/web/who-heat/WHO_HETK/data/years.RDS")
 
 
-# .rdata<-list()
-# .rdata[['maindata']]<-readRDS("X:/projects/who_heat/web/who-heat/WHO_HETK/data/maindata.RDS")
-# .rdata[['inequals']]<-readRDS("X:/projects/who_heat/web/who-heat/WHO_HETK/data/inequals.RDS")
-# .rdata[['nationaldata']]<-readRDS("X:/projects/who_heat/web/who-heat/WHO_HETK/data/nationaldata.RDS")
-# .rdata[['countrynames']]<-readRDS("X:/projects/who_heat/web/who-heat/WHO_HETK/data/countrynames.RDS")
-# .rdata[['years']]<-readRDS("X:/projects/who_heat/web/who-heat/WHO_HETK/data/years.RDS")
-# 
-# library(dplyr)
-# xx<-filter(.rdata[['inequals']], country=="Armenia", year==2010, indic=="carep")
-# xx<-filter(.rdata[['inequals']], measure %in% c("rci", "mld"))
-# 
-# 
-# .rdata[['focus_country']]<<-"Armenia"
-# .rdata[['focus_indicator']]<<-c("carep")
-# .rdata[['focus_dimension']]<<-c("Sex")
-# .rdata[['focus_year']]<<-c(2010)
-# 
-# xx<-filter(.rdata[['maindata']], country=="Armenia", indic == "carep", dimension == 'Sex')
 
-filter(.rdata[['countrynames']], TRUE, whoreg6_name=="Africa")
+
 
 

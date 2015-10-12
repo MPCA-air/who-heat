@@ -14,14 +14,18 @@ wrap.theil <- function(y, w, national_est){
     
     mu <- weighted.mean(x, pop.prop)
   } else {
-    print(paste0("ti: ", national_est))
+    #print(paste0("ti: ", national_est))
     mu <- national_est
   }
   
+  #print(paste0("y is: ", paste(y, collapse=",")))
+  #print(paste0("mu is: ", paste(mu, collapse=",")))
+  
   rj <- y / mu
-  if(any(rj <=0)){
-    return(NULL)
-  }  
+  #This next bit fails if we have an NA so I've commented it out
+  # but probably don't want to comment out.
+  #if(any(rj <=0)) return(NULL)
+ 
   inequal.ti <- sum(prop.pop * rj * log(rj))
   return(inequal.ti)
 }
