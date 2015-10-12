@@ -32,13 +32,7 @@ shinyServer(function(input, output, session){
   source("server/server_observers.R", local=TRUE)
   source("server/server_downloading.R", local=TRUE)
   
-#   session$onSessionEnded(function() {
-#     isolate({
-#       # This will get executed when a session exits
-#       rm(.rdata)
-#     })
-#   })
-  
+
   
 })
 

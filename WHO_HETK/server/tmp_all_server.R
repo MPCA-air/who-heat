@@ -1,9 +1,17 @@
+#******************************************************************************
+#******************************************************************************
+# EXPLORE
+#******************************************************************************
+#******************************************************************************
 
 
 
-##############################################################
-# Explore inequality: all tabs
-#############################################################
+#******************************************************************************
+# Explore inequality: SELECTORS ALL TABS
+#******************************************************************************
+
+
+# ----- Country selector -----------------------------------------------
 
 output$focus_country_explore <- renderUI({
   
@@ -11,6 +19,7 @@ output$focus_country_explore <- renderUI({
   
 })
 
+# ----- Year and source selector -----------------------------------------------
 
 
 output$focus_source_year_explore <- renderUI({
@@ -39,10 +48,7 @@ output$focus_source_year_explore <- renderUI({
 
 
 
-##############################################################
-# Explore inequality: disggregated table and plot-----
-#############################################################
-
+# ----- Indicator selector -----------------------------------------------
 
 
 output$focus_indicator_explore <- renderUI({
@@ -53,6 +59,8 @@ output$focus_indicator_explore <- renderUI({
 })
 
 
+# ----- Dimension selector -----------------------------------------------
+
 output$focus_dimension_explore <- renderUI({
   #print(paste0("inputdatatable:", input$assessment_panel))
   focusDimension_selector("focus_dimension_explore", multiple=TRUE)
@@ -61,189 +69,69 @@ output$focus_dimension_explore <- renderUI({
 })
 
 
+#******************************************************************************
+# Explore inequality: SELECTOR disaggregated table ----
+#******************************************************************************
+
+
+# ----- Variable selector -----------------------------------------------
 
 
 
-# Return the requested dataset based on the UI selection (dataSource)
-datasetInput <- reactive({
-
-  
-  theData<-getDisagData(indicator=input$focus_indicator_explore, 
-                       stratifier=input$focus_dimension_explore,  # in hetkdb.R
-                       countries=input$focus_country_explore, 
-                       years=input$focus_year_explore, 
-                       mostrecent=input$mostrecent_explore,
-                       datasource=input$focus_data_source_explore)
-  #print(head(theData))
-
-})
-
-
-
-
-# Generate a view of the Managed Data
-output$dataTable <- renderDataTable({
-  
-if(is.null(input$focus_country_explore)) return()
-  
-theData <- datasetInput()
-
-  #theData <- datasetInput()
-  
-  theData <- theData %>% 
-    mutate(estimate = round(estimate, 2),
-           lower_95ci = round(lower_95ci,2),
-           upper_95ci = round(upper_95ci,2),
-           popshare = round(popshare, 2),
-           national = round(national, 2))
-  
-  theData<-theData %>% 
-    rename(
-      Country                = country,
-      Year                   = year,
-      `Data source`          = source,
-      `Health indicator`     = indic,
-      `Inequality dimension` = dimension,
-      Subgroup               = subgroup,
-      Estimate               = estimate,
-      `Lower 95%CI`          = lower_95ci,
-      `Upper 95%CI`          = upper_95ci,
-      `Population share %`   = popshare,
-      `National estimate`    = national,
-      Flag                   = flag
-    ) 
-  
-  
-  
-  #if(theData[["Data source"]][1] %in% c('DHS', 'MICS')){
-  #print(head(theData))
-  #print(input$dataTableItems)
-    theData <- theData[, input$dataTableItems]
-    
-#   }
-#   else{
-#     theData <- theData[, c('Country', 'Year', 'Data source', 'Health indicator', 
-#                            'Inequality dimension', 'Subgroup', 'Estimate')]
-#   }
-
-  
-  theData
-}, options = list(dom = "ilftpr", pageLength = 10)  # see https://datatables.net/ for dataTable options
-)
-
-
-
-
-##############################################################
-# Explore inequality: disaggregated table ----
-#############################################################
-
-
-
-
-
-
-
-
-# Set up the selectInput for the display of data in the Disaggregated Data Table view
 output$dataTableItems <- renderUI({
-
-#print(.rdata[['all_table_variables']])
+  
   if(!is.null(input$dataTableItems)) .rdata[['focus_table_variables']] <- input$dataTableItems
-    
-    list(
-      h4("Table options"),
+  
+  list(
+    h4("Table options"),
     selectInput(inputId = "dataTableItems",
                 h5("Select table content"),
                 choices = .rdata[['all_table_variables']],
                 selected = .rdata[['focus_table_variables']],
                 multiple=TRUE)
-    )
+  )
+  
+})
 
+
+
+#******************************************************************************
+# Explore inequality: disaggregated plot ----
+#******************************************************************************
+
+output$disag_plot_type <- renderUI({
+  
+  radioButtons("ai_plot_type", HTML("<h3>Plot options</h3><p><h4>Select chart type</h4></p>"),
+               c("Bar Chart" = "data_bar",
+                 "Line Chart" = "data_line"),
+               inline=T,
+               selected="data_line")
+  
+  
+})
+
+
+output$disag_plot_dimensions <- renderUI({
+  
+  list(
+    sliderInput('plot_height1', h5('Height'), min=200, max=1500, value=400, step = 50,
+                round = T,
+                ticks = TRUE, animate = FALSE),
+    
+    sliderInput('plot_width1', h5('Width'), min=200, max=1500, value=400, step = 50,
+                round = T,
+                ticks = TRUE, animate = FALSE)
+  )
+  
 })
 
 
 
 
 
-
-
-##############################################################
-# Explore inequality: disaggregated plot ----
-#############################################################
-
-
-
-
-
-
-# Generate a reactive element for plotting the Managed Data.
-# Pass to the webpage using renderPlot(print(theDataPlot))
-theDataPlot <- reactive({ 
-  
-  
-  #print("Reactive: theDataPlot")
-  plotData <- datasetInput()
-  plotData <- select(plotData, country, year, indic, subgroup, dimension, estimate, se)
-
-  #print(head(plotData))
-  
-  if(!is.null(plotData) & nrow(plotData)>0){
-    chartopt <- list()
-    # Chart options for axis max and min values
-    chartopt <- lappend(chartopt, 'axmax' = as.integer(input$axis_limitsmax1))
-    chartopt <- lappend(chartopt, 'axmin' = as.integer(input$axis_limitsmin1))
-    # Chart options for whether the chart only carries geographic region data
-    geo_only <- geoOnly(plotData)
-    if(geo_only){
-      chartopt <- lappend(chartopt, 'geo_only' = geo_only)     
-    }
-    
-    if(input$main_title1 != ""){
-      chartopt <- lappend(chartopt, 'main_title' = input$main_title1)
-    }
-    if(input$xaxis_title1 != ""){
-      chartopt <- lappend(chartopt, 'xaxis_title' = input$xaxis_title1)
-    }
-    if(input$yaxis_title1 != ""){
-      chartopt <- lappend(chartopt, 'yaxis_title' = input$yaxis_title1)
-    }
-    
-    
-    
-#     if(input$long_names1==T){
-#       
-#       
-#       relevant_names <- which(names(.rdata[['health_indicator_abbr']]) %in% unique(plotData$indic))
-#       plotData$indic <- plotData$indic_name#factor(plotData$indic,
-#                                #levels = names(.rdata[['health_indicator_abbr']])[relevant_names],
-#                                #labels = unname(.rdata[['health_indicator_abbr']])[relevant_names]) 
-#     }
-    
-    if(input$assessment_panel == 'dataplot' & input$ai_plot_type=='data_bar'){        
-      p <- plotBar_explore(plotData, chartoptions=chartopt)
-
-      return(p)
-    }
-    if(input$assessment_panel == 'dataplot' & input$ai_plot_type=='data_line'){
-      
-      p <- plotFigure2(plotData, chartoptions=chartopt)
-      return(p)
-    }
-  }
-  else{
-    return()
-  }
-  
-})  
-
-
-
-
-
-##############################################################
+#******************************************************************************
 # Explore inequality: summary table and plot ----
-#############################################################
+#******************************************************************************
 
 
 
@@ -254,9 +142,28 @@ output$focus_summeasure_explore_summary <- renderUI({
 
 
 
-##############################################################
+#******************************************************************************
 # Explore inequality:: summary table ----
-#############################################################
+#******************************************************************************
+
+
+
+output$summary_measures <- renderUI({
+  list(
+    checkboxInput('summultiplier1', 'MLD and TI x1000', TRUE),
+    checkboxInput('summultiplier2', 'RCI x100', TRUE),
+    sliderInput('sumsigfig', h5('Select estimate precision'), min=0, max=5, value=2, round=T, width='50%'),
+    radioButtons(inputId='se_type', 
+                 label=h5('Select standard error type'), 
+                 choices = c('Bootstrap and Analytic' = 'both',
+                             'Analytic' = 'analytic',
+                             'Bootstrap' = 'bootstrap',
+                             'Aggregated' = 'balance'), 
+                 selected = 'balance', 
+                 inline = FALSE)
+  )
+})
+
 
 
 output$theDataPlot_web <- renderPlot({
@@ -306,12 +213,133 @@ output$downloadSummtable <- renderUI({
 
 
 
+
+theDataPlot <- reactive({ 
+  
+  if(is.null(input$ai_plot_type)) return()
+  #print("Reactive: theDataPlot")
+  plotData <- datasetInput()
+  plotData <- select(plotData, country, year, indic, subgroup, dimension, estimate, se)
+  
+  #print(head(plotData))
+  
+  if(!is.null(plotData) & nrow(plotData)>0){
+    chartopt <- list()
+    # Chart options for axis max and min values
+    chartopt <- lappend(chartopt, 'axmax' = as.integer(input$axis_limitsmax1))
+    chartopt <- lappend(chartopt, 'axmin' = as.integer(input$axis_limitsmin1))
+    # Chart options for whether the chart only carries geographic region data
+    geo_only <- geoOnly(plotData)
+    if(geo_only){
+      chartopt <- lappend(chartopt, 'geo_only' = geo_only)     
+    }
+    
+    if(input$main_title1 != ""){
+      chartopt <- lappend(chartopt, 'main_title' = input$main_title1)
+    }
+    if(input$xaxis_title1 != ""){
+      chartopt <- lappend(chartopt, 'xaxis_title' = input$xaxis_title1)
+    }
+    if(input$yaxis_title1 != ""){
+      chartopt <- lappend(chartopt, 'yaxis_title' = input$yaxis_title1)
+    }
+    
+    
+    
+    if(input$assessment_panel == 'dataplot' & input$ai_plot_type=='data_bar'){        
+      p <- plotBar_explore(plotData, chartoptions=chartopt)
+      
+      return(p)
+    }
+    if(input$assessment_panel == 'dataplot' & input$ai_plot_type=='data_line'){
+      
+      p <- plotFigure2(plotData, chartoptions=chartopt)
+      return(p)
+    }
+  }
+  else{
+    return()
+  }
+  
+})  
+
+
+
+
+#******************************************************************************
+#******************************************************************************
+# EXPLORE DATA
+#******************************************************************************
+#******************************************************************************
+
+
+
+# Generate a view of the Managed Data
+output$dataTable <- renderDataTable({
+  
+  if(is.null(input$focus_country_explore)) return()
+  
+  theData <- datasetInput()
+  
+  #theData <- datasetInput()
+  
+  theData <- theData %>% 
+    mutate(estimate = round(estimate, 2),
+           lower_95ci = round(lower_95ci,2),
+           upper_95ci = round(upper_95ci,2),
+           popshare = round(popshare, 2),
+           national = round(national, 2))
+  
+  theData<-theData %>% 
+    rename(
+      Country                = country,
+      Year                   = year,
+      `Data source`          = source,
+      `Health indicator`     = indic,
+      `Inequality dimension` = dimension,
+      Subgroup               = subgroup,
+      Estimate               = estimate,
+      `Lower 95%CI`          = lower_95ci,
+      `Upper 95%CI`          = upper_95ci,
+      `Population share %`   = popshare,
+      `National estimate`    = national,
+      Flag                   = flag
+    ) 
+  
+  
+  
+  theData <- theData[, input$dataTableItems]
+  
+  
+  theData
+}, options = list(dom = "ilftpr", pageLength = 10)  # see https://datatables.net/ for dataTable options
+)
+
+
+
+# Return the requested dataset based on the UI selection (dataSource)
+datasetInput <- reactive({
+  
+  
+  theData<-getDisagData(indicator=input$focus_indicator_explore, 
+                        stratifier=input$focus_dimension_explore,  # in hetkdb.R
+                        countries=input$focus_country_explore, 
+                        years=input$focus_year_explore, 
+                        mostrecent=input$mostrecent_explore,
+                        datasource=input$focus_data_source_explore)
+  
+  
+})
+
+
+
 datasetInequal <- reactive({
   
-
+  if(is.null(input$summultiplier1)) return()
+  
   input$focus_country_explore
   input$focus_data_source_explore
-   input$mostrecent_explore
+  input$mostrecent_explore
   input$focus_year_explore
   input$focus_indicator_explore
   input$focus_dimension_explore
@@ -319,52 +347,50 @@ datasetInequal <- reactive({
   input$focus_inequal_type_explore
   
   #if(input$dataSource=='HETK' & input$assessment_panel=='sumtable'){
-    #print('Getting equity data table a')
-    #print(.rdata[['focus_year']])
-    ineqDF <- getInequalData(indicator=.rdata[['focus_indicator']], 
-                         stratifier=.rdata[['focus_dimension']], 
-                         countries=.rdata[['focus_country']], 
-                         years=.rdata[['focus_year']], 
-                         mostrecent=.rdata[['mostrecent']],
-                         datasource=.rdata[['focus_data_source']],  
-                         inequal_types=.rdata[['focus_inequal_type']],
-                         multiplier1 = input$summultiplier1,
-                         multiplier2 = input$summultiplier2)
-
-    #print(head(ineqDF))
-    #return(ineqDF)
-  #}    
+  #print('Getting equity data table a')
+  #print(.rdata[['focus_year']])
+  ineqDF <- getInequalData(indicator=.rdata[['focus_indicator']], 
+                           stratifier=.rdata[['focus_dimension']], 
+                           countries=.rdata[['focus_country']], 
+                           years=.rdata[['focus_year']], 
+                           mostrecent=.rdata[['mostrecent']],
+                           datasource=.rdata[['focus_data_source']],  
+                           inequal_types=.rdata[['focus_inequal_type']],
+                           multiplier1 = input$summultiplier1,
+                           multiplier2 = input$summultiplier2)
+  
   if(input$assessment_panel=='sumplot'){
     #print('Getting equity data plot')
-#     ineqDF <- getInequal(indicator=.rdata[['focus_indicator']], 
-#                          stratifier=.rdata[['focus_dimension']], 
-#                          countries=.rdata[['focus_country']], 
-#                          years=.rdata[['focus_year']],  
-#                          inequal_types=.rdata[['focus_summary_measure']])
+    #     ineqDF <- getInequal(indicator=.rdata[['focus_indicator']], 
+    #                          stratifier=.rdata[['focus_dimension']], 
+    #                          countries=.rdata[['focus_country']], 
+    #                          years=.rdata[['focus_year']],  
+    #                          inequal_types=.rdata[['focus_summary_measure']])
     ineqDF$boot.se[ ineqDF$boot.se == 0] <- NA
     ineqDF$se[ ineqDF$se == 0] <- NA
     
     return(ineqDF)
   }  
-    
-    return(ineqDF)
+  
+  return(ineqDF)
 })
+
 
 
 
 # Generate a view of the HETKB 
 output$dataTableInequal <- renderDataTable({
   #print("In dataTableInequal")
-
+  
   theData <- datasetInequal()
-
+  
   if(!is.null(theData) && nrow(theData)>0){
     #theData <- datasetInequal()
     
     # this is somewhat confusing because theData may not have most of these
     # this could be much cleaner
     
-
+    
     
     #print("In dataTableInequal c")
     var_names <- names(theData)
@@ -407,26 +433,15 @@ output$dataTableInequal <- renderDataTable({
     
     #print(theData)
   }
-#   if(is.null(theData) || nrow(theData)==0){
-#     return()
-#   }
-#   if(nrow(theData)==0){
-#     return()
-#   }
+
   theData
 }, options = list(dom = "ilftpr", pageLength = 10)  # see https://datatables.net/ for dataTable options
 )
 
 
-
-
-
-
-
-
-##############################################################
+#******************************************************************************
 # required in explore inequality: summary plot
-#############################################################
+#******************************************************************************
 
 
 
@@ -512,9 +527,9 @@ theSummaryPlot <- reactive({
 
 
 
-##############################################################
+#******************************************************************************
 # Compare inquality: sidepanel
-#############################################################
+#******************************************************************************
 
 output$focus_country_compare <- renderUI({
   
@@ -634,17 +649,17 @@ output$benchmarkCountries <- renderUI({
 
 
 
-##############################################################
+#******************************************************************************
 # Comparison disaggregated plots SIDEPANEL
-#############################################################
+#******************************************************************************
 
 
 
 
 
-##############################################################
+#******************************************************************************
 # Comparison benchmark MAINPANEL -----
-#############################################################
+#******************************************************************************
 
 
 getBenchmarkData <- reactive({
@@ -790,9 +805,9 @@ output$dataTableBenchmark <- renderDataTable({
 )
 
 
-##############################################################
+#******************************************************************************
 # Comparison benchmark MAINPANEL diaggregated plot tab -----
-#############################################################
+#******************************************************************************
 
 
 
@@ -851,9 +866,9 @@ theComparisonPlot1 <- reactive({
 
 
 
-##############################################################
+#******************************************************************************
 # Comparison benchmark MAINPANEL summary plot tab -----
-#############################################################
+#******************************************************************************
 
 
 
