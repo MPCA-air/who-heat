@@ -40,8 +40,8 @@ output$btnStartDownloadDisagData_explore <- downloadHandler(
 
 output$btnDownloadDisagPlot_explore <- renderUI({
   #print("In downloadDataplot")
-  
-  thePlot <- theDataPlot()
+  thePlot <-"xx"
+  #thePlot <- theDataPlot()
   if(is.null(thePlot)){
     return()
   } else {
@@ -55,15 +55,13 @@ output$btnDownloadDisagPlot_explore <- renderUI({
 
 
 
-
 output$btnStartDownloadDisagPlot_explore  <- downloadHandler(
   filename = function() { 
-    paste(input$focus_country_explore, '_disaggregated_', Sys.Date(), '.pdf', sep='')
+    paste(input$focus_country_explore, '_disaggregated_', Sys.Date(), '.', input$disagPlotType_explore, sep='')
   },
   content = function(file) {
-    pdf(file, width=(as.numeric(input$plot1_width)/2.54), height=(as.numeric(input$plot1_height)/2.45), paper=input$papersize1)
-    print(theDataPlot()) 
-    dev.off()
+    ggsave(file, width=as.numeric(input$disagPlotWitdth_explore), 
+           height=as.numeric(input$disagPlotHeight_explore), units="cm")
   }
 )   
 
@@ -110,7 +108,7 @@ output$btnStartDownloadSummaryData_explore <- downloadHandler(
 
 
 output$btnDownloadSummaryPlot_explore <- renderUI({
-  thePlot <- theDataPlot()
+  thePlot <- "xx" #theDataPlot()
   if(is.null(thePlot)){
     return()
   } else {
@@ -123,18 +121,16 @@ output$btnDownloadSummaryPlot_explore <- renderUI({
 
 output$btnStartDownloadSummaryPlot_explore  <- downloadHandler(
   filename = function() { 
-    paste(input$focus_country_explore, '_summary_', Sys.Date(), '.pdf', sep='')
+    paste(input$focus_country_explore, '_disaggregated_', Sys.Date(), '.', input$summaryPlotType_explore, sep='')
   },
   content = function(file) {
-    pdf(file, width=(as.numeric(input$plot_width_sum)/2.54), height=(as.numeric(input$plot_height_sum)/2.45), paper=input$papersize2)
-    p <- theSummaryPlot()
-    print(p) 
-    #plot(1:10, 1:10)
-    dev.off()
+    ggsave(file, width=as.numeric(input$summaryPlotWitdth_explore), 
+           height=as.numeric(input$summaryPlotHeight_explore), units="cm")
   }
 )   
 
 
+ 
 
 
 

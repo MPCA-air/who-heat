@@ -127,6 +127,17 @@ output$disag_plot_dimensions <- renderUI({
 
 
 
+# output$theDataPlot_web <- renderPlot({
+#   #print("In theDataPlot_web")
+#   p<-theDataPlot()
+#   
+#   
+#   validate(
+#     need(all(!is.null(p)), "There is no data for this combination of variables")
+#   )
+#   
+#   print(p)  # Remember that print(theDataPlot) just prints the code
+# })
 
 
 #******************************************************************************
@@ -166,29 +177,7 @@ output$summary_measures <- renderUI({
 
 
 
-output$theDataPlot_web <- renderPlot({
-  #print("In theDataPlot_web")
-  p<-theDataPlot()
-  
-  
-  validate(
-    need(all(!is.null(p)), "There is no data for this combination of variables")
-  )
-  
-  print(p)  # Remember that print(theDataPlot) just prints the code
-})
 
-
-output$theSumPlot_web <- renderPlot({
-  p<-theSummaryPlot()
-  
-  validate(
-    need(all(!is.null(p)), "There is no data for this combination of variables")
-  )
-  
-  print(p)
-  # Remember that print(theSummaryPlot) just prints the code
-}, res=90, height=exprToFunction(input$plot_height_sum), width=exprToFunction(input$plot_width_sum))
 
 
 
@@ -214,7 +203,7 @@ output$downloadSummtable <- renderUI({
 
 
 
-theDataPlot <- reactive({ 
+output$theDataPlot_web <- renderPlot({ 
   
   if(is.null(input$ai_plot_type)) return()
   #print("Reactive: theDataPlot")
@@ -249,12 +238,12 @@ theDataPlot <- reactive({
     if(input$assessment_panel == 'dataplot' & input$ai_plot_type=='data_bar'){        
       p <- plotBar_explore(plotData, chartoptions=chartopt)
       
-      return(p)
+      print(p)
     }
     if(input$assessment_panel == 'dataplot' & input$ai_plot_type=='data_line'){
       
       p <- plotFigure2(plotData, chartoptions=chartopt)
-      return(p)
+      print(p)
     }
   }
   else{
@@ -335,7 +324,8 @@ datasetInput <- reactive({
 
 datasetInequal <- reactive({
   
-  if(is.null(input$summultiplier1)) return()
+  #if(is.null(input$summultiplier1)) return()
+  if(is.null(input$assessment_panel)) return()
   
   input$focus_country_explore
   input$focus_data_source_explore
@@ -346,10 +336,8 @@ datasetInequal <- reactive({
   
   input$focus_inequal_type_explore
   
-  #if(input$dataSource=='HETK' & input$assessment_panel=='sumtable'){
-  #print('Getting equity data table a')
-  #print(.rdata[['focus_year']])
-  ineqDF <- getInequalData(indicator=.rdata[['focus_indicator']], 
+
+  ineqDF <- getInequalData(indicator=.rdata[['focus_indicator']],  
                            stratifier=.rdata[['focus_dimension']], 
                            countries=.rdata[['focus_country']], 
                            years=.rdata[['focus_year']], 
@@ -359,14 +347,12 @@ datasetInequal <- reactive({
                            multiplier1 = input$summultiplier1,
                            multiplier2 = input$summultiplier2)
   
+  #blah
+ 
+
   if(input$assessment_panel=='sumplot'){
-    #print('Getting equity data plot')
-    #     ineqDF <- getInequal(indicator=.rdata[['focus_indicator']], 
-    #                          stratifier=.rdata[['focus_dimension']], 
-    #                          countries=.rdata[['focus_country']], 
-    #                          years=.rdata[['focus_year']],  
-    #                          inequal_types=.rdata[['focus_summary_measure']])
-    ineqDF$boot.se[ ineqDF$boot.se == 0] <- NA
+    
+    ineqDF$boot.se[ineqDF$boot.se == 0] <- NA
     ineqDF$se[ ineqDF$se == 0] <- NA
     
     return(ineqDF)
@@ -384,20 +370,25 @@ output$dataTableInequal <- renderDataTable({
   
   theData <- datasetInequal()
   
+  if(is.null(input$sumsigfig)) return()
+
   if(!is.null(theData) && nrow(theData)>0){
     #theData <- datasetInequal()
     
     # this is somewhat confusing because theData may not have most of these
     # this could be much cleaner
     
-    
-    
-    #print("In dataTableInequal c")
+
     var_names <- names(theData)
-    # Round the data to selected significant figure
+
+    theData[, c('inequal', 'se', 'boot.se', 'combo.se', 'se.lowerci', 
+                'se.upperci', 'boot.lowerci', 'boot.upperci', 
+                'combo.lowerci', 'combo.upperci' )] <- 
+      round(theData[, c('inequal', 'se', 'boot.se', 'combo.se', 
+                        'se.lowerci', 'se.upperci', 'boot.lowerci', 'boot.upperci', 
+                        'combo.lowerci', 'combo.upperci' )], input$sumsigfig)
     
-    theData[, c('inequal', 'se', 'boot.se', 'combo.se', 'se.lowerci', 'se.upperci', 'boot.lowerci', 'boot.upperci', 'combo.lowerci', 'combo.upperci' )] <- 
-      round(theData[, c('inequal', 'se', 'boot.se', 'combo.se', 'se.lowerci', 'se.upperci', 'boot.lowerci', 'boot.upperci', 'combo.lowerci', 'combo.upperci' )], input$sumsigfig)
+    
     
     if(input$se_type == 'analytic'){
       theData <- theData[, setdiff(var_names, c('boot.se', 'boot.upperci', 'boot.lowerci', 'combo.se', 'combo.lowerci', 'combo.upperci', 'se'))]
@@ -424,6 +415,7 @@ output$dataTableInequal <- renderDataTable({
       
     }
     
+    
     names(theData)[names(theData)=="country" ] <- "Country" 
     names(theData)[names(theData)=="year" ] <- "Year"
     names(theData)[names(theData)=="indic" ] <- "Health indicator" 
@@ -443,30 +435,56 @@ output$dataTableInequal <- renderDataTable({
 # required in explore inequality: summary plot
 #******************************************************************************
 
+output$summary_plot_dimensions <- renderUI({
+  list(
+    sliderInput('plot_height_sum', h5('Height'), min=200, max=1500, value=400, step = 50,
+                round = T,
+                ticks = TRUE, animate = FALSE),
+    
+    sliderInput('plot_width_sum', h5('Width'), min=200, max=1500, value=600, step = 50,
+                round = T,
+                ticks = TRUE, animate = FALSE)
+  )
+})
+
+output$summary_plot_type <- renderUI({
+  radioButtons("sumplot_type", HTML("<h3>Plot options</h3><p><h4>Select chart type</h4></p>"),
+               c("Bar Chart" = "data_bar",
+                 "Line Chart" = "data_line"),
+               inline=T,
+               selected="data_line")
+})
 
 
 
+# output$theSumPlot_web <- renderPlot({
+#   p<-theSummaryPlot()
+#   
+# 
+#   
+#   print(p)
+# 
+# }, res=90)
+# 
 
 
 # Generate a reactive element for plotting the Summary Data.
 # Pass to the webpage using renderPlot(print(theDataPlot))
-theSummaryPlot <- reactive({ 
+output$theSumPlot_web <- renderPlot({ 
   
-  
+
   plotData <- datasetInequal()
-  
+
+  if(is.null(input$sumplot_type)) return()
   validate(
     need(!is.null(plotData) && nrow(plotData)>0, "There is no data for this combination of variables")
   )
   
-  
-  #print(class(plotData))
-  #print("Reactive: theSummaryPlot")
-  if(is.null(plotData)) return()
 
     #plotData <- datasetInequal()
     #if(class(plotData)=="data.frame" && nrow(plotData)>0 ){
       
+  if(!is.null(plotData) && nrow(plotData)>0){
       chartopt <- list()
       chartopt <- lappend(chartopt, 'axmax' = as.integer(input$axis_limitsmax2))
       chartopt <- lappend(chartopt, 'axmin' = as.integer(input$axis_limitsmin2))
@@ -481,38 +499,20 @@ theSummaryPlot <- reactive({
         chartopt <- lappend(chartopt, 'yaxis_title' = input$yaxis_title2)
       }
       
-#       relevant.rows <- which(plotData$year %in% input$sumplotYears & plotData$indic %in% input$sumplotHealthIndicator & 
-#                                plotData$dimension %in% input$sumplotEquityDimension & plotData$measure %in% input$sumplotSumMeasures)
-#       
-      #if(length(relevant.rows)>0){  # This will generally fail because the Health Indicator has not *yet* been selected
-        
-        #plotData <- plotData[relevant.rows, ]      
-        
-#         if(input$long_names2==T){
-#           #relevant_names <- which(names(.rdata[['health_indicator_abbr']]) %in% unique(plotData$indic))
-#           plotData$indic <- factor(plotData$indic,
-#                                    levels = names(.rdata[['health_indicator_abbr']]),
-#                                    labels = unname(.rdata[['health_indicator_abbr']])) 
-#         }
-#         
+   
         
         if(input$assessment_panel == 'sumplot' & input$sumplot_type=='data_bar'){                   
           p <- plotFigure3(plotData, chartoptions=chartopt)
-          return(p)
+          print(p)
         }
         if(input$assessment_panel == 'sumplot' & input$sumplot_type=='data_line'){          
           p <- plotFigure4(plotData, chartoptions=chartopt)
-          return(p)
+          print(p)
         }    
       
-      
-      #}
-    #}
-#     else{
-#       return()
-#     }
-  
-})  
+  }
+
+}, res=90)  
 
 
 

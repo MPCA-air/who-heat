@@ -24,9 +24,9 @@ output$explore_inequality_ui <- renderUI({
    
                        br(),
                        
-                       h4('Select plot dimensions'),
-                       uiOutput("disag_plot_dimensions"),
-                       br(),
+                       #h4('Select plot dimensions'),
+                       #uiOutput("disag_plot_dimensions"),
+                       #br(),
                        h4('Select plot names'),
                 
                        textInputRow(inputId="axis_limitsmin1", label=h5("Axis-min"), value = NULL),
@@ -38,7 +38,7 @@ output$explore_inequality_ui <- renderUI({
       ),
       
       conditionalPanel(condition = "input.assessment_panel == 'sumtable' | input.assessment_panel == 'sumplot'",
-
+                       
                        uiOutput("focus_summeasure_explore_summary")
                        
       ),
@@ -53,28 +53,16 @@ output$explore_inequality_ui <- renderUI({
               
       ),
       conditionalPanel(condition = "input.assessment_panel == 'sumplot'",
-                       
-         
-   
+
                        br(),
-                  
-                       radioButtons("sumplot_type", HTML("<h3>Plot options</h3><p><h4>Select chart type</h4></p>"),
-                                    c("Bar Chart" = "data_bar",
-                                      "Line Chart" = "data_line"),
-                                    inline=T,
-                                    selected="data_line"),
+                       uiOutput("summary_plot_type"),
+       
                        br(),
-                       h4('Select plot dimensions'),
+                       #h4('Select plot dimensions'),
+                      
+                       #uiOutput("summary_plot_dimensions"),
                        
-                       sliderInput('plot_height_sum', h5('Height'), min=200, max=1500, value=400, step = 50,
-                                   round = T,
-                                   ticks = TRUE, animate = FALSE),
-                       
-                       sliderInput('plot_width_sum', h5('Width'), min=200, max=1500, value=600, step = 50,
-                                   round = T,
-                                   ticks = TRUE, animate = FALSE),
-                       
-                       br(),   
+                       #br(),   
                        
                        h4('Select plot names'),
                        
@@ -114,18 +102,12 @@ output$explore_inequality_ui <- renderUI({
               br(),
               tags$p("Close the window once the download has commenced."),
               br(),
-              selectInput(inputId="papersize1", label='Plot size:',
-                          choices=c("A4 portrait" = "a4",
-                                    "A4 landscape" = "a4r",
-                                    "US Letter portrait" = "us",
-                                    "US Letter landscape" = "USr",
-                                    "Custom" = "special")),
-              conditionalPanel(condition = "input.papersize1 == 'special'",  # && assessment_panel = 'dataplot'
-                               helpText('For custom plots the default size is 7" x 7" (i.e., 17.78cm x 17.78cm)'),
-                               textInputRow(inputId="plot1_height", label="Height cm", value = '17.78'),
-                               textInputRow(inputId="plot1_width", label='Width cm', value = '17.78'),
-                               br(), br()
-              ),
+              textInput("disagPlotWitdth_explore", "Plot width (cm)", value="15" ),
+              textInput("disagPlotHeight_explore", "Plot width (cm)", value="12" ),
+              selectInput(inputId="disagPlotType_explore", label='Output format:',
+                          choices=c("PDF" = "PDF",
+                                    "PNG" = "PNG",
+                                    "JPG" = "JPG")),
               downloadButton(outputId = 'btnStartDownloadDisagPlot_explore', label = "Start", class = NULL),
               size = "medium"),
       bsModal(id = "summtableModal", title = "Download summary data", trigger = "btnDownloadSummaryData_explore", 
@@ -150,18 +132,12 @@ output$explore_inequality_ui <- renderUI({
               br(),
               tags$p("Close the window once the download has commenced."),
               br(),
-              selectInput(inputId="papersize2", label='Plot size:',
-                          choices=c("A4 portrait" = "a4",
-                                    "A4 landscape" = "a4r",
-                                    "US Letter portrait" = "us",
-                                    "US Letter landscape" = "USr",
-                                    "Custom" = "special")),
-              conditionalPanel(condition = "input.papersize2 == 'special'",  # && assessment_panel = 'dataplot'
-                               helpText('For custom plots the default size is 7" x 7" (i.e., 17.78cm x 17.78cm)'),
-                               textInputRow(inputId="plot2_height", label="Height cm", value = '17.78'),
-                               textInputRow(inputId="plot2_width", label='Width cm', value = '17.78'),
-                               br(), br()
-              ),
+              textInput("summaryPlotWitdth_explore", "Plot width (cm)", value="15" ),
+              textInput("summaryPlotHeight_explore", "Plot width (cm)", value="12" ),
+              selectInput(inputId="summaryPlotType_explore", label='Output format:',
+                          choices=c("PDF" = "PDF",
+                                    "PNG" = "PNG",
+                                    "JPG" = "JPG")),
               downloadButton(outputId = 'btnStartDownloadSummaryPlot_explore', label = "Start", class = NULL),
               size = "medium"),
 
