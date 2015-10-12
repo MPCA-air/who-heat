@@ -156,7 +156,7 @@ theData <- datasetInput()
   
   #if(theData[["Data source"]][1] %in% c('DHS', 'MICS')){
   #print(head(theData))
-  print(input$dataTableItems)
+  #print(input$dataTableItems)
     theData <- theData[, input$dataTableItems]
     
 #   }
