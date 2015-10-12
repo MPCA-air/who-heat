@@ -60,7 +60,7 @@ saveRDS(years, paste0(outpath, "years.RDS"))
 saveRDS(indicators, paste0(outpath, "indicators.RDS"))
 saveRDS(strata, paste0(outpath, "strata.RDS"))
 
-
+#xx<-readRDS(paste0(outpath, "nationaldata.RDS"))
 # ----- For comparing to the original data I received to make sure that
 # ----- the inequal calculations are done correctly
 

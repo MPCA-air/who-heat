@@ -12,7 +12,7 @@ library(dplyr)
 library(shinythemes)
 
 
-options(shiny.maxRequestSize = 0.100*1024^2)
+options(shiny.maxRequestSize = 0.100*1024^2, encoding = "UTF-8")
 
 
 shinyServer(function(input, output, session){  

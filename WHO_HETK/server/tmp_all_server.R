@@ -4,7 +4,7 @@
 #******************************************************************************
 #******************************************************************************
 
-
+#get_disag("indic", )
 
 #******************************************************************************
 # Explore inequality: SELECTORS ALL TABS
@@ -333,7 +333,6 @@ datasetInequal <- reactive({
   input$focus_year_explore
   input$focus_indicator_explore
   input$focus_dimension_explore
-  
   input$focus_inequal_type_explore
   
 
@@ -472,7 +471,14 @@ output$summary_plot_type <- renderUI({
 # Pass to the webpage using renderPlot(print(theDataPlot))
 output$theSumPlot_web <- renderPlot({ 
   
-
+  input$focus_country_explore
+  input$focus_data_source_explore
+  input$mostrecent_explore
+  input$focus_year_explore
+  input$focus_indicator_explore
+  input$focus_dimension_explore
+  input$focus_inequal_type_explore
+  
   plotData <- datasetInequal()
 
   if(is.null(input$sumplot_type)) return()
