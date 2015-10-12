@@ -815,12 +815,18 @@ output$dataTableBenchmark <- renderDataTable({
 # Create a download button contingent on the existence of a plot of the comparison disaggregated data
 
 
+# output$theComparisonPlot1_web <- renderPlot({
+#   if(is.null(theComparisonPlot1())){
+#     return()
+#   }
+#   print(theComparisonPlot1())  # Remember that print(theDataPlot) just prints the code
+# }, res=90, height=exprToFunction(input$plot_height2), width=exprToFunction(input$plot_width2))
 
 
 
 # Generate a reactive element for plotting the Disaggregated Comparison data.
 # Pass to the webpage using renderPlot(print(theDataPlot))
-theComparisonPlot1 <- reactive({ 
+output$theComparisonPlot1_web <- renderPlot({
 
   
   plotData <- getBenchmarkData()
@@ -872,7 +878,13 @@ theComparisonPlot1 <- reactive({
 
 
 
-
+# output$theComparisonPlot2_web <- renderPlot({    
+#   if(is.null(theComparisonPlot2())){
+#     return(NULL)
+#   }
+#   print(theComparisonPlot2())  # Remember that print(theDataPlot) just prints the code
+# }, res=90, height=exprToFunction(input$plot_height3), width=exprToFunction(input$plot_width3))
+# 
 
 
 
@@ -880,7 +892,7 @@ theComparisonPlot1 <- reactive({
 
 # Generate a reactive element for plotting the Summary Comparison data.
 # Pass to the webpage using renderPlot(print(theDataPlot))
-theComparisonPlot2 <- reactive({ 
+output$theComparisonPlot2_web <- renderPlot({  
   #print("Reactive: theComparisonPlot2")
   #print(getData5())
   plotData<-getBenchmarkDataSum()

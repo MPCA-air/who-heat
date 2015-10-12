@@ -94,9 +94,7 @@ output$explore_inequality_ui <- renderUI({
               size = "medium"),
       
       bsModal(id = "dataplotModal", title = "Download disaggregated plot (PDF)", trigger = "btnDownloadDisagPlot_explore", 
-              tags$p("Set the dimensions for the plot here and download it.  The fit of the plot is determined
-                                 by the size of the paper you choose, and not by the display dimensions you select.
-                                 For printing purposes, you may need to reduce the number of variables plotted"),
+              tags$p("Set the dimensions for the plot here and download it."),
               br(),
               tags$p("Titles and axis labels are displayed according to your selections."),
               br(),
@@ -124,9 +122,7 @@ output$explore_inequality_ui <- renderUI({
               size = "medium"),
       
       bsModal(id = "summplotModal", title = "Download summary plot (PDF)", trigger = "btnDownloadSummaryPlot_explore", 
-              tags$p("Set the dimensions for the plot here and download it.  The fit of the plot is determined
-                                 by the size of the paper you choose, and not by the display dimensions you select.
-                                 For printing purposes, you may need to reduce the number of variables plotted"),
+              tags$p("Set the dimensions for the plot here and download it."),
               br(),
               tags$p("Titles and axis labels are displayed according to your selections."),
               br(),

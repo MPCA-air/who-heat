@@ -210,25 +210,32 @@ output$btnDownloadDisagPlot_compare <- renderUI({
 
 
 
-output$theComparisonPlot1_web <- renderPlot({
-  if(is.null(theComparisonPlot1())){
-    return()
-  }
-  print(theComparisonPlot1())  # Remember that print(theDataPlot) just prints the code
-}, res=90, height=exprToFunction(input$plot_height2), width=exprToFunction(input$plot_width2))
 
 
 # Handler for downloading the data selected in the modal Download graph
-output$btnStartDownloadDisagPlot_compare <- downloadHandler(
+# output$btnStartDownloadDisagPlot_compare <- downloadHandler(
+#   filename = function() { 
+#     paste(input$focus_country_compare, '_benchmark_disaggregated_', Sys.Date(), '.pdf', sep='')
+#   },
+#   content = function(file) {
+#     pdf(file, width=(as.numeric(input$plot2_width)/2.54), height=(as.numeric(input$plot2_height)/2.45), paper=input$papersize2)
+#     print(theComparisonPlot1()) 
+#     dev.off()
+#   }
+# ) 
+
+
+
+output$btnStartDownloadDisagPlot_compare  <- downloadHandler(
   filename = function() { 
-    paste(input$focus_country_compare, '_benchmark_disaggregated_', Sys.Date(), '.pdf', sep='')
+    paste(input$focus_country_compare, '_benchmark_summary_', Sys.Date(), '.', input$disagPlotType_compare, sep='')
   },
   content = function(file) {
-    pdf(file, width=(as.numeric(input$plot2_width)/2.54), height=(as.numeric(input$plot2_height)/2.45), paper=input$papersize2)
-    print(theComparisonPlot1()) 
-    dev.off()
+    ggsave(file, width=as.numeric(input$disagPlotWitdth_compare), 
+           height=as.numeric(input$disagPlotHeight_compare), units="cm")
   }
-) 
+)   
+
 
 
 
@@ -298,25 +305,31 @@ output$btnDownloadSummaryPlot_compare <- renderUI({
 
 
 
-output$btnStartDownloadSummaryPlot_compare <- downloadHandler(
+# output$btnStartDownloadSummaryPlot_compare <- downloadHandler(
+#   filename = function() { 
+#     paste(input$focus_country_compare, '_benchmark_summary_', Sys.Date(), '.pdf', sep='')
+#   },
+#   content = function(file) {
+#     pdf(file, width=(as.numeric(input$plot3_width)/2.54), height=(as.numeric(input$plot3_height)/2.45), paper=input$papersize2)
+#     print(theComparisonPlot2()) 
+#     dev.off()
+#   }
+# ) 
+
+
+output$btnStartDownloadSummaryPlot_compare  <- downloadHandler(
   filename = function() { 
-    paste(input$focus_country_compare, '_benchmark_summary_', Sys.Date(), '.pdf', sep='')
+    paste(input$focus_country_compare, '_benchmark_summary_', Sys.Date(), '.', input$summaryPlotType_compare, sep='')
   },
   content = function(file) {
-    pdf(file, width=(as.numeric(input$plot3_width)/2.54), height=(as.numeric(input$plot3_height)/2.45), paper=input$papersize2)
-    print(theComparisonPlot2()) 
-    dev.off()
+    ggsave(file, width=as.numeric(input$summaryPlotWitdth_compare), 
+           height=as.numeric(input$summaryPlotHeight_compare), units="cm")
   }
-) 
+)   
 
 
 
-output$theComparisonPlot2_web <- renderPlot({    
-  if(is.null(theComparisonPlot2())){
-    return(NULL)
-  }
-  print(theComparisonPlot2())  # Remember that print(theDataPlot) just prints the code
-}, res=90, height=exprToFunction(input$plot_height3), width=exprToFunction(input$plot_width3))
+
 
 
 output$btnStartDownloadSummaryPlotData_compare <- downloadHandler(

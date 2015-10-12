@@ -47,15 +47,15 @@ output$compare_inequality_ui <- renderUI({
                        hr(),
                        p(),
                        h3('Plot options'),
-                       h4('Select plot dimensions'),
-                       
-                       sliderInput('plot_height2', h5('Height'), min=200, max=1500, value=400, step = 50,
-                                   round = T, 
-                                   ticks = TRUE, animate = FALSE),
-                       
-                       sliderInput('plot_width2', h5('Width'), min=200, max=1500, value=600, step = 50,
-                                   round = T,
-                                   ticks = TRUE, animate = FALSE),                                        
+#                        h4('Select plot dimensions'),
+#                        
+#                        sliderInput('plot_height2', h5('Height'), min=200, max=1500, value=400, step = 50,
+#                                    round = T, 
+#                                    ticks = TRUE, animate = FALSE),
+#                        
+#                        sliderInput('plot_width2', h5('Width'), min=200, max=1500, value=600, step = 50,
+#                                    round = T,
+#                                    ticks = TRUE, animate = FALSE),                                        
                        
                        h4("Select plot names"),
                        checkboxInput(inputId='long_names3', label=h5('Long health indicator names'), value = FALSE),                                         
@@ -78,16 +78,16 @@ output$compare_inequality_ui <- renderUI({
                        hr(),
                        p(),
                        h3('Plot options'),
-                       h4('Select plot dimensions'),
-                       
-                       sliderInput('plot_height3', h5('Height'), min=200, max=800, value=400, step = 50,
-                                   round = T, 
-                                   ticks = TRUE, animate = FALSE),
-                       
-                       sliderInput('plot_width3', h5('Width'), min=200, max=800, value=600, step = 50,
-                                   round = T, 
-                                   ticks = TRUE, animate = FALSE),
-                       
+#                        h4('Select plot dimensions'),
+#                        
+#                        sliderInput('plot_height3', h5('Height'), min=200, max=800, value=400, step = 50,
+#                                    round = T, 
+#                                    ticks = TRUE, animate = FALSE),
+#                        
+#                        sliderInput('plot_width3', h5('Width'), min=200, max=800, value=600, step = 50,
+#                                    round = T, 
+#                                    ticks = TRUE, animate = FALSE),
+#                        
                        
                        h4("Select plot names"),
                        ## INSERT  Long health indicator names
@@ -120,26 +120,18 @@ output$compare_inequality_ui <- renderUI({
               downloadButton(outputId = 'btnStartDownloadDisagData_compare', label = "Start"),
               size = "medium"),
       bsModal(id = "compplot1Modal", title = "Download comparison plot (PDF)", trigger = "btnDownloadDisagPlot_compare", 
-              tags$p("Set the dimensions for the plot here and download it.  The fit of the plot is determined
-                                 by the size of the paper you choose, and not by the display dimensions you select.
-                                 For printing purposes, you may need to reduce the number of variables plotted"),
+              tags$p("Set the dimensions for the plot here and download it. "),
               br(),
               tags$p("Titles and axis labels are displayed according to your selections."),
               br(),
               tags$p("Close the window once the download has commenced."),
               br(),
-              selectInput(inputId="papersize2", label='Plot size:',
-                          choices=c("A4 portrait" = "a4",
-                                    "A4 landscape" = "a4r",
-                                    "US Letter portrait" = "us",
-                                    "US Letter landscape" = "USr",
-                                    "Custom" = "special")),
-              conditionalPanel(condition = "input.papersize2 == 'special'",  # && assessment_panel = 'dataplot'
-                               helpText('For custom plots the default size is 7" x 7" (i.e., 17.78cm x 17.78cm)'),
-                               textInputRow(inputId="plot2_height", label="Height cm", value = '17.78'),
-                               textInputRow(inputId="plot2_width", label='Width cm', value = '17.78'),
-                               br(), br()
-              ),
+              textInput("disagPlotWitdth_compare", "Plot width (cm)", value="15" ),
+              textInput("disagPlotHeight_compare", "Plot width (cm)", value="12" ),
+              selectInput(inputId="disagPlotType_compare", label='Output format:',
+                          choices=c("PDF" = "PDF",
+                                    "PNG" = "PNG",
+                                    "JPG" = "JPG")),
               downloadButton(outputId = 'btnStartDownloadDisagPlot_compare', label = "Start", class = NULL),
               size = "medium"),
       bsModal(id = "compdataDisagModal", title = "Download disaggregated data", trigger = "btnDownloadDisagPlotData_compare", 
@@ -155,26 +147,18 @@ output$compare_inequality_ui <- renderUI({
               downloadButton(outputId = 'btnStartDownloadDisagPlotData_compare', label = "Start"),
               size = "medium"),
       bsModal(id = "compplot2Modal", title = "Download comparison plot (PDF)", trigger = "btnDownloadSummaryPlot_compare", 
-              tags$p("Set the dimensions for the plot here and download it.  The fit of the plot is determined
-                                 by the size of the paper you choose, and not by the display dimensions you select.
-                                 For printing purposes, you may need to reduce the number of variables plotted"),
+              tags$p("Set the dimensions for the plot here and download it."),
               br(),
               tags$p("Titles and axis labels are displayed according to your selections."),
               br(),
               tags$p("Close the window once the download has commenced."),
               br(),
-              selectInput(inputId="papersize2", label='Plot size:',
-                          choices=c("A4 portrait" = "a4",
-                                    "A4 landscape" = "a4r",
-                                    "US Letter portrait" = "us",
-                                    "US Letter landscape" = "USr",
-                                    "Custom" = "special")),
-              conditionalPanel(condition = "input.papersize2 == 'special'",  # && assessment_panel = 'dataplot'
-                               helpText('For custom plots the default size is 7" x 7" (i.e., 17.78cm x 17.78cm)'),
-                               textInputRow(inputId="plot3_height", label="Height cm", value = '17.78'),
-                               textInputRow(inputId="plot3_width", label='Width cm', value = '17.78'),
-                               br(), br()
-              ),
+              textInput("summaryPlotWitdth_compare", "Plot width (cm)", value="15" ),
+              textInput("summaryPlotHeight_compare", "Plot width (cm)", value="12" ),
+              selectInput(inputId="summaryPlotType_compare", label='Output format:',
+                          choices=c("PDF" = "PDF",
+                                    "PNG" = "PNG",
+                                    "JPG" = "JPG")),
               downloadButton(outputId = 'btnStartDownloadSummaryPlot_compare', label = "Start", class = NULL),
               size = "medium"),
       bsModal(id = "compdataSummaryModal", title = "Download summary data", trigger = "btnDownloadSummaryPlotData_compare", 
