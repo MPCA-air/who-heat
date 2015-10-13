@@ -106,6 +106,18 @@ output$explore_inequality_ui <- renderUI({
                                     "JPG" = "JPG")),
               downloadButton(outputId = 'btnStartDownloadDisagPlot_explore', label = "Start", class = NULL),
               size = "medium"),
+      bsModal(id = "compdataDisagModal", title = "Download disaggregated data", trigger = "btnDownloadDisagPlotData_explore", 
+              tags$p("The data in the table will be downloaded as a text file with the values separated
+                     by a comma or a tab.  Select your preferred field separator and then download the data.
+                     These can be opened in a text editor, or spreadsheet package."),
+              br(),
+              tags$p("Close the window once the download has commenced."),
+              br(),
+              radioButtons(inputId="filetype_explore_disag", label='Field separator:',
+                           choices=c("Comma separated valued" = "csv",
+                                     "Tab separated values" = "tsv")),
+              downloadButton(outputId = 'btnStartDownloadDisagPlotData_explore', label = "Start"),
+              size = "medium"),
       bsModal(id = "summtableModal", title = "Download summary data", trigger = "btnDownloadSummaryData_explore", 
               tags$p("The summary measures in the table will be downloaded as a text file with the values
                                   separated by a comma or a tab.  Select your preferred field separator and then download
@@ -134,6 +146,18 @@ output$explore_inequality_ui <- renderUI({
                                     "JPG" = "JPG")),
               downloadButton(outputId = 'btnStartDownloadSummaryPlot_explore', label = "Start", class = NULL),
               size = "medium"),
+      bsModal(id = "compdataSummaryModal", title = "Download summary data", trigger = "btnDownloadSummaryPlotData_explore", 
+              tags$p("The data in the table will be downloaded as a text file with the values separated
+                     by a comma or a tab.  Select your preferred field separator and then download the data.
+                     These can be opened in a text editor, or spreadsheet package."),
+              br(),
+              tags$p("Close the window once the download has commenced."),
+              br(),
+              radioButtons(inputId="filetype_explore_summary", label='Field separator:',
+                           choices=c("Comma separated valued" = "csv",
+                                     "Tab separated values" = "tsv")),
+              downloadButton(outputId = 'btnStartDownloadSummaryPlotData_explore', label = "Start"),
+              size = "medium"),
 
       
       
@@ -143,6 +167,7 @@ output$explore_inequality_ui <- renderUI({
                            dataTableOutput(outputId="dataTable")
                   ), 
                   tabPanel(HTML("<h6 style='text-align: center;'>Disaggregated data</br>(graphs)<h6>"), value='dataplot' ,
+                           uiOutput('btnDownloadDisagPlotData_explore'),
                            uiOutput('btnDownloadDisagPlot_explore'),
                            plotOutput('theDataPlot_web')
                            ), 
@@ -151,6 +176,7 @@ output$explore_inequality_ui <- renderUI({
                            dataTableOutput(outputId="dataTableInequal")
                   ),              
                   tabPanel(HTML("<h6 style='text-align: center;'>Summary measures</br>(graphs)<h6>"), value='sumplot' ,
+                           uiOutput('btnDownloadSummaryPlotData_explore'),
                            uiOutput('btnDownloadSummaryPlot_explore'),
                            plotOutput('theSumPlot_web')
                   )

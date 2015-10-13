@@ -8,10 +8,10 @@
 # ----------------------------------------
 
 output$btnDownloadDisagData_explore <- renderUI({
-
+  
   list(br(),
        actionButton("btnDownloadDisagData_explore", "Download table", class = "btn-primary"))
-
+  
 })
 
 
@@ -65,6 +65,34 @@ output$btnStartDownloadDisagPlot_explore  <- downloadHandler(
   }
 )   
 
+# ----- disaggregated plot data
+
+output$btnDownloadDisagPlotData_explore <- renderUI({
+  
+  list(
+    br(),
+    
+    actionButton("btnDownloadDisagPlotData_explore", "Download table", class = "btn-primary")
+    
+  )
+  
+})
+
+
+
+output$btnStartDownloadDisagPlotData_explore <- downloadHandler(
+  filename = function() {
+    paste(input$focus_country_explore, "_disaggregated_", Sys.Date(), '.csv', sep='')
+  },
+  content = function(file) {
+    dat <- datasetInput()
+    sep <- switch(input$filetype_explore_disag, "csv" = ",", "tsv" = "\t")
+    
+    # Write to a file specified by the 'file' argument
+    write.table(dat, file, sep = sep,
+                row.names = FALSE)
+  }
+)
 
 
 
@@ -112,8 +140,8 @@ output$btnDownloadSummaryPlot_explore <- renderUI({
   if(is.null(thePlot)){
     return()
   } else {
-  list(br(),
-       actionButton("btnDownloadSummaryPlot_explore", "Download graph", class = "btn-primary"))
+    list(br(),
+         actionButton("btnDownloadSummaryPlot_explore", "Download graph", class = "btn-primary"))
   }
 })
 
@@ -130,7 +158,36 @@ output$btnStartDownloadSummaryPlot_explore  <- downloadHandler(
 )   
 
 
- 
+
+
+# ----- summary plot data
+
+output$btnDownloadSummaryPlotData_explore <- renderUI({
+  
+  list(
+    br(),
+    
+    actionButton("btnDownloadSummaryPlotData_explore", "Download table", class = "btn-primary")
+    
+  )
+  
+})
+
+
+
+output$btnStartDownloadSummaryPlotData_explore <- downloadHandler(
+  filename = function() {
+    paste(input$focus_country_explore, "_summary_", Sys.Date(), '.csv', sep='')
+  },
+  content = function(file) {
+    dat <- datasetInequal()
+    sep <- switch(input$filetype_explore_summary, "csv" = ",", "tsv" = "\t")
+    
+    # Write to a file specified by the 'file' argument
+    write.table(dat, file, sep = sep,
+                row.names = FALSE)
+  }
+)
 
 
 
@@ -183,27 +240,24 @@ output$btnStartDownloadDisagData_compare <- downloadHandler(
 
 
 output$btnDownloadDisagPlotData_compare <- renderUI({
-#   thePlot <- theSummaryPlot()
-#   if(is.null(thePlot)){
-#     return()
-#   } else {
-    list(br(),
-
-actionButton("btnDownloadDisagPlotData_compare", "Download table", class = "btn-primary")
-
-       
-         )
- # }  btnDownloadDisagPlotData_compare
+  
+  list(
+    br(),
+    
+    actionButton("btnDownloadDisagPlotData_compare", "Download table", class = "btn-primary")
+    
+  )
+  
 })
 
 
 output$btnDownloadDisagPlot_compare <- renderUI({
-
+  
   list(br(),
-
-         actionButton("btnDownloadDisagPlot_compare", "Download graph", class = "btn-primary")
-       )
        
+       actionButton("btnDownloadDisagPlot_compare", "Download graph", class = "btn-primary")
+  )
+  
   
   # }  btnDownloadDisagPlotData_compare
 })
@@ -278,13 +332,13 @@ output$btnStartDownloadDisagPlotData_compare <- downloadHandler(
 
 
 output$btnDownloadSummaryPlotData_compare <- renderUI({
-#   thePlot <- theSummaryPlot()
-#   if(is.null(thePlot)){
-#     return()
-#   } else {
-    list(br(),
-         actionButton("btnDownloadSummaryPlotData_compare", "Download table", class = "btn-primary")
-         )
+  #   thePlot <- theSummaryPlot()
+  #   if(is.null(thePlot)){
+  #     return()
+  #   } else {
+  list(br(),
+       actionButton("btnDownloadSummaryPlotData_compare", "Download table", class = "btn-primary")
+  )
   #}  
 })
 
@@ -298,7 +352,7 @@ output$btnDownloadSummaryPlot_compare <- renderUI({
   #   } else {
   list(br(),
        actionButton("btnDownloadSummaryPlot_compare", "Download graph", class = "btn-primary")
-       )
+  )
   #}  
 })
 
@@ -350,5 +404,5 @@ output$btnStartDownloadSummaryPlotData_compare <- downloadHandler(
 
 
 
- 
+
 
