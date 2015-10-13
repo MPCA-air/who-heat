@@ -17,18 +17,7 @@ output$compare_inequality_ui <- renderUI({
       uiOutput("benchmarkWHOregion"),
 
       conditionalPanel(condition = "input.comparison_panel == 'inequalbenchmark'",
-                       
-                       #uiOutput("focus_country"),
-                       #uiOutput("compplotBenchHealthIndicator"),
-                       #uiOutput("compplotBenchEquityDimension"),
-                       #uiOutput("compplotBenchYears"),
 
-
-
-                       
-                       
-                       
-                       # On the fly drop down menu to select countries of interest
                        
                        uiOutput('benchmarkYears'),
                        
@@ -40,22 +29,11 @@ output$compare_inequality_ui <- renderUI({
       ),
       conditionalPanel(condition = "input.comparison_panel == 'inequaldisag'",
                        
-                       #uiOutput("focus_country"),
-                       #uiOutput("compplotDisagHealthIndicator"),
-                       #uiOutput("compplotDisagEquityDimension"),
-                       #uiOutput("compplotDisagYears"),
+
                        hr(),
                        p(),
                        h3('Plot options'),
-#                        h4('Select plot dimensions'),
-#                        
-#                        sliderInput('plot_height2', h5('Height'), min=200, max=1500, value=400, step = 50,
-#                                    round = T, 
-#                                    ticks = TRUE, animate = FALSE),
-#                        
-#                        sliderInput('plot_width2', h5('Width'), min=200, max=1500, value=600, step = 50,
-#                                    round = T,
-#                                    ticks = TRUE, animate = FALSE),                                        
+                                      
                        
                        h4("Select plot names"),
                        checkboxInput(inputId='long_names3', label=h5('Long health indicator names'), value = FALSE),                                         
@@ -69,25 +47,13 @@ output$compare_inequality_ui <- renderUI({
       conditionalPanel(condition = "input.comparison_panel == 'inequalsum'",
                        
                        
-                       #uiOutput("focus_country"),
-                       #uiOutput("compplotSumMeasure"),
+
                        uiOutput("focus_summeasure_compare_summary"),
-                       #uiOutput("compplotSumHealthIndicator"),
-                       #uiOutput("compplotSumEquityDimension"),
-                       #uiOutput("compplotSumYears"),
+
                        hr(),
                        p(),
                        h3('Plot options'),
-#                        h4('Select plot dimensions'),
-#                        
-#                        sliderInput('plot_height3', h5('Height'), min=200, max=800, value=400, step = 50,
-#                                    round = T, 
-#                                    ticks = TRUE, animate = FALSE),
-#                        
-#                        sliderInput('plot_width3', h5('Width'), min=200, max=800, value=600, step = 50,
-#                                    round = T, 
-#                                    ticks = TRUE, animate = FALSE),
-#                        
+                      
                        
                        h4("Select plot names"),
                        ## INSERT  Long health indicator names

@@ -422,6 +422,8 @@ output$dataTableInequal <- renderDataTable({
     names(theData)[names(theData)=="inequal" ] <- "Estimate"
     names(theData)[names(theData)=="measure" ] <- "Summary measure"
     
+    theData <- select(theData, -ccode)
+    
     #print(theData)
   }
 

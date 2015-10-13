@@ -15,8 +15,6 @@ output$explore_inequality_ui <- renderUI({
                                          hr(),
                         uiOutput('dataTableItems')
 
-                                        
-
       ),
       conditionalPanel(condition = "input.assessment_panel == 'dataplot'",
                        tags$p(),
