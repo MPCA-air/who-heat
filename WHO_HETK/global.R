@@ -17,7 +17,7 @@ focusIndicator_selector <- function(id, multiple = FALSE, core=FALSE){
   #print(indicators)
   
   selectInput(id, 
-              h5("Select health indicators"), 
+              "Select health indicators", 
               choices  = .rdata[['full_indicators']], 
               multiple = multiple, 
               selected = .rdata[['focus_indicator']])
@@ -44,7 +44,7 @@ focusInequalType_selector <- function(id, dimension){
     }
   
   selectInput(id, 
-              h5("Select summary measure"), 
+              "Select summary measure", 
               choices=.rdata[['summary_measures_all']], 
               selected=c("Range difference" = "rd"), 
               multiple=FALSE)
@@ -63,7 +63,7 @@ focusDimension_selector <- function(id, multiple = FALSE){
   ifelse(multiple, focus_dimen <- .rdata[['focus_dimension']], focus_dimen <- .rdata[['focus_dimension']][1])
   
   selectInput(inputId = id,
-              h5("Select inequality dimensions"),
+              "Select inequality dimensions",
               choices = .rdata[['equity_dimensions']],
               selected = focus_dimen,
               multiple=multiple)
@@ -87,7 +87,7 @@ focusCountry_selector <- function(id){
   
   
   selectInput(id, 
-              h5("Country:"), 
+              "Select country", 
               choices  = countries, 
               multiple = FALSE, 
               selected = .rdata[['focus_country']])

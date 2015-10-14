@@ -326,36 +326,29 @@ getComparisonSummaries <- function(summeasure=NULL, indicator=NULL, stratifier=N
                           indic == indicator, dimension == stratifier, measure == summeasure) %>% 
           select(country, ccode, year, indic, dimension, measure, inequal, boot.se, se)
         
-        
+        if(nrow(sumdata)==0 || nrow(natdata)==0) return()
 
-        #print(selectSumStr)
-        if(nrow(natdata)>0 & matchyears==T){
-          natdata$year <- as.integer(years)  # Fix the benchmark year to the anchor year not the actual benchmark year
-        }
-        if(exists('mergedDF1') & nrow(natdata)>0){
-          mergedDF1 <- rbind(mergedDF1, natdata)
-        }
-        if(!exists('mergedDF1') & nrow(natdata)>0){
-          mergedDF1 <- natdata
-        }
+        if(nrow(natdata)>0 & matchyears==T) natdata$year <- as.integer(years)  # Fix the benchmark year to the anchor year not the actual benchmark year
+
+        if(exists('mergedDF1') & nrow(natdata)>0) mergedDF1 <- rbind(mergedDF1, natdata)
+
+        if(!exists('mergedDF1') & nrow(natdata)>0) mergedDF1 <- natdata
+
         
-        if(nrow(sumdata)>0 & matchyears==T){
-          sumdata$year <- as.integer(years)  # Fix the benchmark year to the anchor year not the actual benchmark year
-        }
-        if(exists('mergedDF2') & nrow(sumdata)>0){
-          print("in merged df2")
-          mergedDF2 <- rbind(mergedDF2, sumdata)
-        }
-        if(!exists('mergedDF2') & nrow(sumdata)>0){
-          print("in merged df2b")
-          mergedDF2 <- sumdata
-        }
+        if(nrow(sumdata)>0 & matchyears==T) sumdata$year <- as.integer(years)  # Fix the benchmark year to the anchor year not the actual benchmark year
+
+        
+       
+        if(exists('mergedDF2') & nrow(sumdata)>0) mergedDF2 <- rbind(mergedDF2, sumdata)
+        
+        if(!exists('mergedDF2') & nrow(sumdata)>0)  mergedDF2 <- sumdata
+        
       }
     }
-  }  
-  if(!exists('mergedDF1')){
-    return(NULL)
-  }
+  }   # end loop through countries
+  if(!exists('mergedDF1')) return()
+  
+  print('before merge')
   mergedDF <- merge(mergedDF1, mergedDF2, by=c("country","year", "indic"))   
   names(mergedDF)[4] <- 'estimate'
   return(mergedDF)

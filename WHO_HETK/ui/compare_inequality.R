@@ -4,17 +4,20 @@ output$compare_inequality_ui <- renderUI({
   
   sidebarLayout(
     sidebarPanel(
-      
+      tags$div(class="sectionhead1", "Variable options"),
       uiOutput("focus_country_compare"),
       uiOutput('focus_source_year_compare'),
       #uiOutput("focus_year_compare"),
       uiOutput("focus_indicator_compare"),
       uiOutput("focus_dimension_compare"),
-      hr(),
-      h4("Benchmark options"),
-      uiOutput("benchmark_countries"),
+      conditionalPanel(condition = "input.comparison_panel == 'inequalsum'",
+                       uiOutput("focus_summeasure_compare_summary")),
+      tags$div(class="sectionhead", "Benchmark options"),
       uiOutput("benchmarkWBgroup"),
       uiOutput("benchmarkWHOregion"),
+      uiOutput("benchmark_countries"),
+
+
 
       conditionalPanel(condition = "input.comparison_panel == 'inequalbenchmark'",
 
@@ -22,20 +25,15 @@ output$compare_inequality_ui <- renderUI({
                        uiOutput('benchmarkYears'),
                        
                        helpText(HTML("By how many years can the benchmark countries' data vary from the focus country's data?"),
-                                style="color:black; font-size: 85%"),
-                       
-                       actionButton("getcomparisondata1", "Fetch data", class = "btn-success")
+                                style="color:#666666; font-size: 85%")
+
                        
       ),
       conditionalPanel(condition = "input.comparison_panel == 'inequaldisag'",
-                       
 
-                       hr(),
-                       p(),
-                       h3('Plot options'),
-                                      
-                       
-                       h4("Select plot names"),
+                       tags$div(class="sectionhead", "Plot options"),
+                       tags$span(class="control-label", "Select plot names"),
+
                        checkboxInput(inputId='long_names3', label=h5('Long health indicator names'), value = FALSE),                                         
                        textInputRow(inputId="axis_limitsmin3", label=h5("Axis-min"), value = NULL),
                        textInputRow(inputId="axis_limitsmax3", label=h5("Axis-max"), value = NULL),
@@ -47,15 +45,11 @@ output$compare_inequality_ui <- renderUI({
       conditionalPanel(condition = "input.comparison_panel == 'inequalsum'",
                        
                        
+                       tags$div(class="sectionhead", "Plot options"),
+                       tags$span(class="control-label", "Select plot names"),
 
-                       uiOutput("focus_summeasure_compare_summary"),
-
-                       hr(),
-                       p(),
-                       h3('Plot options'),
-                      
+ 
                        
-                       h4("Select plot names"),
                        ## INSERT  Long health indicator names
                        textInputRow(inputId="xaxis_limitsmin4", label = h5("X-axis min"), value = NULL),
                        textInputRow(inputId="xaxis_limitsmax4", label = h5("X-axis max"), value = NULL),

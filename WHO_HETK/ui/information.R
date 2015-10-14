@@ -5,8 +5,8 @@ output$information_ui <- renderUI({
   sidebarLayout(
     sidebarPanel(
       
-      h5("Information about the"),
-      h2("Health Equity Assessment Tool")
+      helpText("This application uses the"),
+      tags$div(class="sectionhead1", "Health Equity Monitor Database")
       
     ),# end sidebarpanel
     

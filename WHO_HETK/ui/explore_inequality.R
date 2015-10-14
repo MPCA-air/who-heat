@@ -4,6 +4,7 @@ output$explore_inequality_ui <- renderUI({
   #includeScript(file %>% .path(r_path,"base/www/js/returnTextAreaBinding.js")),
   sidebarLayout(
     sidebarPanel(
+      tags$div(class="sectionhead1", "Variable options"),
       uiOutput("focus_country_explore"), 
       uiOutput('focus_source_year_explore'),
       uiOutput("focus_indicator_explore"),
@@ -12,20 +13,17 @@ output$explore_inequality_ui <- renderUI({
       
       conditionalPanel(condition = "input.assessment_panel == 'datatable'",   #### output.owndata gopt from server.R
 
-                                         hr(),
-                        uiOutput('dataTableItems')
+  
+                        tags$div(class="sectionhead", "Table options"),
+                        uiOutput('dataTableItems_explore')
 
       ),
       conditionalPanel(condition = "input.assessment_panel == 'dataplot'",
-                       tags$p(),
+
+                       tags$div(class="sectionhead", "Plot options"),
                        uiOutput("disag_plot_type"),
-   
-                       br(),
-                       
-                       #h4('Select plot dimensions'),
-                       #uiOutput("disag_plot_dimensions"),
-                       #br(),
-                       h4('Select plot names'),
+
+                       tags$span(class="control-label", "Select plot names"),
                 
                        textInputRow(inputId="axis_limitsmin1", label=h5("Axis-min"), value = NULL),
                        textInputRow(inputId="axis_limitsmax1", label=h5("Axis-max"), value = NULL),
@@ -43,26 +41,17 @@ output$explore_inequality_ui <- renderUI({
       
       
       conditionalPanel(condition = "input.assessment_panel == 'sumtable'",
-                       
-                       hr(),
-                       h4('Summary measure options'),
-                       uiOutput("summary_measures"),
-                       h5('Select estimate to display')
+                       tags$div(class="sectionhead", "Summary measure options"),
+                       uiOutput("summary_measures")
+                      
               
       ),
       conditionalPanel(condition = "input.assessment_panel == 'sumplot'",
-
-                       br(),
+                       
+                       tags$div(class="sectionhead", "Plot options"),
                        uiOutput("summary_plot_type"),
-       
-                       br(),
-                       #h4('Select plot dimensions'),
-                      
-                       #uiOutput("summary_plot_dimensions"),
-                       
-                       #br(),   
-                       
-                       h4('Select plot names'),
+ 
+                       tags$span(class="control-label", "Select plot names"),
                        
                        #checkboxInput(inputId='long_names2', label='Long health indicator names', value = FALSE),
                        textInputRow(inputId="axis_limitsmin2", label=h5("Axis-min"), value = NULL),

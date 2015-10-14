@@ -1,3 +1,122 @@
+/* LABELS*/
+
+.whoimg{
+     margin-top: -25px;
+     margin-right: 40px;
+     margin-left: -10px;
+/*        
+    margin-left: -70px;
+    */
+}
+.navbar-inverse .navbar-brand {
+    color: #fff;
+}
+.navtitle{
+     font-weight:bold;
+}
+.nav>li{
+/*         width: 154px;
+    text-align: center;*/
+}
+navbar-inverse .navbar-nav>.active>a, .navbar-inverse .navbar-nav>.active>a:hover, .navbar-inverse .navbar-nav>.active>a:focus {
+    color: #ffffff;
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+.navbar-inverse .navbar-nav>.active>a, .navbar-inverse .navbar-nav>.active>a:hover, .navbar-inverse .navbar-nav>.active>a:focus {
+    color: #ffffff;
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+input#main_title1 {
+    margin-bottom: -10px;
+}
+
+input#xaxis_title1 {
+    margin-bottom: -10px;
+}
+
+input#yaxis_title1 {
+    margin-bottom: -10px;
+}
+
+input#main_title2 {
+    margin-bottom: -10px;
+}
+
+input#xaxis_title2 {
+    margin-bottom: -10px;
+}
+
+input#yaxis_title2 {
+    margin-bottom: -10px;
+}
+
+input#main_title3 {
+    margin-bottom: -10px;
+}
+
+input#xaxis_title3 {
+    margin-bottom: -10px;
+}
+
+input#yaxis_title3 {
+    margin-bottom: -10px;
+}
+
+input#main_title4 {
+    margin-bottom: -10px;
+}
+
+input#xaxis_title4 {
+    margin-bottom: -10px;
+}
+
+input#yaxis_title4 {
+    margin-bottom: -10px;
+}
+
+.sectionhead1{
+     font-size: 1.5em;
+     padding-bottom: 10px;
+     font-weight: bold;
+     text-shadow: 1px 1px #fff;
+}
+
+.sectionhead{
+     font-size: 1.5em;
+     padding-bottom: 10px;
+     font-weight: bold;
+     text-shadow: 1px 1px #fff;
+}
+.sectionhead:before{
+ content: "";
+    display: block;
+    height: 1px;
+    width: 80%;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    /*background: #eeeeee;*/
+    border: 0;
+    border-bottom: 1px dashed #fff;
+    margin-left: 20px;
+}
+
+.sectionhead{
+     font-size: 1.3em;
+     padding-bottom: 10px;
+     font-weight: bold;
+}
+
+.control-label{
+
+     font-size: 1.1em;
+     font-weight: bold; 
+     display: block;
+     padding-bottom: 10px;
+
+}
+
 
 .well {
      padding: 12px;

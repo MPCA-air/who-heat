@@ -26,13 +26,12 @@ output$focus_source_year_explore <- renderUI({
 
   list(
   conditionalPanel(condition = "input.assessment_panel == 'datatable' | input.assessment_panel == 'dataplot'",
-  radioButtons("focus_data_source_explore", h5("Select data sources"),
+  radioButtons("focus_data_source_explore", "Select data sources",
                c("All", "DHS", "MICS"),
                inline=TRUE,
                selected="All")
   ),
-  
-  h5("Select years"),
+  tags$span(class="control-label", "Select years"),
   checkboxInput('mostrecent_explore', 'Most recent year', .rdata[['mostrecent']]),
   
   conditionalPanel( condition = "!input.mostrecent_explore",  
@@ -78,14 +77,14 @@ output$focus_dimension_explore <- renderUI({
 
 
 
-output$dataTableItems <- renderUI({
+output$dataTableItems_explore <- renderUI({
   
   if(!is.null(input$dataTableItems)) .rdata[['focus_table_variables']] <- input$dataTableItems
   
   list(
-    h4("Table options"),
+
     selectInput(inputId = "dataTableItems",
-                h5("Select table content"),
+                "Select table content",
                 choices = .rdata[['all_table_variables']],
                 selected = .rdata[['focus_table_variables']],
                 multiple=TRUE)
@@ -101,7 +100,7 @@ output$dataTableItems <- renderUI({
 
 output$disag_plot_type <- renderUI({
   
-  radioButtons("ai_plot_type", HTML("<h3>Plot options</h3><p><h4>Select chart type</h4></p>"),
+  radioButtons("ai_plot_type", "Select chart type",
                c("Bar Chart" = "data_bar",
                  "Line Chart" = "data_line"),
                inline=T,
@@ -114,11 +113,11 @@ output$disag_plot_type <- renderUI({
 output$disag_plot_dimensions <- renderUI({
   
   list(
-    sliderInput('plot_height1', h5('Height'), min=200, max=1500, value=400, step = 50,
+    sliderInput('plot_height1', 'Height', min=200, max=1500, value=400, step = 50,
                 round = T,
                 ticks = TRUE, animate = FALSE),
     
-    sliderInput('plot_width1', h5('Width'), min=200, max=1500, value=400, step = 50,
+    sliderInput('plot_width1', 'Width', min=200, max=1500, value=400, step = 50,
                 round = T,
                 ticks = TRUE, animate = FALSE)
   )
@@ -163,14 +162,13 @@ output$summary_measures <- renderUI({
   list(
     checkboxInput('summultiplier1', 'MLD and TI x1000', TRUE),
     checkboxInput('summultiplier2', 'RCI x100', TRUE),
-    sliderInput('sumsigfig', h5('Select estimate precision'), min=0, max=5, value=2, round=T, width='50%'),
+    sliderInput('sumsigfig', 'Select estimate precision', min=0, max=5, value=2, round=T, width='50%'),
     radioButtons(inputId='se_type', 
-                 label=h5('Select standard error type'), 
+                 label='Select standard error type', 
                  choices = c('Bootstrap and Analytic' = 'both',
                              'Analytic' = 'analytic',
-                             'Bootstrap' = 'bootstrap',
-                             'Aggregated' = 'balance'), 
-                 selected = 'balance', 
+                             'Bootstrap' = 'bootstrap'), 
+                 selected = 'both', 
                  inline = FALSE)
   )
 })
@@ -210,7 +208,9 @@ output$theDataPlot_web <- renderPlot({
   plotData <- datasetInput()
   plotData <- select(plotData, country, year, indic, subgroup, dimension, estimate, se)
   
-  #print(head(plotData))
+  validate(
+    need(!is.null(plotData) && nrow(plotData)>0, "There is no data for this combination of variables")
+  )
   
   if(!is.null(plotData) & nrow(plotData)>0){
     chartopt <- list()
@@ -270,7 +270,10 @@ output$dataTable <- renderDataTable({
   
   theData <- datasetInput()
   
-  #theData <- datasetInput()
+  validate(
+    need(!is.null(theData) && nrow(theData)>0, "There is no data for this combination of variables")
+  )
+  
   
   theData <- theData %>% 
     mutate(estimate = round(estimate, 2),
@@ -301,7 +304,7 @@ output$dataTable <- renderDataTable({
   
   
   theData
-}, options = list(dom = "ilftpr", pageLength = 10)  # see https://datatables.net/ for dataTable options
+}, options = list(dom = "ilftpr", pageLength = 100)  # see https://datatables.net/ for dataTable options
 )
 
 
@@ -369,6 +372,10 @@ output$dataTableInequal <- renderDataTable({
   
   theData <- datasetInequal()
   
+  validate(
+    need(!is.null(theData ) && nrow(theData )>0, "There is no data for this combination of variables")
+  )
+  
   if(is.null(input$sumsigfig)) return()
 
   if(!is.null(theData) && nrow(theData)>0){
@@ -428,7 +435,7 @@ output$dataTableInequal <- renderDataTable({
   }
 
   theData
-}, options = list(dom = "ilftpr", pageLength = 10)  # see https://datatables.net/ for dataTable options
+}, options = list(dom = "ilftpr", pageLength = 100)  # see https://datatables.net/ for dataTable options
 )
 
 
@@ -438,18 +445,19 @@ output$dataTableInequal <- renderDataTable({
 
 output$summary_plot_dimensions <- renderUI({
   list(
-    sliderInput('plot_height_sum', h5('Height'), min=200, max=1500, value=400, step = 50,
+    sliderInput('plot_height_sum', 'Height', min=200, max=1500, value=400, step = 50,
                 round = T,
                 ticks = TRUE, animate = FALSE),
     
-    sliderInput('plot_width_sum', h5('Width'), min=200, max=1500, value=600, step = 50,
+    sliderInput('plot_width_sum', 'Width', min=200, max=1500, value=600, step = 50,
                 round = T,
                 ticks = TRUE, animate = FALSE)
   )
 })
 
+
 output$summary_plot_type <- renderUI({
-  radioButtons("sumplot_type", HTML("<h3>Plot options</h3><p><h4>Select chart type</h4></p>"),
+  radioButtons("sumplot_type", "Select chart type",
                c("Bar Chart" = "data_bar",
                  "Line Chart" = "data_line"),
                inline=T,
@@ -560,13 +568,12 @@ output$focus_source_year_compare <- renderUI({
   
   list(
     conditionalPanel(condition = "input.comparison_panel == 'inequalbenchmark' | input.comparison_panel == 'inequaldisag'",
-                     radioButtons("focus_data_source_compare", h5("Select data sources"),
+                     radioButtons("focus_data_source_compare", "Select data sources",
                                   c("All", "DHS", "MICS"),
                                   inline=TRUE,
                                   selected="All")
     ),
-    
-    h5("Select years"),
+    tags$span(class="control-label", "Select years"),
     checkboxInput('mostrecent_compare', 'Most recent year', .rdata[['mostrecent']]),
     
     conditionalPanel( condition = "!input.mostrecent_compare",  
@@ -608,7 +615,7 @@ output$benchmark_countries <- renderUI({
   countries <- countries[!countries%in%focus]
   
   selectInput("benchmark_countries", 
-              h5("Select benchmark countries"), 
+              "Select benchmark countries", 
               choices=countries, 
               selected=.rdata[['benchmark_countries']],
               multiple=TRUE)
@@ -618,7 +625,7 @@ output$benchmark_countries <- renderUI({
 
 output$benchmarkWBgroup <- renderUI({
   
-  selectInput("benchmarkWBgroup", label = h5("Filter benchmark countries by income group"),
+  selectInput("benchmarkWBgroup", label = "Filter benchmark countries by income group",
               .rdata[['income_groups']],
               selected = NULL,
               multiple=T)
@@ -630,7 +637,7 @@ output$benchmarkWBgroup <- renderUI({
 output$benchmarkWHOregion <- renderUI({
   
   
-  selectInput("benchmarkWHOregion", label = h5("Filter benchmark countries by WHO region"),
+  selectInput("benchmarkWHOregion", label = "Filter benchmark countries by WHO region",
               .rdata[['who_regions']],
               selected = NULL,
               multiple=T)
@@ -640,7 +647,7 @@ output$benchmarkWHOregion <- renderUI({
 
 output$benchmarkYears <- renderUI({
   
-  sliderInput('benchmarkYears', h5('Select years'), min=0, max=5, value=2, step = 1,
+  sliderInput('benchmarkYears', 'Select years', min=0, max=5, value=2, step = 1,
               round = T, ticks = TRUE, animate = FALSE)
   
 })
@@ -649,7 +656,7 @@ output$benchmarkYears <- renderUI({
 output$benchmarkCountries <- renderUI({
   countries <- getFilteredCountries(input$benchmarkWBgroup, input$benchmarkWHOregion)  
   selectInput("benchmarkCountries", 
-              h5("Select countries"), 
+              "Select countries", 
               choices=countries, 
               selected=countries[1:5],
               multiple=T)
@@ -770,6 +777,7 @@ getBenchmarkDataSum <- reactive({
   #   if(!is.null(anchordata) && !is.null(benchmarkdata) && ncol(anchordata)==ncol(benchmarkdata))  
   theData <- rbind(anchordata, benchmarkdata) 
   
+  
   # Merge the relevant initial data with benchmarkdata
   
   return(theData)
@@ -789,27 +797,53 @@ output$dataTableBenchmark <- renderDataTable({
   
   theData <- getBenchmarkData()
 
+  validate(
+    need(!is.null(theData) && nrow(theData)>0, "There is no data for this combination of variables")
+  )
     if(is.null(theData)) return()
     #if(nrow(theData)==0) return()
 
     
-    theData <- select(theData, country, year, source, indic, dimension, subgroup, estimate)
-    names(theData)[names(theData)=="country" ] <- "Country" 
-    names(theData)[names(theData)=="year" ] <- "Year"
-    names(theData)[names(theData)=="source" ] <- "Data source"
-    names(theData)[names(theData)=="indic" ] <- "Health indicator" 
-    names(theData)[names(theData)=="dimension" ] <- "Inequality dimension"
-    names(theData)[names(theData)=="subgroup" ] <- "Subgroup"
-    names(theData)[names(theData)=="estimate" ] <- "Estimate"
+#     theData <- select(theData, country, year, source, indic, dimension, subgroup, estimate)
+#     #theData <- select(theData, country, year, source, indic, dimension, subgroup, estimate)
+#     names(theData)[names(theData)=="country" ] <- "Country" 
+#     names(theData)[names(theData)=="year" ] <- "Year"
+#     #names(theData)[names(theData)=="source" ] <- "Data source"
+#     names(theData)[names(theData)=="indic" ] <- "Health indicator" 
+#     names(theData)[names(theData)=="dimension" ] <- "Inequality dimension"
+#     names(theData)[names(theData)=="subgroup" ] <- "Subgroup"
+#     names(theData)[names(theData)=="estimate" ] <- "Estimate"
  
+    theData <- theData %>% 
+      mutate(estimate = round(estimate, 2),
+             lower_95ci = round(lower_95ci,2),
+             upper_95ci = round(upper_95ci,2),
+             popshare = round(popshare, 2),
+             national = round(national, 2))
     
+    theData<-theData %>% 
+      rename(
+        Country                = country,
+        Year                   = year,
+        #`Data source`          = source,
+        `Health indicator`     = indic,
+        `Inequality dimension` = dimension,
+        Subgroup               = subgroup,
+        Estimate               = estimate,
+        `Lower 95%CI`          = lower_95ci,
+        `Upper 95%CI`          = upper_95ci,
+        `Population share %`   = popshare,
+        `National estimate`    = national,
+        Flag                   = flag
+      ) 
     
+    theData <- theData[, input$dataTableItems]
       return(theData)
 
   #})
   
 
-}, options = list(dom = "ilftpr", pageLength = 10)  # see https://datatables.net/ for dataTable options
+}, options = list(dom = "ilftpr", pageLength = 100)  # see https://datatables.net/ for dataTable options
 )
 
 
@@ -839,10 +873,13 @@ output$theComparisonPlot1_web <- renderPlot({
   
   plotData <- getBenchmarkData()
 
-  if(is.null(plotData) || nrow(plotData)==0){
-    return()
-  }
-  else{
+  
+  if(is.null(plotData) || nrow(plotData)==0) return()
+
+  validate(
+    need(!is.null(plotData) && nrow(plotData)>0, "There is no data for this combination of variables")
+  )
+  
     plotData <- plotData[, c('country', 'year', 'indic', 'subgroup', 'dimension', 'estimate', 'se')]
     
     if(input$long_names3==T){
@@ -870,7 +907,7 @@ output$theComparisonPlot1_web <- renderPlot({
 
     p <- plotFigure5(plotData, chartoptions=chartopt)
     return(p)
-  }
+  
 })  
 
 
@@ -905,13 +942,13 @@ output$theComparisonPlot2_web <- renderPlot({
   #print(getData5())
   plotData<-getBenchmarkDataSum()
   
-  if(is.null(plotData) || nrow(plotData)==0){
+  validate(
+    need(!is.null(plotData) && nrow(plotData)>0, "There is no data for this combination of variables")
+  )
+  
+
     
-    return()
-  }
-    
-  else{
-    #print('Never got here')
+
     plotData <- plotData[, c('country', 'ccode', 'year', 'indic', 'estimate', 'dimension', 
                              'measure', 'inequal', 'boot.se', 'se', 'anchor')]
     
@@ -938,7 +975,7 @@ output$theComparisonPlot2_web <- renderPlot({
     
     p <- plotFigure6(plotData, chartoptions=chartopt)
     return(p)
-  }
+
 })  
 
 

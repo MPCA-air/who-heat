@@ -6,7 +6,8 @@ output$home_ui <- renderUI({
          
         
         helpText("This application uses the"),
-        h2("Health Equity Monitor Database")
+        tags$div(class="sectionhead1", "Health Equity Monitor Database")
+
 
         
       ),
