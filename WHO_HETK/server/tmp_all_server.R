@@ -697,14 +697,13 @@ getBenchmarkData <- reactive({
   #print(head(anchordata))
   if(!is.null(anchordata) && nrow(anchordata)>0) anchordata$anchor <- 1
   
-  benchmarkdata <- getComparisonCountries(indicator = input$focus_indicator_compare, 
+  benchmarkdata <- getDisagData(indicator = input$focus_indicator_compare, 
                                           stratifier = input$focus_dimension_compare, 
                                           countries = input$benchmark_countries, 
-                                          years =  unique(input$focus_year_compare), 
+                                          years =  input$focus_year_compare, 
                                           mostrecent = input$mostrecent_compare,
                                           datasource = input$focus_data_source_compare,
-                                          elasticity = input$benchmarkYears, 
-                                          matchyears=F)
+                                          elasticity = input$benchmarkYears)
   
   
   if(!is.null(benchmarkdata) && nrow(benchmarkdata)>0) benchmarkdata$anchor <- 0

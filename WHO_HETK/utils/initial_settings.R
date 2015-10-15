@@ -1,4 +1,4 @@
-
+#setwd("X:/projects/who_heat/web/who-heat/WHO_HETK")
 .rdata<<-list()
 #if(input$dataSource == "HETK"){
 .rdata[['focus_country']]<<-"Armenia"

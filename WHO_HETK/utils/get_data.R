@@ -126,15 +126,24 @@ getInequalData <- function(indicator = NULL, stratifier = NULL, countries = NULL
 }
 
 
-getDisagData <- function(indicator = NULL, stratifier = NULL, countries = NULL, years = NULL, mostrecent=FALSE, datasource=NULL){
-  #print(mostrecent)
-  #print("Getting data from getHETKdata")
-  #print(.rdata[['focus_country']])
+getDisagData <- function(indicator = NULL, stratifier = NULL, countries = NULL, 
+                         years = NULL, mostrecent=FALSE, datasource=NULL, 
+                         elasticity=NULL){
   
-  #if(is.null(countries))return()
-  # countries <- c("Afghanistan", "Armenia")
+
   
-  #mostrecent<- .rdata[['mostrecent']]
+
+  
+  if(!is.null(elasticity)){
+    # if mostrecent is TRUE then we want the focus_year, otherwise
+    # we can use the input year
+    years <- as.integer(years)
+    years<-seq(years-elasticity, years+elasticity)
+
+    
+  }
+  
+  
   
   filt_country <- TRUE
   filt_year <- TRUE
@@ -145,7 +154,7 @@ getDisagData <- function(indicator = NULL, stratifier = NULL, countries = NULL, 
   
   
     if(!is.null(countries)) filt_country <- quote(country %in% countries)
-    if(!is.null(years) && !is.null(mostrecent) && !mostrecent) filt_year <- quote(year %in% years)
+    if(!is.null(years) && !is.null(mostrecent)) filt_year <- quote(year %in% years)
     if(!is.null(years) && is.null(mostrecent)) filt_year <- quote(year %in% years)
     if(!is.null(indicator)) filt_indicator <- quote(indic %in% indicator)
     if(!is.null(stratifier)) filt_dimension <- quote(dimension %in% stratifier)
@@ -205,12 +214,17 @@ getDisagData <- function(indicator = NULL, stratifier = NULL, countries = NULL, 
   #names(hetk.data)[which(names(hetk.data)=='r_lower')] <- 'lower_95ci'
   #names(hetk.data)[which(names(hetk.data)=='r_upper')] <- 'upper_95ci'
   
-  if(!is.null(mostrecent) && mostrecent) {
-    hetk.data <- filter(hetk.data, year == max(hetk.data$year))
+
+  if(!is.null(elasticity)){
+
+    maxyear <- group_by(hetk.data, country) %>% 
+      summarise(maxyr = max(year))
+    
+    hetk.data <- semi_join(hetk.data, maxyear, by=c("year" = "maxyr"))
+    
   }
   
   hetk.data <- orderHetkFactors(hetk.data)
-  #print(head(.rdata[['maindata']]))
   
   return(hetk.data)
 }
@@ -235,58 +249,87 @@ orderHetkFactors <- function(DF){
 #******************************************************************************
 # 
 #******************************************************************************
-
-getComparisonCountries <- function(indicator = NULL, stratifier = NULL, countries = NULL, 
-                                   years = NULL, mostrecent=FALSE, datasource=NULL, 
-                                   elasticity, matchyears=F){
-  
-  # indicator: one pre-selected health indicator
-  # stratifier: one pre-selected equity dimension
-  # countries: one or more pre-selected benchmark countries
-  # years: one or more comparison years
-  # elasticity: the number of years around which the benchmark countries' years of data collection can vary from the base country
-  
-  # countries<-c("Afghanistan", "Armenia")
-  # elasticity <-c(2010)
-  
-  
-  for(i in countries){
-    #i<-"Afghanistan"
-    available_years <- filter(.rdata[['years']], country == i) %>% .$year
-    
-    for(j in as.integer(years)){
-      #j<-2010
-      elastic_years <- available_years[nearest(j, available_years, limit=elasticity, all=T)]
-      
-      if(length(elastic_years)>0){
-        if(!(elastic_years==F)){  # Check to see that there is a relevant year
-          elastic_years <- max(elastic_years)      
-          yearsdata <- getDisagData(indicator=indicator,
-                                    stratifier=stratifier, 
-                                    countries = i, 
-                                    years = elastic_years, 
-                                    datasource=datasource)
-          if(nrow(yearsdata)>0 & matchyears==T){
-            yearsdata$year <- j  # Fix the benchmark year to the anchor year not the actual benchmark year
-          }
-          if(exists('mergedDF') & nrow(yearsdata)>0){
-            mergedDF <- rbind(mergedDF, yearsdata)
-          }
-          if(!exists('mergedDF') & nrow(yearsdata)>0){
-            mergedDF <- yearsdata
-          }
-        }
-      }
-    }
-  }
-  #  dbDisconnect(con)
-  if(exists('mergedDF')){
-    return(mergedDF)
-  }
-  else{
-    return(NULL)
-  }
-}
+# 
+# getComparisonCountries <- function(indicator = NULL, stratifier = NULL, countries = NULL, 
+#                                    years = NULL, mostrecent=FALSE, datasource=NULL, 
+#                                    elasticity, matchyears=F){
+#   
+#   
+#   # indicator: one pre-selected health indicator
+#   # stratifier: one pre-selected equity dimension
+#   # countries: one or more pre-selected benchmark countries
+#   # years: one or more comparison years
+#   # elasticity: the number of years around which the benchmark countries' years of data collection can vary from the base country
+#   
+#   # countries<-c("Afghanistan", "Armenia")
+#   # elasticity <-c(2010)
+#   
+#   #indicator <- "carep"
+#   #stratifier <- "Sex"
+#   #countries <- c("Armenia", "Afghanistan")
+#   #datasource = "All"
+#   #years <- 2010
+#   #elasticity <- 5
+#   
+#   thedata <-getDisagData(indicator=indicator,
+#                stratifier=stratifier, 
+#                countries = countries, 
+#                datasource=datasource)
+#   
+#   
+#   # initial year restriction
+#   
+#   thedata<-filter(thedata, year%in%seq(years-elasticity, years+elasticity))
+#   
+#   # looks like it takes the max year
+#   
+#   maxyear <- group_by(thedata, country) %>% 
+#     summarise(maxyr = max(year))
+#   
+#   thedata <- semi_join(thedata, maxyear, by=c("year" = "maxyr"))
+#   
+#   # what does this do, matchyears? I think nothing since match years are false
+# #   if(nrow(yearsdata)>0 & matchyears==T){
+# #     yearsdata$year <- j  # Fix the benchmark year to the anchor year not the actual benchmark year
+# #   }
+# #   
+#   for(i in countries){
+#     #i<-"Armenia"
+#     available_years <- filter(.rdata[['years']], country == i) %>% .$year
+#     print(paste0("elasticity ", elasticity))
+#     for(j in as.integer(years)){
+#       #j<-2010
+#       elastic_years <- available_years[nearest(j, available_years, limit=elasticity, all=T)]
+#       
+#       if(length(elastic_years)>0){
+#         if(!(elastic_years==F)){  # Check to see that there is a relevant year
+#           elastic_years <- max(elastic_years)      
+#           yearsdata <- getDisagData(indicator=indicator,
+#                                     stratifier=stratifier, 
+#                                     countries = i, 
+#                                     years = elastic_years, 
+#                                     datasource=datasource)
+#           if(nrow(yearsdata)>0 & matchyears==T){
+#             yearsdata$year <- j  # Fix the benchmark year to the anchor year not the actual benchmark year
+#           }
+#           if(exists('mergedDF') & nrow(yearsdata)>0){
+#             mergedDF <- rbind(mergedDF, yearsdata)
+#           }
+#           if(!exists('mergedDF') & nrow(yearsdata)>0){
+#             mergedDF <- yearsdata
+#           }
+#         }
+#       }
+#     }
+#   }
+#   #  dbDisconnect(con)
+#   if(exists('mergedDF')){
+#     return(mergedDF)
+#   }
+#   else{
+#     return(NULL)
+#   }
+# }
 
 
 

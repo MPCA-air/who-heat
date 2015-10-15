@@ -174,6 +174,7 @@ observe({
   
   
   
+  
   year <- isolate(input$focus_year_compare)
   
   
@@ -209,6 +210,11 @@ observe({
   if(is.null(input$mostrecent_explore)) return()
   .rdata[['mostrecent']] <<- input$mostrecent_explore
   
+  selectYears <- getFilteredYear(country=isolate(input$focus_country_explore), 
+                                 isolate(input$focus_data_source_explore))
+
+  .rdata[['focus_year']]<<-selectYears[1]
+
   mostrecent <- isolate(input$mostrecent_compare)
   
   
@@ -216,6 +222,8 @@ observe({
     updateCheckboxInput(session,'mostrecent_compare', value=.rdata[['mostrecent']])
   }
   
+  updateSelectInput(session, 'focus_year_explore', selected = .rdata[['focus_year']])
+  updateSelectInput(session, 'focus_year_compare', selected = .rdata[['focus_year']])
   
 })
 
@@ -227,6 +235,12 @@ observe({
   if(is.null(input$mostrecent_compare)) return()
   .rdata[['mostrecent']] <<- input$mostrecent_compare
   
+  
+  selectYears <- getFilteredYear(country=isolate(input$focus_country_compare), 
+                                 isolate(input$focus_data_source_compare))
+  
+  .rdata[['focus_year']]<<-selectYears[1]
+
   mostrecent <- isolate(input$mostrecent_explore)
   
   
@@ -234,6 +248,9 @@ observe({
     updateCheckboxInput(session,'mostrecent_explore', value=.rdata[['mostrecent']])
   }
   
+  
+  updateSelectInput(session, 'focus_year_explore', selected = .rdata[['focus_year']])
+  updateSelectInput(session, 'focus_year_compare', selected = .rdata[['focus_year']])
   
 })
 
