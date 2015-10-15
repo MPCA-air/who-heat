@@ -14,7 +14,7 @@ library(grid)
 library(RColorBrewer)
 
 #######PLOT 1
-plotBar_explore <- function(plotData, chartoptions=NULL){
+plotDisagBar_explore <- function(plotData, chartoptions=NULL){
   # Plot 1: Barchart for a single country (Disaggregation of data)
   
   #print("plotFigure1() in plotter.R")
@@ -96,11 +96,14 @@ plotBar_explore <- function(plotData, chartoptions=NULL){
 
 
 #######PLOT 2
-plotFigure2 <- function(plotData, chartoptions=NULL){
+plotDisagLine_explore <- function(plotData, chartoptions=NULL){
   #  Plot 2: Horizontal line chart for a single country (Disaggregation of data)
+  #plotData <-theData
+  #chartoptions <-list(axmax=NA, axmin=NA)
+  print(chartoptions)
   
   if(!('geo_only' %in% names(chartoptions))){
-    plotPch <- c(17, 15, 18, 19, 15)
+    #plotPch <- c(17, 15, 18, 19, 15)
     legendRow <- 1
     plotPalette <- c()
     sexPalette <- c('#FF7F0F', '#B85A0D')  # ORANGE
@@ -154,14 +157,15 @@ plotFigure2 <- function(plotData, chartoptions=NULL){
   }
   
   p <- ggplot(plotData, aes(estimate, as.factor(year))) + geom_line()
+  p <- p + geom_point(aes(color=subgroup), size=4) 
   
-  p <- p + geom_point(aes(color=subgroup, shape=dimension), size=4) 
+  #p <- p + geom_point(aes(color=subgroup, shape=dimension), size=4) 
   
-  if(!('geo_only' %in% names(chartoptions))){
-    p <- p + scale_shape_manual(values=plotPch, guide=F)
-  } else {
-    p <- p + scale_shape_manual(values=15, guide=F)
-  }
+#   if(!('geo_only' %in% names(chartoptions))){
+#     p <- p + scale_shape_manual(values=plotPch, guide=F)
+#   } else {
+#     p <- p + scale_shape_manual(values=15, guide=F)
+#   }
   
   if(!("Geographic region" %in% plotData$dimension)){
     p <- p + scale_colour_manual(name="",
@@ -176,22 +180,37 @@ plotFigure2 <- function(plotData, chartoptions=NULL){
   }
   
   
-  if(F){
-    p <- p + facet_grid(" indic + dimension ~ . ", scale="free_y", space = "free_y")
-  }
-  if(T){
+#   if(F){
+#     p <- p + facet_grid(" indic + dimension ~ . ", scale="free_y", space = "free_y")
+#   }
+
     p <- p + facet_grid("dimension + indic ~ . ", scale="free_y", space = "free_y")  
-  }
+
   
   if(!('geo_only' %in% names(chartoptions))){
     p <- p + theme(legend.position="bottom", panel.margin = unit(1, "mm"), 
-                   strip.text.y = element_text(colour = "black", angle = 0, size = 10,
+                   axis.text.x = element_text(size=12),
+                   axis.text.y = element_text(size=12),
+                   strip.text.y = element_text(colour = "black", angle = 0, size = 12,
                                                hjust = 0.5, vjust = 0.5),
                    panel.background = element_rect(fill='white'),
-                   panel.grid.major = element_line(colour = "dark grey"),
-                   panel.grid.minor = element_line(colour = "dark grey"),
-                   axis.line = element_line(colour = "black"),
-                   legend.key = element_rect(fill = "white"))
+                   panel.grid.major = element_blank(),#element_line(colour = "dark grey"),
+                   panel.grid.minor = element_blank(),#element_line(colour = "dark grey"),
+                   axis.line = element_blank(),#element_line(colour = "black"),
+                   legend.key = element_rect(fill = "white"),
+                   strip.background = element_rect(colour = "black", fill="white", size=1),
+                  panel.border = element_rect(colour = "black", fill=NA, size=1)
+                   ) 
+    
+#     g <- ggplotGrob(p)
+#     
+#     g$layout[g$layout$name == "strip-right",c("l", "r")] <- 3
+#     g$layout[g$layout$name == "axis-l",c("l", "r")] <- 5
+#     grid.newpage()
+#     grid.draw(g)
+    
+    
+    
   } else {    
     p <- p + theme(legend.position="bottom", panel.margin = unit(1, "mm"), 
                    strip.text.y = element_text(colour = "black", angle = 0, size = 10,

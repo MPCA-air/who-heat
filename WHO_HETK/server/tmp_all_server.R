@@ -236,13 +236,13 @@ output$theDataPlot_web <- renderPlot({
     
     
     if(input$assessment_panel == 'dataplot' & input$ai_plot_type=='data_bar'){        
-      p <- plotBar_explore(plotData, chartoptions=chartopt)
+      p <- plotDisagBar_explore(plotData, chartoptions=chartopt)
       
       print(p)
     }
     if(input$assessment_panel == 'dataplot' & input$ai_plot_type=='data_line'){
       
-      p <- plotFigure2(plotData, chartoptions=chartopt)
+      p <- plotDisagLine_explore(plotData, chartoptions=chartopt)
       print(p)
     }
   }

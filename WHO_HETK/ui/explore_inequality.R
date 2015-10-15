@@ -158,7 +158,7 @@ output$explore_inequality_ui <- renderUI({
                   tabPanel(HTML("<h6 style='text-align: center;'>Disaggregated data</br>(graphs)<h6>"), value='dataplot' ,
                            uiOutput('btnDownloadDisagPlotData_explore'),
                            uiOutput('btnDownloadDisagPlot_explore'),
-                           plotOutput('theDataPlot_web')
+                           plotOutput('theDataPlot_web', height="500px")
                            ), 
                   tabPanel(HTML("<h6 style='text-align: center;'>Summary measures</br>(tables)<h6>"), value='sumtable' , 
                            uiOutput('btnDownloadSummaryData_explore'),
