@@ -232,7 +232,7 @@ output$theDataPlot_web <- renderPlot({
     if(input$yaxis_title1 != ""){
       chartopt <- lappend(chartopt, 'yaxis_title' = input$yaxis_title1)
     }
-    
+     
     
     
     if(input$assessment_panel == 'dataplot' & input$ai_plot_type=='data_bar'){        
