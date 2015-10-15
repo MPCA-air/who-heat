@@ -25,12 +25,12 @@ output$focus_country_explore <- renderUI({
 output$focus_source_year_explore <- renderUI({
 
   list(
-  conditionalPanel(condition = "input.assessment_panel == 'datatable' | input.assessment_panel == 'dataplot'",
+  #conditionalPanel(condition = "input.assessment_panel == 'datatable' | input.assessment_panel == 'dataplot'",
   radioButtons("focus_data_source_explore", "Select data sources",
                c("All", "DHS", "MICS"),
                inline=TRUE,
-               selected="All")
-  ),
+               selected="All"),
+ # ),
   tags$span(class="control-label", "Select years"),
   checkboxInput('mostrecent_explore', 'Most recent year', .rdata[['mostrecent']]),
   
@@ -567,12 +567,12 @@ output$focus_indicator_compare <- renderUI({
 output$focus_source_year_compare <- renderUI({
   
   list(
-    conditionalPanel(condition = "input.comparison_panel == 'inequalbenchmark' | input.comparison_panel == 'inequaldisag'",
+    #conditionalPanel(condition = "input.comparison_panel == 'inequalbenchmark' | input.comparison_panel == 'inequaldisag'",
                      radioButtons("focus_data_source_compare", "Select data sources",
                                   c("All", "DHS", "MICS"),
                                   inline=TRUE,
-                                  selected="All")
-    ),
+                                  selected="All"),
+    #),
     tags$span(class="control-label", "Select years"),
     checkboxInput('mostrecent_compare', 'Most recent year', .rdata[['mostrecent']]),
     
@@ -741,6 +741,8 @@ getBenchmarkDataSum <- reactive({
                                           stratifier = input$focus_dimension_compare, 
                                           countries = input$focus_country_compare, 
                                           years =  unique(input$focus_year_compare), 
+                                          mostrecent = input$mostrecent_compare,
+                                          datasource = input$focus_data_source_compare,
                                           elasticity = input$benchmarkYears, 
                                           matchyears=F,
                                           summeasure = input$focus_inequal_type_compare)
@@ -752,6 +754,8 @@ getBenchmarkDataSum <- reactive({
                                           stratifier = input$focus_dimension_compare, 
                                           countries = input$benchmark_countries, 
                                           years =  unique(input$focus_year_compare), 
+                                          mostrecent = input$mostrecent_compare,
+                                          datasource = input$focus_data_source_compare,
                                           elasticity = input$benchmarkYears, 
                                           matchyears=F,
                                           summeasure = input$focus_inequal_type_compare)

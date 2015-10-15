@@ -24,6 +24,7 @@ getInequalData <- function(indicator = NULL, stratifier = NULL, countries = NULL
   filt_indicator <- TRUE
   filt_dimension <- TRUE
   filt_inequaltype<- TRUE
+  filt_datasource <- TRUE
   
   if(!is.null(countries)) filt_country <- quote(country %in% countries)
   if(!is.null(years) && !is.null(mostrecent) && !mostrecent) filt_year <- quote(year %in% years)
@@ -31,6 +32,8 @@ getInequalData <- function(indicator = NULL, stratifier = NULL, countries = NULL
   if(!is.null(indicator)) filt_indicator <- quote(indic %in% indicator)
   if(!is.null(stratifier)) filt_dimension <- quote(dimension %in% stratifier)
   if(!is.null(inequal_types)) filt_inequaltype <- quote(measure %in% inequal_types)
+  if(!is.null(datasource) && datasource == 'All') filt_datasource <- TRUE
+  if(!is.null(datasource) && datasource != 'All') filt_datasource <- quote(source == datasource)
   
   #     print(paste0('filt_country:', deparse(filt_country)))
   #     print(paste0('filt_year:', deparse(filt_year)))
@@ -42,7 +45,8 @@ getInequalData <- function(indicator = NULL, stratifier = NULL, countries = NULL
   #     print(paste0('indicator:', indicator))
   #     print(paste0('dimension:', stratifier))
   
-  ineqDF <- filter(.rdata[['inequals']], filt_country, filt_year, filt_indicator, filt_dimension, filt_inequaltype) %>% 
+  ineqDF <- filter(.rdata[['inequals']], filt_country, filt_year, filt_indicator, 
+                   filt_dimension, filt_inequaltype, filt_datasource) %>% 
     select(country, year, indic, dimension, measure, inequal, boot.se, se, ccode)
   
   #   if(is.null(ineqDF)){
@@ -293,7 +297,8 @@ getComparisonCountries <- function(indicator = NULL, stratifier = NULL, countrie
 
 
 getComparisonSummaries <- function(summeasure=NULL, indicator=NULL, stratifier=NULL, 
-                                   countries=NULL, years=NULL, elasticity=NULL, matchyears=F){
+                                   countries=NULL, years=NULL, mostrecent=FALSE, datasource=NULL,
+                                   elasticity=NULL, matchyears=F){
   # summeasure: the Inequality summary measure
   # indicator: one pre-selected health indicator
   # stratifier: one pre-selected equity dimension

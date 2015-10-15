@@ -76,7 +76,10 @@ years <- select(maindata, country, year, source) %>%  distinct
 # xx<-filter(.rdata[['inequals']], country=="Armenia", year==2010, indic=="carep")
 # xx<-filter(.rdata[['inequals']], measure %in% c("rci", "mld"))
 # 
-# 
+
+# this is for testing purposes
+# inequals<-readRDS("X:/projects/who_heat/web/who-heat/WHO_HETK/data/inequals.RDS")
+# inequals$source<-"DHS"
 
 
 
