@@ -168,7 +168,8 @@ observe({
 
 observe({
 
-  if(is.null(input$focus_country_explore) && is.null(input$focus_country_compare)) return()
+  if(is.null(input$focus_country_compare)) return()
+  
   .rdata[['benchmark_countries']]<<-input$benchmark_countries
   print(.rdata[['benchmark_countries']])
   

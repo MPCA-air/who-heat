@@ -133,7 +133,7 @@ getInequalData <- function(indicator = NULL, stratifier = NULL, countries = NULL
   
   #!!!!! You need source!!!! but inequal does not have it yet
   #ineqDF <- left_join(ineqDF, nationaldata, by=c('country', 'year', 'source', 'indic'))
-  ineqDF <- left_join(ineqDF, nationaldata, by=c('country', 'year', 'indic'))
+  ineqDF <- left_join(ineqDF, select(nationaldata, -source), by=c('country', 'year', 'indic'))
   
   
   ineqDF <- rename(ineqDF, estimate = r)

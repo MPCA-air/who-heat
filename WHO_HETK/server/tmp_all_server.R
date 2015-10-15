@@ -867,8 +867,9 @@ output$dataTableBenchmark <- renderDataTable({
       ) 
     
     
-    vars<-c("Country", "Year", "Data source", "Health indicator", "Inequality dimension", 
-                                                "Subgroup", "Estimate",  "Lower 95%CI", "Upper 95%CI")
+    vars<-c("Country", "Year", "Health indicator", "Inequality dimension", 
+                                                "Subgroup", "Estimate",  "Lower 95%CI", "Upper 95%CI",
+            "Population share %")
      theData <- theData[, vars]
 
       return(theData)

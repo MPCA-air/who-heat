@@ -20,10 +20,10 @@ output$explore_inequality_ui <- renderUI({
       ),
       conditionalPanel(condition = "input.assessment_panel == 'dataplot'",
 
-                       tags$div(class="sectionhead", "Plot options"),
+                       tags$div(class="sectionhead", "Graph options"),
                        uiOutput("disag_plot_type"),
 
-                       tags$span(class="control-label", "Select plot names"),
+                       tags$span(class="control-label", "Select graph names"),
                 
                        textInputRow(inputId="axis_limitsmin1", label=h5("Axis-min"), value = NULL),
                        textInputRow(inputId="axis_limitsmax1", label=h5("Axis-max"), value = NULL),
@@ -48,10 +48,10 @@ output$explore_inequality_ui <- renderUI({
       ),
       conditionalPanel(condition = "input.assessment_panel == 'sumplot'",
                        
-                       tags$div(class="sectionhead", "Plot options"),
+                       tags$div(class="sectionhead", "Graph options"),
                        uiOutput("summary_plot_type"),
  
-                       tags$span(class="control-label", "Select plot names"),
+                       tags$span(class="control-label", "Select graph names"),
                        
                        #checkboxInput(inputId='long_names2', label='Long health indicator names', value = FALSE),
                        textInputRow(inputId="axis_limitsmin2", label=h5("Axis-min"), value = NULL),
@@ -80,15 +80,15 @@ output$explore_inequality_ui <- renderUI({
               downloadButton(outputId = 'btnStartDownloadDisagData_explore', label = "Start"),
               size = "medium"),
       
-      bsModal(id = "dataplotModal", title = "Download disaggregated plot (PDF)", trigger = "btnDownloadDisagPlot_explore", 
+      bsModal(id = "dataplotModal", title = "Download disaggregated graph (PDF)", trigger = "btnDownloadDisagPlot_explore", 
               tags$p("Set the dimensions for the plot here and download it."),
               br(),
               tags$p("Titles and axis labels are displayed according to your selections."),
               br(),
               tags$p("Close the window once the download has commenced."),
               br(),
-              textInput("disagPlotWitdth_explore", "Plot width (cm)", value="15" ),
-              textInput("disagPlotHeight_explore", "Plot width (cm)", value="12" ),
+              textInput("disagPlotWitdth_explore", "Graph width (cm)", value="15" ),
+              textInput("disagPlotHeight_explore", "Graph width (cm)", value="12" ),
               selectInput(inputId="disagPlotType_explore", label='Output format:',
                           choices=c("PDF" = "PDF",
                                     "PNG" = "PNG",
@@ -120,15 +120,15 @@ output$explore_inequality_ui <- renderUI({
               downloadButton(outputId = 'btnStartDownloadSummaryData_explore', label = "Start", class = NULL),
               size = "medium"),
       
-      bsModal(id = "summplotModal", title = "Download summary plot (PDF)", trigger = "btnDownloadSummaryPlot_explore", 
+      bsModal(id = "summplotModal", title = "Download summary graph (PDF)", trigger = "btnDownloadSummaryPlot_explore", 
               tags$p("Set the dimensions for the plot here and download it."),
               br(),
               tags$p("Titles and axis labels are displayed according to your selections."),
               br(),
               tags$p("Close the window once the download has commenced."),
               br(),
-              textInput("summaryPlotWitdth_explore", "Plot width (cm)", value="15" ),
-              textInput("summaryPlotHeight_explore", "Plot width (cm)", value="12" ),
+              textInput("summaryPlotWitdth_explore", "Graph width (cm)", value="15" ),
+              textInput("summaryPlotHeight_explore", "Graph width (cm)", value="12" ),
               selectInput(inputId="summaryPlotType_explore", label='Output format:',
                           choices=c("PDF" = "PDF",
                                     "PNG" = "PNG",
