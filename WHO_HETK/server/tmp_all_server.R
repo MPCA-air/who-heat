@@ -735,29 +735,53 @@ getBenchmarkDataSum <- reactive({
   input$benchmarkWHOregion
   input$getcomparisondata1
   
+  if(is.null(input$focus_inequal_type_compare)) return()
   
-  anchordata <- getComparisonSummaries(indicator = input$focus_indicator_compare, 
-                                          stratifier = input$focus_dimension_compare, 
-                                          countries = input$focus_country_compare, 
-                                          years =  unique(input$focus_year_compare), 
-                                          mostrecent = input$mostrecent_compare,
-                                          datasource = input$focus_data_source_compare,
-                                          elasticity = input$benchmarkYears, 
-                                          matchyears=F,
-                                          summeasure = input$focus_inequal_type_compare)
-  
+  anchordata <- getInequalData(indicator=input$focus_indicator_compare,  
+                           stratifier=input$focus_dimension_compare, 
+                           countries=input$focus_country_compare, 
+                           years=input$focus_year_compare, 
+                           mostrecent=input$mostrecent_compare,
+                           datasource=input$focus_data_source_compare,  
+                           inequal_types=input$focus_inequal_type_compare,
+                           elasticity = input$benchmarkYears,
+                           multiplier1 = input$summultiplier1,
+                           multiplier2 = input$summultiplier2)
+ 
   #print(head(anchordata))
+  
+#   anchordata <- getComparisonSummaries(indicator = input$focus_indicator_compare, 
+#                                           stratifier = input$focus_dimension_compare, 
+#                                           countries = input$focus_country_compare, 
+#                                           years =  unique(input$focus_year_compare), 
+#                                           mostrecent = input$mostrecent_compare,
+#                                           datasource = input$focus_data_source_compare,
+#                                           elasticity = input$benchmarkYears, 
+#                                           matchyears=F,
+#                                           summeasure = input$focus_inequal_type_compare)
+
   if(!is.null(anchordata)) anchordata$anchor <- 1
   
-  benchmarkdata <- getComparisonSummaries(indicator = input$focus_indicator_compare, 
-                                          stratifier = input$focus_dimension_compare, 
-                                          countries = input$benchmark_countries, 
-                                          years =  unique(input$focus_year_compare), 
-                                          mostrecent = input$mostrecent_compare,
-                                          datasource = input$focus_data_source_compare,
-                                          elasticity = input$benchmarkYears, 
-                                          matchyears=F,
-                                          summeasure = input$focus_inequal_type_compare)
+  benchmarkdata <- getInequalData(indicator=input$focus_indicator_compare,  
+                               stratifier=input$focus_dimension_compare, 
+                               countries=input$benchmark_countries, 
+                               years=input$focus_year_compare, 
+                               mostrecent=input$mostrecent_compare,
+                               datasource=input$focus_data_source_compare,  
+                               inequal_types=input$focus_inequal_type_compare,
+                               elasticity = input$benchmarkYears,
+                               multiplier1 = input$summultiplier1,
+                               multiplier2 = input$summultiplier2)
+  
+#   benchmarkdata <- getComparisonSummaries(indicator = input$focus_indicator_compare, 
+#                                           stratifier = input$focus_dimension_compare, 
+#                                           countries = input$benchmark_countries, 
+#                                           years =  unique(input$focus_year_compare), 
+#                                           mostrecent = input$mostrecent_compare,
+#                                           datasource = input$focus_data_source_compare,
+#                                           elasticity = input$benchmarkYears, 
+#                                           matchyears=F,
+#                                           summeasure = input$focus_inequal_type_compare)
   
 #       thedata <- getComparisonSummaries(summeasure=input$compplotSumMeasure, 
 #                                         indicator=input$compplotSumHealthIndicator, 
@@ -767,7 +791,7 @@ getBenchmarkDataSum <- reactive({
 #                                         elasticity=input$benchmarkYears, matchyears=T)
   
   if(!is.null(benchmarkdata)) benchmarkdata$anchor <- 0
-  
+  #print(head(benchmarkdata))
   #     benchmarkdata <- getComparisonCountries(indicator = input$compplotBenchHealthIndicator, 
   #                                             stratifier = input$compplotBenchEquityDimension, 
   #                                             countries = input$benchmarkCountries, 
@@ -778,6 +802,7 @@ getBenchmarkDataSum <- reactive({
   
   
   #   if(!is.null(anchordata) && !is.null(benchmarkdata) && ncol(anchordata)==ncol(benchmarkdata))  
+
   theData <- rbind(anchordata, benchmarkdata) 
   
   
@@ -883,6 +908,8 @@ output$theComparisonPlot1_web <- renderPlot({
     need(!is.null(plotData) && nrow(plotData)>0, "There is no data for this combination of variables")
   )
   
+  
+  
     plotData <- plotData[, c('country', 'year', 'indic', 'subgroup', 'dimension', 'estimate', 'se')]
     
     if(input$long_names3==T){
@@ -950,7 +977,7 @@ output$theComparisonPlot2_web <- renderPlot({
   )
   
 
-    
+
 
     plotData <- plotData[, c('country', 'ccode', 'year', 'indic', 'estimate', 'dimension', 
                              'measure', 'inequal', 'boot.se', 'se', 'anchor')]

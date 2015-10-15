@@ -5,20 +5,20 @@
 
 
 getInequalData <- function(indicator = NULL, stratifier = NULL, countries = NULL, years = NULL,
-                       mostrecent=NULL, datasource=NULL,  inequal_types=NULL, multiplier1=TRUE,multiplier2=TRUE){
-  #print("In getInequal function a")
-  #print(paste0(indicator, stratifier, countries, years))
-  # Fetch the inequalities data from the inbuilt database  
+                       mostrecent=NULL, datasource=NULL,  inequal_types=NULL, multiplier1=TRUE,multiplier2=TRUE, 
+                       elasticity=NULL){
+
+  #browser()
+  if(!is.null(elasticity)){
+    # if mostrecent is TRUE then we want the focus_year, otherwise
+    # we can use the input year
+    years <- as.integer(years)
+    years<-seq(years-elasticity, years+elasticity)
+    
+    
+  }
   
-  
-  
-  #   inequal.types <- inequal_types
-  #   if(inequal_types=='all'){
-  #     inequal.types <- c('aci', 'bgv', 'idis', 'riikm', 'mdb', 'mdm', 'mld', 
-  #                        'paf', 'par', 'rci', 'rd', 'rii', 'rr', 'sii', 'ti')
-  # }
-  #   
-  
+  #
   filt_country <- TRUE
   filt_year <- TRUE
   filt_indicator <- TRUE
@@ -47,7 +47,7 @@ getInequalData <- function(indicator = NULL, stratifier = NULL, countries = NULL
   
   ineqDF <- filter(.rdata[['inequals']], filt_country, filt_year, filt_indicator, 
                    filt_dimension, filt_inequaltype, filt_datasource) %>% 
-    select(country, year, indic, dimension, measure, inequal, boot.se, se, ccode)
+    select(country, year, indic, dimension,source, measure, inequal, boot.se, se, ccode)
   
   #   if(is.null(ineqDF)){
   #     return()
@@ -114,16 +114,35 @@ getInequalData <- function(indicator = NULL, stratifier = NULL, countries = NULL
   }
   
   
+
   
-  
-  if(!is.null(mostrecent) && mostrecent) {
-    #print("in most recent")
-    ineqDF <- filter(ineqDF, year == max(ineqDF$year))
+  if(!is.null(elasticity)){
+    
+    maxyear <- group_by(ineqDF, country) %>% 
+      summarise(maxyr = max(year))
+    
+    ineqDF <- semi_join(ineqDF, maxyear, by=c("year" = "maxyr"))
+    
   }
   
-  #print(head(ineqDF))
+  
+#   natdata <- filter(.rdata[['nationaldata']], country == i, year == elastic_years, indic==indicator) %>% 
+#     select(country, year, indic, r)
+  
+  nationaldata <- select(.rdata[['nationaldata']], country, year, source, indic, r)
+  
+  #!!!!! You need source!!!! but inequal does not have it yet
+  #ineqDF <- left_join(ineqDF, nationaldata, by=c('country', 'year', 'source', 'indic'))
+  ineqDF <- left_join(ineqDF, nationaldata, by=c('country', 'year', 'indic'))
+  
+  
+  ineqDF <- rename(ineqDF, estimate = r)
+  
   return(ineqDF)
 }
+
+
+
 
 
 getDisagData <- function(indicator = NULL, stratifier = NULL, countries = NULL, 
@@ -396,7 +415,7 @@ getComparisonSummaries <- function(summeasure=NULL, indicator=NULL, stratifier=N
   }   # end loop through countries
   if(!exists('mergedDF1')) return()
   
-  print('before merge')
+
   mergedDF <- merge(mergedDF1, mergedDF2, by=c("country","year", "indic"))   
   names(mergedDF)[4] <- 'estimate'
   return(mergedDF)
