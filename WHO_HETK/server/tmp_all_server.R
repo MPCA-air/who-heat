@@ -748,8 +748,8 @@ getBenchmarkDataSum <- reactive({
                            multiplier1 = input$summultiplier1,
                            multiplier2 = input$summultiplier2)
  
-  #print(head(anchordata))
-  
+  if(is.null(anchordata) || nrow(anchordata)==0) return()
+  anchordata$anchor <- 1
 #   anchordata <- getComparisonSummaries(indicator = input$focus_indicator_compare, 
 #                                           stratifier = input$focus_dimension_compare, 
 #                                           countries = input$focus_country_compare, 
@@ -760,7 +760,7 @@ getBenchmarkDataSum <- reactive({
 #                                           matchyears=F,
 #                                           summeasure = input$focus_inequal_type_compare)
 
-  if(!is.null(anchordata)) anchordata$anchor <- 1
+
   
   benchmarkdata <- getInequalData(indicator=input$focus_indicator_compare,  
                                stratifier=input$focus_dimension_compare, 
@@ -773,6 +773,9 @@ getBenchmarkDataSum <- reactive({
                                multiplier1 = input$summultiplier1,
                                multiplier2 = input$summultiplier2)
   
+  
+  if(is.null(benchmarkdata) || nrow(benchmarkdata)==0) return()
+  benchmarkdata$anchor <- 0
 #   benchmarkdata <- getComparisonSummaries(indicator = input$focus_indicator_compare, 
 #                                           stratifier = input$focus_dimension_compare, 
 #                                           countries = input$benchmark_countries, 
@@ -790,7 +793,7 @@ getBenchmarkDataSum <- reactive({
 #                                         years=input$compplotSumYears, 
 #                                         elasticity=input$benchmarkYears, matchyears=T)
   
-  if(!is.null(benchmarkdata)) benchmarkdata$anchor <- 0
+
   #print(head(benchmarkdata))
   #     benchmarkdata <- getComparisonCountries(indicator = input$compplotBenchHealthIndicator, 
   #                                             stratifier = input$compplotBenchEquityDimension, 
@@ -902,7 +905,7 @@ output$theComparisonPlot1_web <- renderPlot({
   plotData <- getBenchmarkData()
 
   
-  if(is.null(plotData) || nrow(plotData)==0) return()
+  #if(is.null(plotData) || nrow(plotData)==0) return()
 
   validate(
     need(!is.null(plotData) && nrow(plotData)>0, "There is no data for this combination of variables")
