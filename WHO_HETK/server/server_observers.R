@@ -136,7 +136,7 @@ observe({
 
 observe({
   
-  if(is.null(input$benchmarkWBgroup) || input$benchmarkWBgroup == "") return()
+  #if(is.null(input$benchmarkWBgroup) || input$benchmarkWBgroup == "") return()
   tmpCountries<-getFilteredCountries(input$benchmarkWBgroup, isolate(input$benchmarkWHOregion))
   tmpCountries <- append(.rdata[['benchmark_countries']], tmpCountries)
   #print("in observe")
@@ -152,8 +152,7 @@ observe({
 
 observe({
   
-  if(is.null(input$benchmarkWHOregion) || input$benchmarkWHOregion == "") return()
-  #print(input$benchmarkWHOregion)
+
   tmpCountries<-getFilteredCountries(isolate(input$benchmarkWBgroup), input$benchmarkWHOregion)
   
   tmpCountries <- append(.rdata[['benchmark_countries']], tmpCountries)
@@ -165,6 +164,17 @@ observe({
   updateSelectInput(session, "benchmark_countries", choices = tmpCountries, selected=.rdata[['benchmark_countries']])
   
 })
+
+
+observe({
+
+  if(is.null(input$focus_country_explore) && is.null(input$focus_country_compare)) return()
+  .rdata[['benchmark_countries']]<<-input$benchmark_countries
+  print(.rdata[['benchmark_countries']])
+  
+})
+
+
 
 #****************** Watch year_explore
 

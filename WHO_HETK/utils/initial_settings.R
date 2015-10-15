@@ -52,7 +52,7 @@
 
 
 
-.rdata[['focus_table_variables']]<-c("Country", "Year", "Source", "Health indicator", "Inequality dimension", 
+.rdata[['focus_table_variables']]<-c("Country", "Year", "Data source", "Health indicator", "Inequality dimension", 
                                      "Subgroup", "Estimate", "Population share %", "Lower 95%CI", "Upper 95%CI")
 
 

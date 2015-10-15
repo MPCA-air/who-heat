@@ -637,9 +637,8 @@ output$benchmarkWBgroup <- renderUI({
 output$benchmarkWHOregion <- renderUI({
   
   
-  selectInput("benchmarkWHOregion", label = "Filter benchmark countries by WHO region",
-              .rdata[['who_regions']],
-              selected = NULL,
+  selectizeInput("benchmarkWHOregion", label = "Filter benchmark countries by WHO region",
+              choices=.rdata[['who_regions']],
               multiple=T)
   
 })
@@ -680,9 +679,9 @@ output$benchmarkCountries <- renderUI({
 getBenchmarkData <- reactive({
   
   
-  input$benchmarkWBgroup
-  input$benchmarkWHOregion
-  input$getcomparisondata1
+#   input$benchmarkWBgroup
+#   input$benchmarkWHOregion
+#   input$getcomparisondata1
   
   if(is.null(input$benchmarkYears)) return()
 
@@ -731,9 +730,9 @@ getBenchmarkData <- reactive({
 getBenchmarkDataSum <- reactive({
   
   
-  input$benchmarkWBgroup
-  input$benchmarkWHOregion
-  input$getcomparisondata1
+#   input$benchmarkWBgroup
+#   input$benchmarkWHOregion
+#   input$getcomparisondata1
   
   if(is.null(input$focus_inequal_type_compare)) return()
   
@@ -831,8 +830,7 @@ output$dataTableBenchmark <- renderDataTable({
   validate(
     need(!is.null(theData) && nrow(theData)>0, "There is no data for this combination of variables")
   )
-    if(is.null(theData)) return()
-    #if(nrow(theData)==0) return()
+
 
     
 #     theData <- select(theData, country, year, source, indic, dimension, subgroup, estimate)
@@ -856,7 +854,7 @@ output$dataTableBenchmark <- renderDataTable({
       rename(
         Country                = country,
         Year                   = year,
-        #`Data source`          = source,
+        `Data source`          = source,
         `Health indicator`     = indic,
         `Inequality dimension` = dimension,
         Subgroup               = subgroup,
@@ -868,7 +866,11 @@ output$dataTableBenchmark <- renderDataTable({
         Flag                   = flag
       ) 
     
-    theData <- theData[, input$dataTableItems]
+    
+    vars<-c("Country", "Year", "Data source", "Health indicator", "Inequality dimension", 
+                                                "Subgroup", "Estimate",  "Lower 95%CI", "Upper 95%CI")
+     theData <- theData[, vars]
+
       return(theData)
 
   #})
